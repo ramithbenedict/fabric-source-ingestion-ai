@@ -1,0 +1,23 @@
+{
+  "_doc": "Conventions and skills copied one-way from Fabric-AI-DEV-REPO by 0-shared/scripts/sync_baseline.py. Synced paths are overwritten on every sync: change them in the baseline, never here.",
+  "paths": [
+    "2-config/conventions/01-general/fabric-architecture-overview.md",
+    "2-config/conventions/01-general/fabric-git-repo-structure.md",
+    "2-config/conventions/01-general/domains.md",
+    "2-config/conventions/01-general/environment-suffixes.md",
+    "2-config/conventions/02-fabric-workspace/1-workspace-naming.md",
+    "2-config/conventions/02-fabric-workspace/2-workspace-folder-organization.md",
+    "2-config/conventions/02-fabric-workspace/5-workspace-dpg-convention.md",
+    "2-config/conventions/02-fabric-workspace/6-workspace-sds-convention.md",
+    "2-config/conventions/03-fabric-items",
+    "2-config/conventions/05-data-products/database-project-structure.md",
+    "2-config/conventions/05-data-products/column-naming-convention.md",
+    "2-config/conventions/06-coding/sql-convention.md",
+    "1-skills/skill-sql-generation",
+    "1-skills/skill-fabric-create-lakehouse",
+    "1-skills/skill-fabric-create-warehouse",
+    "1-skills/skill-fabric-create-pipeline",
+    "1-skills/skill-fabric-create-shortcut"
+  ],
+  "_owned_here": "Rewritten for the DPV1 migration (ingestion-design.md), no longer synced: skill-raw-to-lakehouse, skill-ingestion (one section per method)"
+}

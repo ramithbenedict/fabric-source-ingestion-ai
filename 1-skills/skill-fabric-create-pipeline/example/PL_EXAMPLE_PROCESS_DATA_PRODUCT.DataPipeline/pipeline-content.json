@@ -1,0 +1,142 @@
+{
+  "properties": {
+    "parameters": {
+      "LOAD_MODE": {
+        "type": "String",
+        "defaultValue": "FULL"
+      }
+    },
+    "activities": [
+      {
+        "name": "DIM_CUSTOMER",
+        "type": "SqlServerStoredProcedure",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.02:00:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "storedProcedureName": "PRC.SP_LOAD_DIM_CUSTOMER"
+        },
+        "connectionSettings": {
+          "name": "f3a9b2c1_d4e5_6f78_9012_abcdef345678",
+          "properties": {
+            "annotations": [],
+            "type": "DataWarehouse",
+            "typeProperties": {
+              "endpoint": "@pipeline().libraryVariables.WH_ADP_EXAMPLE_SQL_ENDPOINT",
+              "artifactId": "@pipeline().libraryVariables.WH_ADP_EXAMPLE_ID",
+              "workspaceId": "@pipeline().libraryVariables.WH_ADP_EXAMPLE_WORKSPACE_ID"
+            },
+            "externalReferences": {
+              "connection": "00000000-0000-0000-0000-000000000000"
+            }
+          }
+        }
+      },
+      {
+        "name": "FACT_SALES",
+        "type": "SqlServerStoredProcedure",
+        "dependsOn": [
+          {
+            "activity": "DIM_CUSTOMER",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.02:00:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "storedProcedureName": "PRC.SP_LOAD_FACT_SALES",
+          "storedProcedureParameters": {
+            "LoadMode": {
+              "value": {
+                "value": "@pipeline().parameters.LOAD_MODE",
+                "type": "Expression"
+              },
+              "type": "String"
+            }
+          }
+        },
+        "connectionSettings": {
+          "name": "a7e2d9f4_b1c3_5e60_8421_fedcba987654",
+          "properties": {
+            "annotations": [],
+            "type": "DataWarehouse",
+            "typeProperties": {
+              "endpoint": "@pipeline().libraryVariables.WH_ADP_EXAMPLE_SQL_ENDPOINT",
+              "artifactId": "@pipeline().libraryVariables.WH_ADP_EXAMPLE_ID",
+              "workspaceId": "@pipeline().libraryVariables.WH_ADP_EXAMPLE_WORKSPACE_ID"
+            },
+            "externalReferences": {
+              "connection": "00000000-0000-0000-0000-000000000000"
+            }
+          }
+        }
+      },
+      {
+        "name": "Notify_on_failure",
+        "type": "Office365Outlook",
+        "dependsOn": [
+          {
+            "activity": "FACT_SALES",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "inputs": {
+            "method": "post",
+            "path": "/v2/Mail",
+            "body": {
+              "To": "data-platform-alerts@example.com",
+              "Subject": {
+                "value": "@concat('Pipeline failed: ', pipeline().Pipeline)",
+                "type": "Expression"
+              },
+              "Body": "<p>The data product processing pipeline failed. Check the run details in Fabric.</p>",
+              "Importance": "High"
+            }
+          }
+        },
+        "externalReferences": {
+          "connection": "00000000-0000-0000-0000-000000000000"
+        }
+      }
+    ],
+    "libraryVariables": {
+      "WH_ADP_EXAMPLE_ID": {
+        "type": "String",
+        "variableName": "WH_ADP_EXAMPLE_ID",
+        "libraryName": "VL_MAIN"
+      },
+      "WH_ADP_EXAMPLE_SQL_ENDPOINT": {
+        "type": "String",
+        "variableName": "WH_ADP_EXAMPLE_SQL_ENDPOINT",
+        "libraryName": "VL_MAIN"
+      },
+      "WH_ADP_EXAMPLE_WORKSPACE_ID": {
+        "type": "String",
+        "variableName": "WH_ADP_EXAMPLE_WORKSPACE_ID",
+        "libraryName": "VL_MAIN"
+      }
+    }
+  }
+}

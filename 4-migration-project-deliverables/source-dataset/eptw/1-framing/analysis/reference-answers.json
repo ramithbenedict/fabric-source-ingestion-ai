@@ -1,0 +1,26 @@
+{
+ "Q01": {
+  "answer": "Yes, as proposed."
+ },
+ "Q02": {
+  "answer": "None exist: build new. Items under DIGI_SOURCE_WS_DEV/EPTW were test-only."
+ },
+ "Q03": {
+  "answer": "Drop them: offload pipelines and their triggers are not required in Fabric (owner decision 2026-11-02)."
+ },
+ "Q04": {
+  "answer": "No schedule (on demand); DPV1 triggers dropped."
+ },
+ "Q06": {
+  "answer": "Keep every name as in DPV1."
+ },
+ "Q10": {
+  "answer": "Create one connection per environment."
+ },
+ "Q11": {
+  "answer": "Keep what DPV1 does."
+ },
+ "Q12": {
+  "answer": "Keep all catalog tables."
+ }
+}

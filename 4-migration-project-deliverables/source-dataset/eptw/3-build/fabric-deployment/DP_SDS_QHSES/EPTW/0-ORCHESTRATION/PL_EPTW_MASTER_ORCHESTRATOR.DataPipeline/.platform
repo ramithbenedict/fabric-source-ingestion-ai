@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "DataPipeline",
+    "displayName": "PL_EPTW_MASTER_ORCHESTRATOR",
+    "description": "EPTW: source => raw, then raw => dbo tables, same run folder."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "fc308995-87d4-5858-a68d-207dc103596c"
+  }
+}

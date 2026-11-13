@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Warehouse",
+    "displayName": "WH_CATALOG_COMMON",
+    "description": "Common catalog warehouse: the catalog views of the source datasets of this workspace."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "8e2fdf36-f9ee-4319-ad2c-590fa1c48189"
+  }
+}

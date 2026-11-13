@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "NB_EPTW_RAW_TO_DELTA",
+    "description": "EPTW: raw parquet => dbo tables, only the tables that copied (semi-structured)."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "12a06cb4-d3f4-50b5-b9fd-61a42fb954ba"
+  }
+}

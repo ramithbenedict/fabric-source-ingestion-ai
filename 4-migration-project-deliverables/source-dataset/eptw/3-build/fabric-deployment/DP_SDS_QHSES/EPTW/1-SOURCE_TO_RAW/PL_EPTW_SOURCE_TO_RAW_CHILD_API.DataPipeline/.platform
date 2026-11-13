@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "DataPipeline",
+    "displayName": "PL_EPTW_SOURCE_TO_RAW_CHILD_API",
+    "description": "EPTW: one REST call per cpInternalCode of the list, for the catalog rows that have a ParamName (DPV1 PL_RAWDATA_EPTW_CHILD_API)."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "7a85567b-80c6-54e2-ace5-158a7afa38eb"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/variableLibrary/definition/valueSet/1.0.0/schema.json",
+  "name": "DEV",
+  "variableOverrides": [
+    {
+      "name": "CATALOG_WAREHOUSE_CONN_ID",
+      "value": "d36dfa2d-c0ec-4225-a5d9-8ca399c84cdc"
+    },
+    {
+      "name": "CATALOG_WAREHOUSE_ID",
+      "value": "740281c9-80e9-439a-9a85-e325277c4688"
+    },
+    {
+      "name": "CATALOG_WAREHOUSE_NAME",
+      "value": "WH_CATALOG_COMMON"
+    },
+    {
+      "name": "CATALOG_WAREHOUSE_SQL_ENDPOINT",
+      "value": "dlihtekm5geejnpqivklyr2prq-26sfxqamwjyehklnwsekxins4m.datawarehouse.fabric.microsoft.com"
+    },
+    {
+      "name": "LH_SDS_RMA_ID",
+      "value": "2519e3e9-e9a9-4f7e-9a37-f59afc8c867f"
+    },
+    {
+      "name": "LH_SDS_WPS_ID",
+      "value": "019482c8-10c1-4c21-91b4-95d5a053ef64"
+    },
+    {
+      "name": "RMA_CATALOG_VIEW_NAME",
+      "value": "CATALOG.rma_catalog"
+    },
+    {
+      "name": "RMA_LH_CONN_ID",
+      "value": "2519e3e9-e9a9-4f7e-9a37-f59afc8c867f"
+    },
+    {
+      "name": "RMA_LH_NAME",
+      "value": "LH_SDS_RMA"
+    },
+    {
+      "name": "RMA_SQL_SERVER_CONN_ID",
+      "value": "ecabc208-d0a2-48e3-8c1e-5f42e5a1bf9a"
+    },
+    {
+      "name": "RMA_SQL_SERVER_CONN_NAME",
+      "value": "CONN_RMA_SQL_SERVER_DEV"
+    },
+    {
+      "name": "WPS_CATALOG_VIEW_NAME",
+      "value": "CATALOG.wps_catalog"
+    },
+    {
+      "name": "WPS_LH_CONN_ID",
+      "value": "2519e3e9-e9a9-4f7e-9a37-f59afc8c867f"
+    },
+    {
+      "name": "WPS_LH_NAME",
+      "value": "LH_SDS_WPS"
+    },
+    {
+      "name": "WPS_ORACLE_CONN_ID",
+      "value": "6f18d578-010f-4573-adbc-8eb8656d7f2d"
+    },
+    {
+      "name": "WPS_ORACLE_CONN_NAME",
+      "value": "CONN_WPS_ORACLE_DEV"
+    }
+  ]
+}

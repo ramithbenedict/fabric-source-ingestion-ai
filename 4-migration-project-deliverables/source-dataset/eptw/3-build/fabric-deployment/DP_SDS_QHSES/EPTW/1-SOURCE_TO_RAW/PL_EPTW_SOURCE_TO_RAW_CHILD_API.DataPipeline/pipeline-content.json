@@ -1,0 +1,264 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "name": "Get secret AZ-REST-EPTW-APIM-SUBKEY",
+        "type": "WebActivity",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.00:10:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 30,
+          "secureInput": true,
+          "secureOutput": true
+        },
+        "description": "DPV1 `Get APIM SubKey`: reads the Key Vault secret `AZ-REST-EPTW-APIM-SUBKEY` (header `ocp-apim-subscription-key` of the DPV1 linked service LS_CORE_REST_EPTW). The output is secure.",
+        "typeProperties": {
+          "method": "GET",
+          "relativeUrl": "secrets/AZ-REST-EPTW-APIM-SUBKEY?api-version=7.0"
+        },
+        "externalReferences": {
+          "connection": "@pipeline().libraryVariables.EPTW_KEYVAULT_CONN_ID"
+        }
+      },
+      {
+        "name": "ForEach item",
+        "type": "ForEach",
+        "dependsOn": [
+          {
+            "activity": "Get secret AZ-REST-EPTW-APIM-SUBKEY",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "description": "One Copy per item of the list (50 in parallel, as DPV1).",
+        "typeProperties": {
+          "isSequential": false,
+          "batchCount": 50,
+          "items": {
+            "value": "@pipeline().parameters.projectMetadata",
+            "type": "Expression"
+          },
+          "activities": [
+            {
+              "name": "Land item",
+              "type": "Copy",
+              "dependsOn": [],
+              "policy": {
+                "timeout": "7.00:00:00",
+                "retry": 3,
+                "retryIntervalInSeconds": 60
+              },
+              "description": "One call of the API for this cpInternalCode: `@{pipeline().parameters.apiMetadata.ApiName}/?@{pipeline().parameters.apiMetadata.ParamName}=@{item().cpInternalCode}&LastSyncDate=@{pipeline().parameters.apiMetadata.WatermarkNow}`. The JSON lands as delivered, one file per item.",
+              "typeProperties": {
+                "source": {
+                  "type": "RestSource",
+                  "httpRequestTimeout": "00:05:00",
+                  "requestInterval": "00.00:00:00.010",
+                  "requestMethod": "GET",
+                  "paginationRules": {
+                    "supportRFC5988": "true"
+                  },
+                  "datasetSettings": {
+                    "type": "RestResource",
+                    "annotations": [],
+                    "typeProperties": {
+                      "relativeUrl": {
+                        "value": "@{pipeline().parameters.apiMetadata.ApiName}/?@{pipeline().parameters.apiMetadata.ParamName}=@{item().cpInternalCode}&LastSyncDate=@{pipeline().parameters.apiMetadata.WatermarkNow}",
+                        "type": "Expression"
+                      }
+                    },
+                    "externalReferences": {
+                      "connection": "@pipeline().libraryVariables.EPTW_REST_SERVICE_CONN_ID"
+                    }
+                  },
+                  "additionalHeaders": {
+                    "value": "@json(concat('{', '\"ocp-apim-subscription-key\":\"', if(contains(activity('Get secret AZ-REST-EPTW-APIM-SUBKEY').output, 'value'), activity('Get secret AZ-REST-EPTW-APIM-SUBKEY').output.value, activity('Get secret AZ-REST-EPTW-APIM-SUBKEY').output.data.value), '\"', '}'))",
+                    "type": "Expression"
+                  }
+                },
+                "sink": {
+                  "type": "JsonSink",
+                  "storeSettings": {
+                    "type": "LakehouseWriteSettings"
+                  },
+                  "formatSettings": {
+                    "type": "JsonWriteSettings"
+                  },
+                  "datasetSettings": {
+                    "type": "Json",
+                    "typeProperties": {
+                      "location": {
+                        "type": "LakehouseLocation",
+                        "folderPath": {
+                          "value": "@{pipeline().parameters.LandingRoot}/@{pipeline().parameters.Run}",
+                          "type": "Expression"
+                        },
+                        "fileName": {
+                          "value": "@{pipeline().parameters.apiMetadata.EntityName}~@{item().cpInternalCode}.json",
+                          "type": "Expression"
+                        }
+                      }
+                    },
+                    "schema": {},
+                    "connectionSettings": {
+                      "name": "lh_sds_eptw",
+                      "properties": {
+                        "annotations": [],
+                        "type": "Lakehouse",
+                        "typeProperties": {
+                          "workspaceId": "@pipeline().DataFactory",
+                          "artifactId": "@pipeline().libraryVariables.LH_SDS_EPTW_ID",
+                          "rootFolder": "Files"
+                        },
+                        "externalReferences": {
+                          "connection": "@pipeline().libraryVariables.EPTW_LH_CONN_ID"
+                        }
+                      }
+                    },
+                    "annotations": []
+                  }
+                },
+                "enableStaging": false
+              }
+            },
+            {
+              "name": "Add to errors",
+              "type": "AppendVariable",
+              "dependsOn": [
+                {
+                  "activity": "Land item",
+                  "dependencyConditions": [
+                    "Failed"
+                  ]
+                }
+              ],
+              "description": "The failed item and the Copy error; the other items carry on, then the child fails (DPV1 INGESTION FAILURE).",
+              "typeProperties": {
+                "variableName": "errors",
+                "value": {
+                  "value": "@concat(item().cpInternalCode, ': ', activity('Land item').error.message)",
+                  "type": "Expression"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "Any item failed",
+        "type": "IfCondition",
+        "dependsOn": [
+          {
+            "activity": "ForEach item",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "expression": {
+            "value": "@greater(length(variables('errors')), 0)",
+            "type": "Expression"
+          },
+          "ifFalseActivities": [],
+          "ifTrueActivities": [
+            {
+              "name": "Fail on failed items",
+              "type": "Fail",
+              "dependsOn": [],
+              "typeProperties": {
+                "errorCode": "API_ITEM_FAILED",
+                "message": {
+                  "value": "@concat(pipeline().parameters.apiMetadata.ApiName, ': ', string(length(variables('errors'))), ' call(s) failed, first: ', string(first(variables('errors'))))",
+                  "type": "Expression"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "Fail Item Loop",
+        "type": "Fail",
+        "dependsOn": [
+          {
+            "activity": "ForEach item",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "errorCode": "API_LOOP_FAILED",
+          "message": "PL_EPTW_SOURCE_TO_RAW_CHILD_API could not run the loop over the list."
+        }
+      },
+      {
+        "name": "Fail Key Vault",
+        "type": "Fail",
+        "dependsOn": [
+          {
+            "activity": "Get secret AZ-REST-EPTW-APIM-SUBKEY",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "errorCode": "KEYVAULT_SECRET_FAILED",
+          "message": "The pipeline could not read the Key Vault secret(s) AZ-REST-EPTW-APIM-SUBKEY: check the connection EPTW_KEYVAULT_CONN_ID and its access."
+        }
+      }
+    ],
+    "parameters": {
+      "apiMetadata": {
+        "type": "Object"
+      },
+      "projectMetadata": {
+        "type": "Array"
+      },
+      "Run": {
+        "type": "String"
+      },
+      "LandingRoot": {
+        "type": "String",
+        "defaultValue": "landing/eptw"
+      }
+    },
+    "variables": {
+      "errors": {
+        "type": "Array",
+        "defaultValue": []
+      }
+    },
+    "libraryVariables": {
+      "LH_SDS_EPTW_ID": {
+        "type": "String",
+        "variableName": "LH_SDS_EPTW_ID",
+        "libraryName": "VL_MAIN"
+      },
+      "EPTW_LH_CONN_ID": {
+        "type": "String",
+        "variableName": "EPTW_LH_CONN_ID",
+        "libraryName": "VL_MAIN"
+      },
+      "EPTW_LH_NAME": {
+        "type": "String",
+        "variableName": "EPTW_LH_NAME",
+        "libraryName": "VL_MAIN"
+      },
+      "EPTW_REST_SERVICE_CONN_ID": {
+        "type": "String",
+        "variableName": "EPTW_REST_SERVICE_CONN_ID",
+        "libraryName": "VL_MAIN"
+      },
+      "EPTW_KEYVAULT_CONN_ID": {
+        "type": "String",
+        "variableName": "EPTW_KEYVAULT_CONN_ID",
+        "libraryName": "VL_MAIN"
+      }
+    }
+  }
+}

@@ -1,0 +1,193 @@
+{
+  "_doc": "Owner decisions that override the mapping rules for one object of one scope. dpv1_mapping.py applies them on every refresh; the row keeps its DPV1 name and gets the decided action, target and a note with who decided and when. Actions: drop, translate, merge, rebuild, replace, upstream, product, shared. Keys: sds = source dataset scopes, dp = data product scopes, estate = objects outside every scope. Optional 'target' sets the Fabric target or the scope that owns the object.",
+  "sds": {
+    "GEOS": {
+      "Get_Geos_Data": {
+        "action": "drop",
+        "reason": "Older full extract of GEOS for GSP_ANALYSIS (Lookup on dbo.Catalog_Geos, RAW + CLEANSED copy). Replaced by PL_GEOS_SOURCE_TO_RAW.",
+        "decided_by": "migration owner",
+        "date": "2026-10-25"
+      },
+      "Metadata_For_rpl_geos": {
+        "action": "product",
+        "reason": "Manual script creating 14 rpl_geos serverless views over GEOS RAW parquet for GSP_ANALYSIS. Not migrated with GEOS: it is the consumer side of GSP_ANALYSIS, replaced there by LH_INP_SDS_GEOS shortcuts (see the GEOS source dataset contract).",
+        "decided_by": "migration owner",
+        "date": "2026-10-25",
+        "target": "Data Product Migration: GSP_ANALYSIS (rpl_geos views => LH_INP_SDS_GEOS shortcuts)"
+      },
+      "sp_for_rpl_geos": {
+        "action": "product",
+        "reason": "Procedure gsp_ten.sp_metadata_rpl_geos rebuilding the same rpl_geos views (called by GSP_DDL). Not migrated with GEOS: it is the consumer side of GSP_ANALYSIS, replaced there by LH_INP_SDS_GEOS shortcuts (see the GEOS source dataset contract).",
+        "decided_by": "migration owner",
+        "date": "2026-10-25",
+        "target": "Data Product Migration: GSP_ANALYSIS (rpl_geos views => LH_INP_SDS_GEOS shortcuts)"
+      }
+    },
+    "EASYTENDER": {
+      "TR_EASYTENDER_DAILY_4AM": {
+        "action": "product",
+        "target": "Data Product Migration: EASYTENDER (starts PL_ORCH_EASYTENDER)",
+        "reason": "Daily 04:00 UTC trigger of the data product master PL_ORCH_EASYTENDER, which calls this source through EXEC_EASYTENDER. The source gets no schedule in Fabric for now; the owner will schedule it manually.",
+        "decided_by": "migration owner",
+        "date": "2026-10-25"
+      }
+    },
+    "CORNERSTONE": {
+      "TR_CORNERSTONE_DAILY_5AM": {
+        "action": "drop",
+        "reason": "ScheduleTrigger (Stopped, daily 05:00 UTC) with an empty \"pipelines\" array in DPV1: never wired to PL_MASTER_CORNERSTONE or any other pipeline. Orphaned leftover, out of scope.",
+        "decided_by": "migration owner",
+        "date": "2026-10-26"
+      }
+    },
+    "RMA": {
+      "TR_RMA_DAILY": {
+        "action": "product",
+        "target": "Data Product Migration: RMA (starts PL_ORCH_RMA)",
+        "reason": "Daily 22:00 UTC trigger (Stopped) of the data product master PL_ORCH_RMA. The source gets no trigger in Fabric: owner decided none is needed.",
+        "decided_by": "migration owner",
+        "date": "2026-10-27"
+      }
+    },
+    "EPTW": {
+      "PL_CHILD_EPTW_OFFLOAD_TABLE": {
+        "action": "drop",
+        "reason": "DW TO SPOT offload chain, not required in Fabric.",
+        "decided_by": "migration owner",
+        "date": "2026-11-02"
+      },
+      "PL_EPTW_OFFLOAD_TABLE": {
+        "action": "drop",
+        "reason": "DW TO SPOT offload chain, not required in Fabric.",
+        "decided_by": "migration owner",
+        "date": "2026-11-02"
+      },
+      "PL_CHILD_CURDATA_EPTW_DWH_EXTRACT_TABLE_V2": {
+        "action": "drop",
+        "reason": "DW TO SPOT offload chain, not required in Fabric.",
+        "decided_by": "migration owner",
+        "date": "2026-11-02"
+      },
+      "TR_EPTW_8HOURS": {
+        "action": "drop",
+        "reason": "Trigger of the dropped offload pipelines; no schedule rebuilt.",
+        "decided_by": "migration owner",
+        "date": "2026-11-02"
+      },
+      "TR_EPTW_DAILY_1AM": {
+        "action": "drop",
+        "reason": "Trigger of the dropped offload pipelines; no schedule rebuilt.",
+        "decided_by": "migration owner",
+        "date": "2026-11-02"
+      },
+      "LOGS_EPTW_INCREMENTAL_LOAD_TABLE": {
+        "action": "rebuild",
+        "target": "WH_CATALOG_COMMON: [LOGS].[EPTW_INCREMENTAL_LOAD]",
+        "reason": "Owner keeps the incremental load log table (process_name, status, start/end time, last_refresh_time, error_message). Lives with the catalog in the common warehouse.",
+        "decided_by": "migration owner",
+        "date": "2026-11-02"
+      },
+      "LOGS_EPTW_INCREMENTAL_LOAD_SP": {
+        "action": "rebuild",
+        "target": "WH_CATALOG_COMMON: [LOGS].[SP_EPTW_INCREMENTAL_LOAD]",
+        "reason": "Owner keeps the procedure that writes the incremental load log (OPENJSON of the extraction logs into [LOGS].[EPTW_INCREMENTAL_LOAD]).",
+        "decided_by": "migration owner",
+        "date": "2026-11-02"
+      }
+    }
+  },
+  "dp": {
+    "EPTW": {
+      "PL_MASTER_EPTW_DWH_TO_SPOT": {
+        "action": "drop",
+        "reason": "DW TO SPOT offload chain is out of scope for the EPTW data product (the DW data is not copied back to SPOT).",
+        "decided_by": "migration owner",
+        "date": "2026-11-02"
+      },
+      "PL_CURDATA_EPTW_DWH_PROVISION_SPOT": {
+        "action": "drop",
+        "reason": "Part of the DW TO SPOT offload chain, out of scope.",
+        "decided_by": "migration owner",
+        "date": "2026-11-02"
+      },
+      "PL_GENERIC_CHILD_DWH_TO_SPOT_EXTRACT_TABLE": {
+        "action": "drop",
+        "reason": "Part of the DW TO SPOT offload chain, out of scope.",
+        "decided_by": "migration owner",
+        "date": "2026-11-02"
+      },
+      "PL_GENERIC_CHILD_DWH_TO_SPOT_EXTRACT_TABLE_SCRIPT": {
+        "action": "drop",
+        "reason": "Part of the DW TO SPOT offload chain, out of scope.",
+        "decided_by": "migration owner",
+        "date": "2026-11-02"
+      },
+      "PL_GENERIC_CHILD_DWH_TO_SPOT_PROVISION_SPOT": {
+        "action": "drop",
+        "reason": "Part of the DW TO SPOT offload chain, out of scope.",
+        "decided_by": "migration owner",
+        "date": "2026-11-02"
+      },
+      "NTBK_EPV2_CHILD_FULL_DSQLOFFLOAD_TO_CLEAN": {
+        "action": "drop",
+        "reason": "DW TO SPOT offload notebook, out of scope. Its removal drops the EPV2 input.",
+        "decided_by": "migration owner",
+        "date": "2026-11-02"
+      },
+      "NTBK_EPV2BI_MASTER_DSQLOFFLOAD_TO_CLEAN": {
+        "action": "drop",
+        "reason": "DW TO SPOT offload notebook, out of scope. Its removal drops the EPV2 input.",
+        "decided_by": "migration owner",
+        "date": "2026-11-02"
+      },
+      "NTBK_GENERIC_MASTER_DSQLOFFLOAD_TO_CLEAN": {
+        "action": "drop",
+        "reason": "DW TO SPOT offload notebook, out of scope.",
+        "decided_by": "migration owner",
+        "date": "2026-11-02"
+      },
+      "PL_CHILD_REFRESH_DATASET_EPTW": {
+        "action": "drop",
+        "reason": "REFRESH POWERBI DATASETS is out of scope for the EPTW data product.",
+        "decided_by": "migration owner",
+        "date": "2026-11-02"
+      },
+      "PL_MASTER_REFRESH_DATASET_EPTW": {
+        "action": "drop",
+        "reason": "REFRESH POWERBI DATASETS is out of scope for the EPTW data product.",
+        "decided_by": "migration owner",
+        "date": "2026-11-02"
+      }
+    },
+    "RMA": {
+      "TR_RMA_DAILY": {
+        "action": "drop",
+        "reason": "Daily 22:00 UTC trigger (Stopped) of PL_ORCH_RMA. Owner decided no trigger is migrated; the data product runs on demand.",
+        "decided_by": "migration owner",
+        "date": "2026-10-29"
+      },
+      "PL_CHILD_DEDICATED_RMA": {
+        "action": "drop",
+        "reason": "Replaced by PL_RMA_PROCESS_DATA_PRODUCT (parallel SP_LOAD_* calls from the OUT views; no STG hop, no Copy activities).",
+        "decided_by": "migration owner",
+        "date": "2026-10-30"
+      },
+      "inp_rma.sp_meta_create_inp_view": {
+        "action": "drop",
+        "reason": "Created the INP views over SPOT at run time: replaced by the LH_INP_SDS_RMA shortcuts and the INT_SILV_RMA views.",
+        "decided_by": "migration owner",
+        "date": "2026-10-30"
+      }
+    }
+  },
+  "exclude_inputs": {
+    "EPTW": {
+      "EPV2": {
+        "reason": "EPV2 is not part of the EPTW project. It was only reached through the DW TO SPOT offload chain (dropped, not required in Fabric). EPTW reads only its own source dataset.",
+        "decided_by": "migration owner",
+        "date": "2026-11-02"
+      }
+    }
+  },
+  "estate": {}
+}

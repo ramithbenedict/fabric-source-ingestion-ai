@@ -1,0 +1,8 @@
+{
+  "_doc": "Paths used by the scripts in 0-shared/scripts, relative to the repository root (absolute paths also work).",
+  "dpv1_export_root": "C:\\MS_FABRIC_REPO\\MS_FABRIC_NEW_SERVICES\\Migration\\DPV1\\TEN Data Platform",
+  "baseline_repo": "../../Fabric_DEV/FABRIC-REPO-AI",
+  "deliverables_root": "4-migration-project-deliverables",
+  "hub_root": "5-migration-hub",
+  "deployment_repo": ""
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "DataPipeline",
+    "displayName": "PL_WPS_RAW_TO_DELTA",
+    "description": "WPS: tables that copied => dbo tables."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "468ce916-9726-4498-9e8e-4fedc64a50e7"
+  }
+}

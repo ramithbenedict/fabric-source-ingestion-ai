@@ -1,0 +1,155 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "name": "Load raw to Lakehouse tables",
+        "type": "TridentNotebook",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.04:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 60
+        },
+        "description": "Runs NB_RMA_RAW_TO_DELTA once with the tables to load; it loads them in parallel in one session and reports loaded and failed tables.",
+        "typeProperties": {
+          "notebookId": "99dc992a-60b9-4da3-a6c6-f8a858d1a407",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "sessionTag": "rma-raw-to-delta",
+          "parameters": {
+            "lakehouse_name": {
+              "value": {
+                "value": "@pipeline().libraryVariables.RMA_LH_NAME",
+                "type": "Expression"
+              },
+              "type": "String"
+            },
+            "tables_json": {
+              "value": {
+                "value": "@string(pipeline().parameters.LoadedTables)",
+                "type": "Expression"
+              },
+              "type": "String"
+            },
+            "run_partition": {
+              "value": {
+                "value": "@pipeline().parameters.RunPartition",
+                "type": "Expression"
+              },
+              "type": "String"
+            },
+            "raw_root": {
+              "value": {
+                "value": "@pipeline().parameters.RawRoot",
+                "type": "Expression"
+              },
+              "type": "String"
+            },
+            "target_schema": {
+              "value": {
+                "value": "@pipeline().parameters.TargetSchema",
+                "type": "Expression"
+              },
+              "type": "String"
+            },
+            "max_parallel": {
+              "value": {
+                "value": "@pipeline().parameters.MaxParallel",
+                "type": "Expression"
+              },
+              "type": "String"
+            },
+            "pipeline_name": {
+              "value": {
+                "value": "@pipeline().Pipeline",
+                "type": "Expression"
+              },
+              "type": "String"
+            }
+          }
+        }
+      },
+      {
+        "name": "Return loaded and failed tables",
+        "type": "SetVariable",
+        "dependsOn": [
+          {
+            "activity": "Load raw to Lakehouse tables",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "description": "Gives the master the tables that went through this step and the ones that failed, with their error.",
+        "typeProperties": {
+          "variableName": "pipelineReturnValue",
+          "setSystemVariable": true,
+          "value": [
+            {
+              "key": "LoadedTables",
+              "value": {
+                "type": "Expression",
+                "content": "@json(activity('Load raw to Lakehouse tables').output.result.exitValue).loaded"
+              }
+            },
+            {
+              "key": "FailedTables",
+              "value": {
+                "type": "Expression",
+                "content": "@json(activity('Load raw to Lakehouse tables').output.result.exitValue).failed"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "Fail Load raw to Lakehouse tables",
+        "type": "Fail",
+        "dependsOn": [
+          {
+            "activity": "Load raw to Lakehouse tables",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "errorCode": "RAW_TO_DELTA_FAILED",
+          "message": "PL_RMA_RAW_TO_DELTA: \"Load raw to Lakehouse tables\" did not run to the end (notebook session or item error); see its run output."
+        }
+      }
+    ],
+    "parameters": {
+      "LoadedTables": {
+        "type": "Array",
+        "defaultValue": []
+      },
+      "RawRoot": {
+        "type": "String",
+        "defaultValue": "raw/rma"
+      },
+      "RunPartition": {
+        "type": "String",
+        "defaultValue": ""
+      },
+      "TargetSchema": {
+        "type": "String",
+        "defaultValue": "dbo"
+      },
+      "MaxParallel": {
+        "type": "String",
+        "defaultValue": "8"
+      }
+    },
+    "libraryVariables": {
+      "RMA_LH_NAME": {
+        "type": "String",
+        "variableName": "RMA_LH_NAME",
+        "libraryName": "VL_MAIN"
+      }
+    }
+  }
+}

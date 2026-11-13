@@ -1,0 +1,423 @@
+{
+  "_doc": "Build scenarios of the DPV1 estate. classify_scenarios.py assigns one scenario and any number of modifiers to each source dataset (S-*) and data product (D-*) from what its DPV1 code does. Each entry says how it is built, which tools exist, and what is still open. Read by classify_scenarios.py (catalogs and scenarios.json) and the hub page. status: ready = built and reviewed in a pilot; partial = built, some part not verified in Fabric; gap = the build does not cover it yet (backlog).",
+  "sds": {
+    "scenarios": {
+      "S-DB-FULL": {
+        "title": "Database source, full load",
+        "status": "ready",
+        "detect": "A database linked service (Oracle, SQL Server, Azure SQL, PostgreSQL...) and no watermark read in the DPV1 pipelines. Catalog flags such as isIncLoad may exist but are unused.",
+        "build": [
+          "S1 catalog view from the DPV1 catalog script, Lakehouse LH_SDS_<SRC>",
+          "S2 one Copy per catalog row, SELECT * (or the DPV1 per-table query), parquet written once to Files/raw",
+          "S3 one loader notebook NB_<SRC>_RAW_TO_DELTA only when DPV1 cleansed in a notebook, else a Copy raw to table; tables load in parallel in one session",
+          "S4 master orchestrator, VL_MAIN, schedule documented and not activated"
+        ],
+        "tools": [
+          "build_source_dataset.py",
+          "create_catalog_view.py",
+          "review_scope.py"
+        ],
+        "refs": [
+          "skill-ingestion (structured full)"
+        ],
+        "open": []
+      },
+      "S-DB-INC": {
+        "title": "Database source, incremental load",
+        "status": "partial",
+        "detect": "A database linked service and the DPV1 pipelines read a watermark (WatermarkParam, WatermarkVal, isFullLoad).",
+        "build": [
+          "As S-DB-FULL, plus a watermark table in the catalog warehouse",
+          "S2 extracts changes since the watermark minus 1 day",
+          "S3 MERGE on the key columns, newest row wins, delete logs and history tables",
+          "S4 master updates the watermark only for tables that loaded"
+        ],
+        "tools": [
+          "build_source_dataset.py",
+          "create_catalog_view.py"
+        ],
+        "refs": [
+          "skill-ingestion (structured incremental)"
+        ],
+        "open": [
+          "Built and reviewed, not yet run end to end in Fabric (B46)"
+        ]
+      },
+      "S-REST-FULL": {
+        "title": "REST API, full load",
+        "status": "ready",
+        "detect": "A REST linked service and no watermark in the request.",
+        "build": [
+          "S1 catalog view (one row per API path)",
+          "S2 Copy per row lands the JSON pages as delivered in Files/landing (DPV1 pagination rules copied)",
+          "S3 NB_<SRC>_FLATTEN writes flattened parquet to Files/raw, then the loader writes the tables",
+          "S4 master, VL_MAIN, connection per API"
+        ],
+        "tools": [
+          "build_source_dataset.py"
+        ],
+        "refs": [
+          "skill-ingestion (semistructured full)"
+        ],
+        "open": [
+          "The raw layout of API sources with a landing zone (B56) is not settled"
+        ]
+      },
+      "S-REST-INC": {
+        "title": "REST API, incremental load",
+        "status": "partial",
+        "detect": "A REST linked service and the request carries a watermark (in the URL or a parameter, different for every API).",
+        "build": [
+          "As S-REST-FULL",
+          "S1 the catalog parser reads every DPV1 catalog layout (multi-line values, column lists)",
+          "S2 the DPV1 request is copied to 2-config/migration/request-urls/<SRC>.json (item().WatermarkVal => item().WatermarkNow) and used as relativeUrl; the Lookup returns the live watermark",
+          "S4 the master updates the watermark of the tables that loaded"
+        ],
+        "tools": [
+          "build_source_dataset.py",
+          "create_catalog_view.py",
+          "review_scope.py"
+        ],
+        "refs": [
+          "skill-ingestion (semistructured incremental)"
+        ],
+        "open": [
+          "Request derived from the catalog row for ONEGBS, EPTW and ECOSYS_COSTCONTROL; SERVICENOW and OCTOPASS build it from pipeline parameters or variables: write it in \"override\" of the request file. Not run in Fabric (B46)"
+        ]
+      },
+      "S-FILES-FULL": {
+        "title": "File source, full load",
+        "status": "ready",
+        "detect": "SFTP, FTP, blob, file share, S3, Azure Files or HTTP files, and no watermark.",
+        "build": [
+          "S1 catalog view (one row per file pattern)",
+          "S2 Copy per row lands the files as delivered in Files/landing",
+          "S3 NB_<SRC>_FLATTEN converts csv, Excel, xml or json to parquet in Files/raw, then the loader",
+          "S4 master, VL_MAIN"
+        ],
+        "tools": [
+          "build_source_dataset.py"
+        ],
+        "refs": [
+          "skill-ingestion (semistructured full)"
+        ],
+        "open": []
+      },
+      "S-FILES-INC": {
+        "title": "File source, incremental load",
+        "status": "partial",
+        "detect": "File source and the DPV1 pipelines filter on the modified date or a watermark.",
+        "build": [
+          "As S-FILES-FULL, with modifiedDatetimeStart set from the watermark for incremental rows"
+        ],
+        "tools": [
+          "build_source_dataset.py"
+        ],
+        "refs": [
+          "skill-ingestion (semistructured incremental)"
+        ],
+        "open": [
+          "Not run end to end in Fabric"
+        ]
+      },
+      "S-POOL": {
+        "title": "Source is the DPV1 dedicated pool",
+        "status": "gap",
+        "detect": "The only linked service is a Synapse SQL pool (AzureSqlDW): the pipeline copies data out of the pool, for example an offload to SPOT.",
+        "build": [
+          "Usually not a source: the data is produced by a data product. Confirm with the owner whether to drop it or replace it by the product's Warehouse tables"
+        ],
+        "tools": [],
+        "refs": [],
+        "open": [
+          "Owner decision per source"
+        ]
+      },
+      "S-MANUAL": {
+        "title": "No external source found",
+        "status": "gap",
+        "detect": "No external linked service or copy source was detected. The data comes from another DPV1 mechanism (metabase, manual load).",
+        "build": [
+          "Assess by hand from the DPV1 objects listed in the framing, then choose another scenario"
+        ],
+        "tools": [],
+        "refs": [],
+        "open": [
+          "Needs a human look before framing"
+        ]
+      }
+    },
+    "modifiers": {
+      "M-MIXED": {
+        "title": "Two kinds of input in one source",
+        "status": "partial",
+        "how": "Database plus files in one source (GAIA: Oracle and SharePoint CSV). file-inputs/<SRC>.json lists the files (one catalog row each, ConnectionKey files); S2 has a second Lookup, ForEach and Copy; FLATTEN converts the file rows and passes the database rows on; the loader reads each row from its own raw folder; the contract lists the file tables. Other combinations (files plus REST, several file groups) are still manual."
+      },
+      "M-SWITCH-QUERIES": {
+        "title": "Per-table queries in a Switch",
+        "status": "ready",
+        "how": "Extracted from the DPV1 Switch into 2-config/migration/extract-queries/<SRC>.json and returned by the catalog Lookup as ExtractQuery."
+      },
+      "M-PAGINATION": {
+        "title": "REST pagination",
+        "status": "ready",
+        "how": "Pagination rules copied from the DPV1 Copy."
+      },
+      "M-EXCEL": {
+        "title": "Excel files",
+        "status": "ready",
+        "how": "Landed as delivered, converted sheet by sheet to parquet in the FLATTEN notebook."
+      },
+      "M-WEB-AUTH": {
+        "title": "Token or secret fetched by a Web activity",
+        "status": "ready",
+        "how": "Replaced by a Fabric connection. The Key Vault secret name stays in the connection sheet; no secret in the repo."
+      },
+      "M-SHAREPOINT-GRAPH": {
+        "title": "SharePoint through Microsoft Graph",
+        "status": "partial",
+        "how": "DPV1 gets a Graph token with a Web activity. The Copy uses an HTTP connection (VL_MAIN <SRC>_HTTP_SERVER_CONN_ID) with relativeUrl root:/<folder>/<file>:/content; the service principal and the connector are to confirm in Fabric."
+      },
+      "M-NOTEBOOK-CLEANSING": {
+        "title": "DPV1 cleansed in a notebook",
+        "status": "ready",
+        "how": "The cleansing rules are read from the legacy notebooks and generated into one loader notebook."
+      },
+      "M-DATAFLOW": {
+        "title": "Mapping data flows",
+        "status": "partial",
+        "how": "Converted to Spark notebooks (skill-dataflow-to-notebook in DPV2)."
+      },
+      "M-REST-INCREMENTAL": {
+        "title": "REST API with a watermark",
+        "status": "partial",
+        "how": "See S-REST-INC: the DPV1 request is carried with the live watermark."
+      },
+      "M-MODELING-IN-SOURCE": {
+        "title": "Modeling notebooks listed in the source dataset scope",
+        "status": "gap",
+        "how": "Notebooks such as *_DIM or *_MODEL build the BI model, which is data product work (INTELEX lists about 20 in the source dataset). Confirm at framing and move them to the data product."
+      },
+      "M-FLAGS-UNUSED": {
+        "title": "Catalog flags that DPV1 never reads",
+        "status": "ready",
+        "how": "The catalog marks tables incremental but the pipeline loads in full. Keep full, as DPV1 does, and ask the owner."
+      }
+    }
+  },
+  "dp": {
+    "scenarios": {
+      "D-LDW": {
+        "title": "Modeling in serverless LDW views",
+        "status": "partial",
+        "detect": "LDW views (CREATE VIEW [LDW]... or SP_CREATE_* procedures whose body is the view) between the INP views and the dedicated pool.",
+        "build": [
+          "D1 extract the embedded SQL of the pipelines (extract_scope_code.py)",
+          "D2 convert_serverless_sql.py: SP_CREATE_* procedures and LDW / OUT views become Warehouse views reading LH_INP_SDS_<SRC> tables (contract names), SP_TRAN_* loaders read the OUT views, STG and CETAS dropped, K3 fixes applied",
+          "K2 dacpac_retarget.py --flat 3-build/_work/d2-converted-sql places them; K3 lint must show 0 blocking; K4 dotnet build (SDK 8)",
+          "D3 input Lakehouse with one shortcut per table the code reads",
+          "D4 process pipeline from d2-load-order.json: dimensions in parallel, then facts",
+          "D5 equivalence: counts and checksums per table"
+        ],
+        "tools": [
+          "extract_scope_code.py",
+          "convert_serverless_sql.py",
+          "dacpac_retarget.py",
+          "tsql_fabric_lint.py",
+          "build_input_lakehouse.py",
+          "review_scope.py",
+          "resolve_upstream.py",
+          "build_process_pipeline.py",
+          "deploy_preflight.py"
+        ],
+        "refs": [
+          "skill-tsql-dedicated-to-fabric",
+          "skill-sql-generation"
+        ],
+        "open": [
+          "Built and lint-clean on GAIA (67 views, 48 loaders, 0 unmapped reads); dotnet build not run (the machine has SDK 10 only), D4 pipelines and D5 tests are written by hand",
+          "Views with ORDER BY are listed in the D2 notes and need a TOP or the ORDER BY removed"
+        ]
+      },
+      "D-PROC": {
+        "title": "Modeling in dedicated-pool procedures",
+        "status": "partial",
+        "detect": "Stored procedures in the dedicated pool do the transformation; pipelines call them in batches.",
+        "build": [
+          "D1 extract what the repo holds",
+          "K1 to K4 DACPAC from the code, or from the live pool when procedures are called but not defined in the repo",
+          "D3 warehouse and input Lakehouse",
+          "D4 batches in the DPV1 order, parallel inside a batch"
+        ],
+        "tools": [
+          "extract_scope_code.py",
+          "dacpac_retarget.py",
+          "tsql_fabric_lint.py",
+          "build_input_lakehouse.py"
+        ],
+        "refs": [
+          "skill-tsql-dedicated-to-fabric"
+        ],
+        "open": [
+          "Procedures that exist only in the pool need a DACPAC extract or a login (see dacpac_source)"
+        ]
+      },
+      "D-COPY": {
+        "title": "Copy-through (OUT to STG to DW to DM)",
+        "status": "partial",
+        "detect": "Config-driven Copy activities move tables into the pool; little or no logic in the pool.",
+        "build": [
+          "D1 extract the embedded SQL; D2 pool_read.py ddl (live pool DDL is the truth), convert_serverless_sql.py, d2_assemble_flat.py: silver tables, INT_SILV views from the OUT views, one SP_LOAD per table, the [INP_<SRC>] input views",
+          "K2 dacpac_retarget.py --flat 3-build/_work/d2-flat --schema-map ... --gold-views: 1-input, 2-intermediate, 3-processing, 4-output, gold views over silver",
+          "D3 resolve_upstream.py then build_input_lakehouse.py, build_warehouse.py, create_variable_library.py",
+          "D4 build_process_pipeline.py: master and child pipelines",
+          "D6 review_scope.py and deploy_preflight.py check: no failure; deploy_preflight.py runbook for the order of the deployment"
+        ],
+        "tools": [
+          "pool_read.py",
+          "convert_serverless_sql.py",
+          "d2_assemble_flat.py",
+          "dacpac_retarget.py",
+          "resolve_upstream.py",
+          "build_input_lakehouse.py",
+          "build_warehouse.py",
+          "build_process_pipeline.py",
+          "deploy_preflight.py"
+        ],
+        "refs": [
+          "skill-tsql-dedicated-to-fabric"
+        ],
+        "open": [
+          "Built, reviewed and published for RMA; not yet synced in Fabric. The DACPAC is built by the Azure DevOps pipeline (.NET 8)",
+          "Confirm that nothing reads the DW tables (Q06)"
+        ]
+      },
+      "D-DATAFLOW": {
+        "title": "Modeling in mapping data flows",
+        "status": "partial",
+        "detect": "Mapping data flows in the pipelines do the transformation.",
+        "build": [
+          "Dataflows become Spark notebooks (skill-dataflow-to-notebook), pool code through the DACPAC"
+        ],
+        "tools": [
+          "dacpac_retarget.py"
+        ],
+        "refs": [
+          "skill-dataflow-to-notebook"
+        ],
+        "open": [
+          "No converter in this repo yet"
+        ]
+      },
+      "D-SPARK": {
+        "title": "Modeling in Spark notebooks",
+        "status": "partial",
+        "detect": "Spark notebooks named *_MODEL, *_DIM, *_FACT or *_OUT_COPY do the transformation; the pool is at most a copy target.",
+        "build": [
+          "Notebooks converted to Fabric notebooks (skill-pyspark-synapse-to-fabric), writing to the Lakehouse"
+        ],
+        "tools": [],
+        "refs": [
+          "skill-pyspark-synapse-to-fabric"
+        ],
+        "open": []
+      },
+      "D-SERVERLESS-VIEWS": {
+        "title": "Serverless views only",
+        "status": "partial",
+        "detect": "A serverless database with views (business-user databases), no dedicated pool.",
+        "build": [
+          "Views move to the Lakehouse SQL endpoint or a Warehouse over the input Lakehouse; no loads"
+        ],
+        "tools": [
+          "tsql_fabric_lint.py"
+        ],
+        "refs": [
+          "skill-tsql-dedicated-to-fabric"
+        ],
+        "open": [
+          "Target (SQL endpoint or Warehouse) to decide with the owner"
+        ]
+      },
+      "D-NONE": {
+        "title": "Nothing to build in a Warehouse",
+        "status": "ready",
+        "detect": "No dedicated pool objects, views or notebooks in the scope.",
+        "build": [
+          "Confirm with the owner that the product is a source-side consumer only, then close it as dropped or handled by the source dataset"
+        ],
+        "tools": [],
+        "refs": [],
+        "open": []
+      }
+    },
+    "modifiers": {
+      "M-LDW-SP-CREATE": {
+        "title": "LDW and OUT views written as SP_CREATE_* procedures",
+        "status": "partial",
+        "how": "The procedure body is the view: convert_serverless_sql.py writes CREATE VIEW [ldw|out].[<NAME>] (the batch number of the DPV1 name is kept in the notes)."
+      },
+      "M-LDW-DIRECT-VIEWS": {
+        "title": "LDW views written as CREATE VIEW",
+        "status": "partial",
+        "how": "Extracted from the embedded SQL and placed in 2-intermediate in dependency order."
+      },
+      "M-OUT-VIEWS": {
+        "title": "OUT views feed the load",
+        "status": "partial",
+        "how": "Kept as views in 2-intermediate; the DW or DM tables are loaded from them by set-based procedures."
+      },
+      "M-CETAS": {
+        "title": "CETAS copies to the lake",
+        "status": "ready",
+        "how": "Dropped: the Warehouse reads the Lakehouse directly."
+      },
+      "M-SPOT-COPY-BACK": {
+        "title": "Warehouse copied back to SPOT",
+        "status": "partial",
+        "how": "Dropped when the consumers read the Warehouse. Ask who reads the SPOT copy."
+      },
+      "M-SPARK-NOTEBOOKS": {
+        "title": "Spark notebooks in the product",
+        "status": "partial",
+        "how": "Converted to Fabric notebooks."
+      },
+      "M-DATAFLOW": {
+        "title": "Mapping data flows",
+        "status": "partial",
+        "how": "Converted to notebooks."
+      },
+      "M-MANY-SOURCES": {
+        "title": "More than two source datasets",
+        "status": "ready",
+        "how": "Every source needs its contract before the product starts."
+      },
+      "M-DDL-EMBEDDED": {
+        "title": "Table DDL inside pipeline scripts",
+        "status": "partial",
+        "how": "Unwrapped from EXEC('...') into object files by extract_scope_code.py."
+      },
+      "M-DDL-IN-SCRIPTS": {
+        "title": "Table DDL in SQL scripts",
+        "status": "ready",
+        "how": "Read from the Synapse SQL scripts."
+      },
+      "M-POOL-ONLY-CODE": {
+        "title": "Procedures called but not defined in the repo",
+        "status": "gap",
+        "how": "The code exists only in the live dedicated pool: extract a DACPAC from it (SqlPackage) or ask for the project."
+      },
+      "M-FRAMEWORK-PROCS": {
+        "title": "Shared framework procedures",
+        "status": "ready",
+        "how": "catalog.sp_common_updatewatermark, sp_meta_out_cetas and similar are replaced by the Fabric catalog and watermark, not migrated."
+      }
+    },
+    "dacpac_source": {
+      "scripts-complete": "Every procedure the pipelines call is defined in the repo: build the DACPAC from the code (wf-4 K1 option 3).",
+      "pool-required": "Procedures are called but not defined in the repo: ask for the DACPAC or database project, or a read login to extract it from the dedicated pool (SqlPackage /Action:Extract).",
+      "ddl-only": "Table DDL is in the repo, no procedures are called: build the DACPAC from the DDL.",
+      "none-needed": "No dedicated pool code."
+    }
+  }
+}

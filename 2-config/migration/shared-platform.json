@@ -1,0 +1,12 @@
+{
+  "_doc": "Catalog warehouse of the source datasets. For now each source gets its own warehouse in its own workspace, named catalog_warehouse_pattern (WH_CATALOG_<SOURCE>, catalog_warehouse_location = same_workspace). When the common warehouse exists, set catalog_warehouse_location = shared: every source then uses catalog_warehouse in shared_workspace. Each source has one view, [catalog_schema].[<source>_catalog]; VL_MAIN only holds where the view is: view name, warehouse name, ID, SQL endpoint, connection.",
+  "catalog_warehouse": "WH_CATALOG",
+  "catalog_warehouse_pattern": "WH_CATALOG_{SOURCE}",
+  "catalog_warehouse_location": "same_workspace",
+  "shared_workspace": "DP_COMMON_<ENV>",
+  "catalog_schema": "CATALOG",
+  "catalog_view_pattern": "{source}_catalog",
+  "catalog_database": "",
+  "notebook_timeout": "0.04:00:00",
+  "_doc_notebook_timeout": "Timeout of the FLATTEN and RAW_TO_DELTA notebook activities (d.hh:mm:ss). A project can override it with notebook_timeout in progress.json project_inputs; regenerate S3 after a change."
+}

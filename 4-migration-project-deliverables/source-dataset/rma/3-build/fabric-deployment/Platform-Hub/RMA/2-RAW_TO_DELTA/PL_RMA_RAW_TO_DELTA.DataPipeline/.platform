@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "DataPipeline",
+    "displayName": "PL_RMA_RAW_TO_DELTA",
+    "description": "RMA: tables that copied => dbo tables."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "6b054e57-de8d-4a00-a3d9-48136939781b"
+  }
+}

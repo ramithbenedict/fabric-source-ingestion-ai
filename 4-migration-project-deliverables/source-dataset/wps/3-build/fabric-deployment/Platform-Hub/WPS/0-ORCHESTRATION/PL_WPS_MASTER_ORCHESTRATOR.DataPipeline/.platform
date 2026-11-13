@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "DataPipeline",
+    "displayName": "PL_WPS_MASTER_ORCHESTRATOR",
+    "description": "WPS: source => raw, then raw => dbo tables, same run folder."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "31932e0f-f638-4241-b022-a8036e7cb33b"
+  }
+}

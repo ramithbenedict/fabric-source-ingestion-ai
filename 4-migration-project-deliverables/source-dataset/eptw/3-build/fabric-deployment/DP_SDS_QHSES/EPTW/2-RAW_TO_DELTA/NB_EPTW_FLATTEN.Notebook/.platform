@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "NB_EPTW_FLATTEN",
+    "description": "EPTW: files as delivered in landing => flattened parquet in raw."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "3b67d2db-d000-54d8-9098-f5c94fac7e3b"
+  }
+}

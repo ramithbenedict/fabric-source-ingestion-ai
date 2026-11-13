@@ -1,0 +1,45 @@
+{
+    "name": "{{PIPELINE_NAME}}",
+    "objectId": "{{PIPELINE_OBJECT_GUID}}",
+    "properties": {
+        "parameters": {
+            "{{PARAM_NAME_1}}": {
+                "type": "String",
+                "defaultValue": "{{DEFAULT_VALUE_1}}"
+            },
+            "{{PARAM_NAME_2}}": {
+                "type": "String",
+                "defaultValue": "{{DEFAULT_VALUE_2}}"
+            }
+        },
+        "libraryVariables": {
+            "{{VARIABLE_NAME_1}}": {
+                "type": "String",
+                "variableName": "{{VARIABLE_NAME_1}}",
+                "libraryName": "VL_MAIN"
+            },
+            "{{VARIABLE_NAME_2}}": {
+                "type": "String",
+                "variableName": "{{VARIABLE_NAME_2}}",
+                "libraryName": "VL_MAIN"
+            }
+        },
+        "activities": [
+            {
+                "name": "{{ACTIVITY_NAME}}",
+                "type": "{{ACTIVITY_TYPE}}",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.02:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureInput": false,
+                    "secureOutput": false
+                },
+                "typeProperties": {}
+            }
+        ],
+        "lastModifiedByObjectId": "{{LAST_MODIFIED_BY_GUID}}",
+        "lastPublishTime": "2026-07-24T13:03:12Z"
+    }
+}

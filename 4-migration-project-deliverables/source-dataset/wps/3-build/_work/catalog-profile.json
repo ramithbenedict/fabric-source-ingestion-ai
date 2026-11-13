@@ -1,0 +1,50 @@
+{
+ "source": "WPS",
+ "origin": "dpv1",
+ "where": "DPV1 sqlscript `Catalog_Wps`",
+ "view": "CATALOG.wps_catalog",
+ "columns": [
+  [
+   "schemaName",
+   "varchar(50)"
+  ],
+  [
+   "tableName",
+   "varchar(200)"
+  ],
+  [
+   "isIncLoad",
+   "bit"
+  ],
+  [
+   "DeltaMode",
+   "varchar(10)"
+  ],
+  [
+   "isActive",
+   "bit"
+  ],
+  [
+   "watermark",
+   "datetime2(6)"
+  ],
+  [
+   "TableProvenance",
+   "varchar(20)"
+  ],
+  [
+   "Comment",
+   "varchar(500)"
+  ]
+ ],
+ "rows": 27,
+ "expected_rows": 27,
+ "incremental": false,
+ "watermark_table": null,
+ "renames": {},
+ "columns_used_by_dpv1": [
+  "SchemaName",
+  "schemaName",
+  "tableName"
+ ]
+}

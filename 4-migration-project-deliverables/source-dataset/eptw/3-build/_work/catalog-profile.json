@@ -1,0 +1,41 @@
+{
+ "source": "EPTW",
+ "origin": "dpv1",
+ "where": "DPV1 sqlscript `CATALOG_EPTW`",
+ "view": "CATALOG.eptw_catalog",
+ "columns": [
+  [
+   "ApiName",
+   "varchar(100)"
+  ],
+  [
+   "isActive",
+   "bit"
+  ],
+  [
+   "ParamName",
+   "varchar(255)"
+  ],
+  [
+   "UnicityKeys",
+   "varchar(255)"
+  ],
+  [
+   "WatermarkVal",
+   "datetime2(6)"
+  ]
+ ],
+ "rows": 26,
+ "expected_rows": 26,
+ "incremental": true,
+ "watermark_table": "CATALOG.catalog_eptw_watermark",
+ "renames": {},
+ "columns_used_by_dpv1": [
+  "ApiName",
+  "ParamName",
+  "UnicityKeys",
+  "WatermarkVal",
+  "cpInternalCode",
+  "isActive"
+ ]
+}

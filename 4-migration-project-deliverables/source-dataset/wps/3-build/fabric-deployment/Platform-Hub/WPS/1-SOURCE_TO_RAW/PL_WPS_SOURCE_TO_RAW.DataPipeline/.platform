@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "DataPipeline",
+    "displayName": "PL_WPS_SOURCE_TO_RAW",
+    "description": "WPS (structured) => Files/raw (parquet, written once), one Copy per catalog row."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "d3aff7e2-b291-427a-9a9b-088e1c5ca958"
+  }
+}

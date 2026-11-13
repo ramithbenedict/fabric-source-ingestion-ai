@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "DataPipeline",
+    "displayName": "PL_RMA_SOURCE_TO_RAW",
+    "description": "RMA (structured) => Files/raw (parquet, written once), one Copy per catalog row."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "325c6c2f-cab8-4bbf-975f-8c520505cd92"
+  }
+}

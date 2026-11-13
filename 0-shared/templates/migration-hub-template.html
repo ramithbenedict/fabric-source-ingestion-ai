@@ -1,0 +1,1308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>DPV1 Migration Hub</title>
+<style>
+:root{
+  --text:#111827;--muted:#4B5563;--faint:#6B7280;--line:#E3E7ED;--line2:#EEF1F4;--subtle:#F7F8FA;--bg:#fff;
+  --blue:#0070EF;--blue50:#EEF5FF;--blue200:#BFDBFE;--navy:#003B73;
+  --br-bg:#FBF1E8;--br-bd:#D9A57F;--br-tx:#8A3F1F;
+  --si-bg:#F1F4F7;--si-bd:#A9B4C1;--si-tx:#3F4B58;
+  --go-bg:#FFF8E1;--go-bd:#E3C766;--go-tx:#7A5B00;
+  --v1-bg:#EEF5FF;--v1-bd:#9CC7FF;--v1-tx:#0B4F9C;
+  --dd-bg:#E9EEF6;--dd-bd:#8FA6C8;--dd-tx:#1F3F6E;
+  --rd-bg:#FDEEF0;--rd-bd:#F1A7B1;--rd-tx:#9B1C2C;
+  --gr-bg:#ECF8F0;--gr-bd:#9FD3B0;--gr-tx:#14532D;
+  --vi-bg:#F2EFFC;--vi-bd:#C3B8EE;--vi-tx:#4C3DA8;
+  --te-bg:#E7F5F5;--te-bd:#9ED2D4;--te-tx:#0E5F66;
+  --am-bg:#FFF4D6;--am-bd:#EBCB6B;--am-tx:#6B5200;
+  color-scheme:light}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:24px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"Helvetica Neue",Helvetica,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+code,.mono{font-family:Consolas,"SF Mono",Menlo,monospace;font-size:.86em}
+code{background:var(--subtle);border:1px solid var(--line2);padding:1px 5px;border-radius:4px}
+button{font:inherit;cursor:pointer;color:inherit}
+.ic{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none;vertical-align:-3px}
+.ic.lg{width:22px;height:22px}
+
+/* ---------- layout ---------- */
+.shell{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:100vh}
+aside{position:sticky;top:0;height:100vh;overflow:auto;border-right:1px solid var(--line);padding:22px 18px 18px;display:flex;flex-direction:column;gap:18px;background:#fff}
+.brand{font-size:12px;color:var(--faint);line-height:1.4}
+.brand b{display:block;font-size:16px;color:var(--blue);margin-top:4px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{display:flex;align-items:center;gap:10px;border:none;background:none;text-align:left;padding:8px 10px;border-radius:8px;font-weight:700;font-size:14px;color:var(--text)}
+.nav button:hover{background:var(--subtle)}
+.nav button.on{background:var(--blue50);color:var(--blue)}
+.nav .dot{width:7px;height:7px;border-radius:50%;background:#C6CDD6;flex:none}
+.nav button.on .dot{background:var(--blue)}
+.subnav{display:none;flex-direction:column;margin:2px 0 6px 27px;border-left:1px solid var(--line);padding-left:10px}
+.subnav.on{display:flex}
+.subnav a{font-size:12.5px;color:var(--faint);text-decoration:none;padding:3px 0}
+.subnav a:hover{color:var(--blue)}
+.subnav .sc{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--blue);padding:4px 0 2px}
+.foot{margin-top:auto;font-size:11.5px;color:var(--faint);line-height:1.5;border-top:1px solid var(--line2);padding-top:12px}
+main{padding:40px 48px 96px;max-width:1240px;width:100%}
+.view{display:none}.view.on{display:block}
+
+/* ---------- type ---------- */
+.eyebrow{font-size:13px;color:var(--faint);margin:0 0 6px}
+h1{color:var(--blue);font-size:34px;line-height:1.15;margin:0 0 12px;font-weight:700;letter-spacing:-.01em}
+.lead{font-size:17px;color:var(--text);max-width:72ch;margin:0}
+.rule{border:0;border-top:3px solid var(--blue);margin:26px 0 34px}
+h2{color:var(--blue);font-size:24px;line-height:1.25;margin:44px 0 6px;font-weight:700}
+h2:first-child{margin-top:0}
+.sub{color:var(--muted);font-size:14.5px;margin:0 0 18px;max-width:80ch}
+.lbl{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.mute{color:var(--faint)}
+
+/* ---------- atoms ---------- */
+.card{border:1px solid var(--line);border-radius:14px;background:#fff}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:999px;border:1px solid transparent;white-space:nowrap;line-height:1.6}
+.pill.o{background:#fff;border-color:var(--line);color:var(--muted);font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:10.5px}
+.a-translate{background:var(--si-bg);border-color:var(--si-bd);color:var(--si-tx)}
+.a-merge{background:var(--blue50);border-color:var(--blue200);color:#0B4F9C}
+.a-collapse{background:var(--vi-bg);border-color:var(--vi-bd);color:var(--vi-tx)}
+.a-rebuild{background:var(--dd-bg);border-color:var(--dd-bd);color:var(--dd-tx)}
+.a-replace{background:var(--te-bg);border-color:var(--te-bd);color:var(--te-tx)}
+.a-reuse{background:var(--gr-bg);border-color:var(--gr-bd);color:var(--gr-tx)}
+.a-rewrite,.a-review{background:var(--am-bg);border-color:var(--am-bd);color:var(--am-tx)}
+.a-inline{background:var(--subtle);border-color:var(--line);color:var(--faint)}
+.a-upstream,.a-product{background:#fff;border-color:var(--blue200);color:var(--blue)}
+.a-shared{background:#fff;border-color:#C6CDD6;border-style:dashed;color:var(--faint)}
+.a-drop{background:var(--rd-bg);border-color:var(--rd-bd);color:var(--rd-tx)}
+.cx-Small{background:var(--gr-bg);border-color:var(--gr-bd);color:var(--gr-tx)}
+.scp{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid;white-space:nowrap;line-height:1.6}
+.scp.ready{background:var(--gr-bg);border-color:var(--gr-bd);color:var(--gr-tx)}.scp.partial{background:var(--am-bg);border-color:var(--am-bd);color:var(--am-tx)}.scp.gap{background:var(--rd-bg);border-color:var(--rd-bd);color:var(--rd-tx)}
+.scn-id{font-family:ui-monospace,Consolas,monospace;font-weight:700;font-size:12px}.scn-list{margin:6px 0 0;padding-left:18px}.scn-list li{margin:5px 0}
+.scn-open{border-left:3px solid var(--rd-bd);padding:6px 10px;background:var(--rd-bg);color:var(--rd-tx);font-size:12.5px;border-radius:6px;margin:5px 0}
+.cx-Medium{background:var(--am-bg);border-color:var(--am-bd);color:var(--am-tx)}
+.cx-High{background:var(--rd-bg);border-color:var(--rd-bd);color:var(--rd-tx)}
+.st{display:inline-flex;align-items:center;gap:7px;font-size:13px;white-space:nowrap}
+.st i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:#fff;color:var(--text);font-weight:700;font-size:13.5px;padding:8px 14px;border-radius:9px;transition:border-color .15s,background .15s,box-shadow .15s;white-space:nowrap}
+.btn:hover{border-color:#9CC7FF;background:var(--blue50)}
+.btn.pri{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 1px 2px rgba(0,112,239,.25)}
+.btn.pri:hover{background:#005FCC}
+.btn.sm{padding:5px 10px;font-size:12.5px;border-radius:7px}
+.btn.link{border-color:transparent;background:none;color:var(--blue);padding:4px 6px}
+.btn.link:hover{background:var(--blue50)}
+.btn:focus-visible,.nav button:focus-visible,.tab:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,16px);background:var(--text);color:#fff;padding:10px 16px;border-radius:10px;font-size:13.5px;font-weight:700;opacity:0;transition:.18s;pointer-events:none;z-index:50;display:flex;gap:8px;align-items:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- KPI ---------- */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:0 0 8px}
+.kpi{padding:18px 18px 16px}
+.kpi .v{font-size:34px;font-weight:700;color:var(--navy);line-height:1}
+.kpi .v.am{color:#9A6B00}.kpi .v.rd{color:var(--rd-tx)}
+.kpi p{margin:8px 0 0;font-size:13px;color:var(--muted)}
+
+/* ---------- table ---------- */
+.tbl{border:1px solid var(--line);border-radius:12px;overflow:auto;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th{background:var(--subtle);color:var(--faint);text-align:left;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:10px 14px;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:1;white-space:nowrap}
+#v-projects td:last-child{white-space:nowrap}
+td{padding:10px 14px;border-bottom:1px solid var(--line2);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:#FAFCFF}
+td.nm,.nm{font-family:Consolas,"SF Mono",monospace;font-size:12.5px;word-break:break-word}
+td.k{font-weight:700}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.empty{padding:36px 20px;text-align:center;color:var(--faint);font-size:14px}
+.empty b{display:block;color:var(--text);margin-bottom:4px}
+
+/* ---------- toolbar ---------- */
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 12px}
+.search{position:relative;flex:1;min-width:220px}
+.search input{width:100%;font:inherit;font-size:14px;padding:9px 12px 9px 36px;border:1px solid var(--line);border-radius:9px;background:#fff}
+.search .ic{position:absolute;left:12px;top:11px;color:var(--faint)}
+select{font:inherit;font-size:13.5px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.fchip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:700;color:var(--muted);display:inline-flex;gap:6px;align-items:center}
+.fchip span{color:var(--faint);font-weight:400}
+.fchip.on{background:var(--text);border-color:var(--text);color:#fff}.fchip.on span{color:#CBD2DB}
+.count{font-size:12.5px;color:var(--faint);margin-left:auto}
+
+/* ---------- picker ---------- */
+.picker{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--subtle)}
+.seg{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px}
+.seg button{border:none;background:none;padding:7px 14px;border-radius:7px;font-weight:700;font-size:13.5px;color:var(--muted);display:flex;gap:8px;align-items:center}
+.seg button.on{background:var(--blue);color:#fff}
+.picker .search{min-width:280px}
+.picker .search input{font-size:15px;padding:10px 12px 10px 38px}
+.resolved{font-size:12.5px;color:var(--faint);margin:8px 2px 0;min-height:18px}
+
+/* ---------- scope summary ---------- */
+.summary{margin:22px 0 0;overflow:hidden}
+.summary .bar{height:5px}
+.summary.sds .bar{background:linear-gradient(90deg,#B5764A,#D9A57F)}
+.summary.dp .bar{background:linear-gradient(90deg,#8A98A8,#C9982A)}
+.summary .top{display:flex;gap:20px;justify-content:space-between;align-items:flex-start;padding:22px 24px 18px;flex-wrap:wrap}
+.summary h2{margin:4px 0 10px;font-size:30px;color:var(--text)}
+.crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-family:Consolas,monospace;font-size:13px}
+.crumbs span{padding:4px 9px;border-radius:7px;border:1px solid}
+.crumbs .c-ws{background:var(--blue50);border-color:var(--blue200);color:#0B4F9C}
+.crumbs .c-sds{background:var(--br-bg);border-color:var(--br-bd);color:var(--br-tx)}
+.crumbs .c-dp{background:var(--si-bg);border-color:var(--si-bd);color:var(--si-tx)}
+.crumbs .c-go{background:var(--go-bg);border-color:var(--go-bd);color:var(--go-tx)}
+.crumbs .sep{border:none;padding:0;color:#A3ACB8;font-family:Arial}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line2)}
+.facts div{padding:16px 24px;border-left:1px solid var(--line2)}.facts div:first-child{border-left:none}
+.facts b{display:block;font-size:26px;line-height:1.1;color:var(--navy);margin-top:4px}
+.facts small{font-size:12.5px;color:var(--faint)}
+.meta{display:flex;flex-wrap:wrap;gap:18px;padding:12px 24px;border-top:1px solid var(--line2);background:var(--subtle);font-size:13px;color:var(--muted)}
+.meta b{color:var(--text)}
+.meta .warn{color:#9A6B00}
+
+/* ---------- architecture ---------- */
+/* ---------- identification ---------- */
+.found{padding:6px 0 0;overflow:hidden}
+.fd-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0}
+.fd-step{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:start;padding:14px 20px;border-bottom:1px solid var(--line2)}
+.fd-step b{font-size:14px}.fd-step p{margin:2px 0 0;font-size:13px;color:var(--muted);line-height:1.45}
+.fd-step code{font-size:11.5px}
+.fd-n{font-size:20px;font-weight:700;color:var(--navy);min-width:34px;text-align:right}
+.fd-check{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px 20px}
+.ck{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:10px;border:1px solid}
+.ck .ic{width:20px;height:20px;margin-top:1px}
+.ck b{display:block;font-size:14px}.ck span{font-size:13px;color:var(--muted)}
+.ck.ok{background:var(--gr-bg);border-color:var(--gr-bd)}.ck.ok .ic{color:var(--gr-tx)}
+.ck.warn{background:var(--am-bg);border-color:var(--am-bd)}.ck.warn .ic{color:#9A6B00}
+.fd-list{padding:0 20px 18px}
+.fd-list>summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--blue);padding:4px 0}
+@media (max-width:900px){.fd-check{grid-template-columns:1fr}}
+
+/* ---------- overview ---------- */
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.pl{padding:18px 18px 16px}.pl .lbl{color:var(--blue)}.pl h3{margin:6px 0 6px;font-size:16px}.pl p{margin:0;font-size:13.5px;color:var(--muted)}
+.scopebox{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.scopebox .card{padding:16px 18px}.scopebox ul{margin:6px 0 0;padding-left:18px;font-size:13.5px;color:var(--muted)}.scopebox li{margin:3px 0}
+.scopebox .def{background:var(--am-bg);border-color:var(--am-bd)}
+.chain{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding:2px 0 6px}
+.chain .nd{flex:1 1 0;min-width:58px;border:1px solid;border-radius:9px;padding:9px 5px;text-align:center;font-size:12px;font-weight:700;line-height:1.3;overflow-wrap:anywhere}
+.chain .nd small{display:block;font-weight:400;font-size:11px;color:var(--faint);margin-top:2px}
+.chain .ar{flex:0 0 16px;display:flex;align-items:center;justify-content:center;color:#9AA4B2}
+.chain .nd.gone{background:#fff;border-style:dashed;color:#A3ACB8;text-decoration:line-through}
+.chain .bd{flex:0 0 18px;display:flex;align-items:center;justify-content:center;color:var(--rd-tx);font-weight:700}
+.chainbox{padding:16px 18px;margin-bottom:12px}
+.chainbox .ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px;flex-wrap:wrap}
+.chainbox .ch b{font-size:14px}
+.dur{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px}
+.layers{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px}
+.ly{border:1.5px solid;border-radius:14px;padding:16px 18px}
+.ly h3{margin:6px 0 8px;font-size:17px}
+.ly dl{margin:0;display:grid;grid-template-columns:82px 1fr;gap:7px 10px;font-size:13px}
+.ly dt{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding-top:2px}.ly dd{margin:0}
+.ly.b{background:var(--br-bg);border-color:var(--br-bd)}.ly.b h3{color:var(--br-tx)}
+.ly.s{background:var(--si-bg);border-color:var(--si-bd)}.ly.s h3{color:var(--si-tx)}
+.ly.g{background:var(--go-bg);border-color:var(--go-bd)}.ly.g h3{color:var(--go-tx)}
+.wsorg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.wsorg .card{padding:14px 16px}
+.signals{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.sig{padding:14px}.sig .fn{margin-bottom:8px}.sig b{display:block;font-size:14px;margin-bottom:4px}.sig p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.45}
+.sig .ex{margin-top:8px;font-family:Consolas,monospace;font-size:11px;color:var(--v1-tx);background:var(--v1-bg);border-radius:6px;padding:5px 7px}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.tile{padding:16px}.tile .v{font-size:28px;font-weight:700;line-height:1}.tile b{display:block;font-size:14px;margin:8px 0 4px}.tile p{margin:0;font-size:12.5px;color:var(--muted)}
+.tile.r .v{color:var(--rd-tx)}.tile.a .v{color:#9A6B00}.tile.n .v{color:var(--navy)}
+.road{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.wave{padding:14px}.wave .pill{margin-bottom:8px}.wave b{display:block;font-size:14px;margin-bottom:4px}.wave p{margin:0;font-size:12.5px;color:var(--muted)}
+.wave.p2{background:var(--am-bg);border-color:var(--am-bd)}
+@media (max-width:1100px){.pillars,.layers,.scopebox,.wsorg{grid-template-columns:1fr}.signals,.tiles{grid-template-columns:1fr 1fr}.road{grid-template-columns:1fr 1fr}}
+
+/* ---------- as-is / to-be ---------- */
+.ab{padding:0;overflow:hidden}
+.ab-h,.fr{display:grid;grid-template-columns:170px minmax(0,1fr) 118px minmax(0,1fr);gap:0 0;align-items:stretch}
+.ab-h{position:sticky;top:0;z-index:2;background:#fff;border-bottom:1px solid var(--line);padding:16px 22px}
+.ab-col{display:flex;align-items:center;gap:10px;font-size:16px}
+.ab-col.v1 .pill{background:var(--v1-bg);border-color:var(--v1-bd);color:var(--v1-tx)}
+.ab-col.v2 .pill{background:var(--gr-bg);border-color:var(--gr-bd);color:var(--gr-tx)}
+.ab-sec{padding:22px 22px 6px}
+.ab-sec h3{margin:0;color:var(--blue);font-size:18px}
+.ab-sec p{margin:2px 0 0;font-size:13.5px;color:var(--muted)}
+.fx{padding:8px 22px 6px}
+.fr{padding:7px 0;position:relative}
+.fl{display:flex;gap:10px;align-items:flex-start;padding:12px 12px 0 0}
+.fl b{display:block;font-size:14px}.fl small{display:block;font-size:12px;color:var(--faint);line-height:1.35;margin-top:2px}
+.fn{display:inline-flex;width:24px;height:24px;flex:none;border-radius:7px;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--subtle);border:1px solid var(--line);color:var(--muted)}
+.fb{position:relative;border:1px solid;border-radius:11px;padding:11px 13px 12px;min-width:0}
+.fr:not(:last-child) .fb::after{content:"";position:absolute;left:50%;bottom:-15px;width:1.5px;height:14px;background:#C6CDD6}
+.fb-h{display:flex;align-items:center;gap:8px;justify-content:space-between}
+.fb-h b{font-size:14px}
+.fb-h .pill{font-size:9.5px;padding:1px 7px}
+.fb-s{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.45}
+.fb-s code{font-size:11.5px}
+.fb-f{font-size:11.5px;color:var(--faint);margin-top:8px}
+.fb-f.warn{color:#9A6B00}
+.fb.ghost{background:#fff!important;border-style:dashed}
+.ents{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.ent{font-family:Consolas,monospace;font-size:11px;background:rgba(255,255,255,.85);border:1px solid rgba(0,0,0,.08);border-radius:5px;padding:1px 6px;color:#1F2937;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ent.more{font-family:Arial;color:var(--faint);background:none;border-style:dashed}
+.t-src{background:var(--subtle);border-color:#CBD2DB}.t-src b{color:#374151}
+.t-v1{background:var(--v1-bg);border-color:var(--v1-bd)}.t-v1 b{color:var(--v1-tx)}
+.t-dd{background:var(--dd-bg);border-color:var(--dd-bd)}.t-dd b{color:var(--dd-tx)}
+.t-br{background:var(--br-bg);border-color:var(--br-bd)}.t-br b{color:var(--br-tx)}
+.t-si{background:var(--si-bg);border-color:var(--si-bd)}.t-si b{color:var(--si-tx)}
+.t-go{background:var(--go-bg);border-color:var(--go-bd)}.t-go b{color:var(--go-tx)}
+.t-gr{background:var(--gr-bg);border-color:var(--gr-bd)}.t-gr b{color:var(--gr-tx)}
+.fc{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:0 6px;text-align:center}
+.fc-a{color:#9AA4B2}.fc-a .ic{width:20px;height:20px}
+.fc-t{font-size:11.5px;color:var(--faint);line-height:1.3}
+.fc .pill{font-size:10.5px;white-space:normal;text-align:center}
+.tx{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:10px 22px 22px}
+.tx-c{border:1px solid var(--line);border-radius:12px;padding:12px 12px;max-height:620px;overflow:auto;background:#fff}
+@media (max-width:1100px){
+ .ab-h{display:none}
+ .fr{grid-template-columns:1fr;gap:8px;padding:14px 0;border-bottom:1px solid var(--line2)}
+ .fr .fb::after{display:none}
+ .fc{flex-direction:row;justify-content:flex-start}
+ .fc-a{transform:rotate(90deg)}
+ .tx{grid-template-columns:1fr}
+}
+
+/* ---------- compare ---------- */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.side{display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.side-h{display:flex;align-items:center;gap:10px;padding:16px 18px 0}
+.side-h h3{margin:0;font-size:17px}
+.side.v1 .badge{background:var(--v1-bg);border-color:var(--v1-bd);color:var(--v1-tx)}
+.side.v2 .badge{background:var(--gr-bg);border-color:var(--gr-bd);color:var(--gr-tx)}
+.side-h .sp{margin-left:auto}
+.tabs{display:flex;gap:2px;padding:10px 12px 0;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:none;background:none;padding:9px 10px;font-size:13px;font-weight:700;color:var(--faint);border-bottom:2px solid transparent;white-space:nowrap;display:flex;gap:6px;align-items:center}
+.tab em{font-style:normal;font-size:11px;font-weight:700;background:var(--subtle);border-radius:999px;padding:0 7px;color:var(--faint)}
+.tab.on{color:var(--blue);border-bottom-color:var(--blue)}.tab.on em{background:var(--blue50);color:var(--blue)}
+.pbody{padding:14px 16px 16px;max-height:600px;overflow:auto}
+.pbody .tbl{border-radius:10px}
+.note{font-size:13px;color:var(--muted);background:var(--subtle);border-radius:10px;padding:10px 12px;margin:0 0 12px;line-height:1.5}
+
+/* ---------- trees ---------- */
+.tree{font-size:13px;line-height:1.5}
+.tree details{margin-left:14px;border-left:1px solid var(--line);padding-left:10px}
+.tree>details,.tree>.node{margin-left:0;border-left:none;padding-left:0}
+.tree summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:7px;padding:4px 6px;border-radius:7px;flex-wrap:wrap}
+.tree summary::-webkit-details-marker{display:none}
+.tree summary:hover{background:var(--subtle)}
+.tree summary::before{content:"";width:6px;height:6px;border-right:1.6px solid #9AA4B2;border-bottom:1.6px solid #9AA4B2;transform:rotate(-45deg);margin:0 3px 0 1px;transition:transform .15s;flex:none}
+.tree details[open]>summary::before{transform:rotate(45deg)}
+.tree .node{display:flex;align-items:center;gap:7px;padding:4px 6px 4px 22px;flex-wrap:wrap}
+.tree .node.root{padding-left:6px}
+.tree .t{font-family:Consolas,monospace;font-size:12.5px}
+.tree .to{flex-basis:100%;padding-left:23px;font-size:12px;color:var(--faint)}
+.tree .to b{font-weight:400;color:var(--blue)}
+.tree .ws{font-weight:700;color:var(--text)}
+.tree .fd{font-weight:700;color:var(--muted)}
+.tree .from{font-size:11.5px;color:var(--faint)}
+.c-pl{color:#2563EB}.c-nb{color:#B45309}.c-ls{color:#0E7C86}.c-sql{color:#6D28D9}.c-tb{color:#9E4A2A}.c-wh{color:#475569}.c-fd{color:#A3ACB8}.c-tr{color:#B91C1C}.c-vl{color:#6D28D9}
+
+/* ---------- services (how it works) ---------- */
+.svc{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.svcc{border-radius:14px;border:1.5px solid;overflow:hidden}
+.svcc.s{background:var(--br-bg);border-color:var(--br-bd)}.svcc.d{background:var(--si-bg);border-color:var(--si-bd)}
+.svcc .hd{padding:18px 20px 6px;display:flex;gap:12px;align-items:flex-start}
+.svcc .ico{width:42px;height:42px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;border:1px solid}
+.svcc.s .ico{border-color:var(--br-bd);color:var(--br-tx)}.svcc.d .ico{border-color:var(--si-bd);color:var(--si-tx)}
+.svcc h3{margin:0;font-size:18px}.svcc.s h3{color:var(--br-tx)}.svcc.d h3{color:var(--si-tx)}
+.svcc dl{margin:0;padding:6px 20px 18px;display:grid;grid-template-columns:96px 1fr;gap:10px 12px;font-size:13.5px}
+.svcc dt{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding-top:2px}
+.svcc dd{margin:0}
+.steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.step{padding:18px}
+.step .n{display:inline-flex;width:28px;height:28px;border-radius:8px;align-items:center;justify-content:center;font-weight:700;color:#fff;background:var(--blue);margin-bottom:10px}
+.step h3{margin:0 0 6px;font-size:16px}.step p{margin:0;font-size:13.5px;color:var(--muted)}
+.gloss{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.gloss div{display:flex;gap:10px;align-items:baseline;font-size:13.5px;color:var(--muted);padding:10px 12px;border:1px solid var(--line2);border-radius:10px}
+.gloss .pill{min-width:84px;justify-content:center}
+
+/* ---------- code ---------- */
+.code{position:relative;background:var(--subtle);border:1px solid var(--line);border-radius:12px;padding:16px 18px;font-family:Consolas,monospace;font-size:12.5px;white-space:pre-wrap;line-height:1.6;margin:0 0 18px;color:#1F2937}
+.code .btn{position:absolute;top:10px;right:10px}
+ol.how{margin:0 0 18px;padding-left:20px;color:var(--muted)}ol.how li{margin:4px 0}
+
+/* ---------- process ---------- */
+.pflow{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding:4px 0 8px}
+.pflow .st2{flex:1 1 0;min-width:112px;border:1px solid var(--line);border-radius:11px;padding:10px 10px 11px;background:#fff;font-size:12.5px;line-height:1.35}
+.pflow .st2 b{display:block;font-size:13px;margin-bottom:3px}
+.pflow .st2 small{color:var(--faint)}
+.pflow .st2.f{background:var(--blue50);border-color:var(--blue200)}.pflow .st2.f b{color:#0B4F9C}
+.pflow .st2.s{background:var(--br-bg);border-color:var(--br-bd)}.pflow .st2.s b{color:var(--br-tx)}
+.pflow .st2.d{background:var(--si-bg);border-color:var(--si-bd)}.pflow .st2.d b{color:var(--si-tx)}
+.pflow .st2.r{background:var(--gr-bg);border-color:var(--gr-bd)}.pflow .st2.r b{color:var(--gr-tx)}
+.pflow .st2.g{background:#fff;border-style:dashed;border-color:var(--am-bd)}.pflow .st2.g b{color:var(--am-tx)}
+.pflow .ar{flex:0 0 18px;display:flex;align-items:center;justify-content:center;color:#9AA4B2}
+.lanes{border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.lane{display:grid;grid-template-columns:200px minmax(0,1fr);border-top:1px solid var(--line2)}
+.lane:first-child{border-top:none}
+.lane .lh{padding:14px 16px;background:var(--subtle);border-right:1px solid var(--line2)}
+.lane .lh b{display:block;font-family:Consolas,monospace;font-size:13px;color:var(--navy)}
+.lane .lh span{font-size:12px;color:var(--faint)}
+.lane .ls{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;padding:12px}
+.stg{border:1px solid var(--line);border-radius:10px;padding:9px 10px;font-size:12.5px;color:var(--muted);line-height:1.4;background:#fff;overflow-wrap:anywhere;min-width:0}
+.stg i{font-style:normal;display:inline-block;font-weight:700;font-size:11px;color:#fff;background:var(--blue);border-radius:6px;padding:0 6px;margin-right:6px}
+.stg b{color:var(--text);font-size:13px}
+.stg code{font-size:11px}
+.stg .o{display:block;margin-top:5px;font-size:11.5px;color:var(--faint)}
+.agents{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.agent{padding:14px;display:flex;flex-direction:column;gap:6px}
+.agent .em{font-size:22px;line-height:1}
+.agent b{font-size:14px}
+.agent p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.45}
+.agent .w{margin-top:auto;font-size:11.5px;color:var(--faint);border-top:1px solid var(--line2);padding-top:6px}
+.rules{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.rule{padding:14px;border-top:3px solid var(--blue)}
+.rule b{display:block;font-size:14px;margin-bottom:4px}.rule p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.45}
+.rule.n{border-top-color:var(--rd-bd)}.rule.g{border-top-color:var(--gr-bd)}
+.split{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:14px;align-items:start}
+.dtree{background:#0F1B2D;color:#DCE6F2;border-radius:14px;padding:16px 18px;font-family:Consolas,monospace;font-size:12.3px;line-height:1.65;white-space:pre;overflow-x:auto}
+.dtree .c{color:#7F93AD}.dtree .k{color:#8EC5FF}.dtree .s{color:#F2C97D}.dtree .g{color:#9FE0B4}
+.expl{padding:16px 18px}.expl dl{margin:0;display:grid;grid-template-columns:120px 1fr;gap:8px 12px;font-size:13px}
+.expl dt{font-family:Consolas,monospace;font-size:12px;color:var(--navy);font-weight:700}.expl dd{margin:0;color:var(--muted)}
+.learn{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.lrn{padding:14px;border-top:3px solid var(--am-bd)}
+.lrn .lbl{display:block;margin-bottom:4px}.lrn b{display:block;font-size:14px;margin-bottom:4px}.lrn p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.45}
+.lrn.ok{border-top-color:var(--gr-bd)}.lrn.rd{border-top-color:var(--rd-bd)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--muted);margin:10px 0 0}
+.chg{margin:0;padding:0;list-style:none;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.chg li{display:grid;grid-template-columns:54px 150px minmax(0,1fr);gap:12px;padding:10px 14px;border-top:1px solid var(--line2);font-size:13.5px;align-items:baseline}
+.chg li:first-child{border-top:none}
+.chg .id{font-family:Consolas,monospace;font-size:12px;font-weight:700;color:var(--navy)}
+.chg .ar2{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.code .ct{display:block}
+.trees{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;margin-top:6px}
+.trees .th{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.trees .dtree{max-height:640px;overflow:auto;font-size:12px}
+.dtree .tp{color:#5C6F89}.dtree .tc{color:#7F93AD}
+.dtree .tn-root{color:#8EC5FF;font-weight:700}.dtree .tn-dir{color:#8EC5FF}.dtree .tn-item{color:#9FE0B4}
+.dtree .tn-gone{color:#F29B9B}.dtree .tn-more{color:#7F93AD;font-style:italic}
+@media (max-width:1280px){.trees{grid-template-columns:1fr}}
+@media (max-width:1100px){.agents{grid-template-columns:1fr 1fr}.rules,.learn{grid-template-columns:1fr 1fr}.split{grid-template-columns:1fr}.lane{grid-template-columns:1fr}.lane .lh{border-right:none;border-bottom:1px solid var(--line2)}}
+@media (max-width:860px){.agents,.rules,.learn{grid-template-columns:1fr}.chg li{grid-template-columns:1fr}}
+
+@media (max-width:1280px){.compare{grid-template-columns:1fr}}
+@media (max-width:1100px){.svc{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.gloss{grid-template-columns:1fr 1fr}}
+@media (max-width:860px){.shell{grid-template-columns:1fr}aside{position:static;height:auto;border-right:none;border-bottom:1px solid var(--line)}.nav{flex-direction:row;flex-wrap:wrap}.subnav,.foot{display:none!important}main{padding:24px 16px 64px}.facts{grid-template-columns:1fr 1fr}.steps3,.gloss{grid-template-columns:1fr}h1{font-size:27px}}
+@media print{aside,.toolbar,.actions,.picker{display:none!important}.shell{display:block}.pbody{max-height:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-pl" viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.4"/><circle cx="19" cy="6" r="2.4"/><circle cx="19" cy="18" r="2.4"/><path d="M7.4 12h4m0 0 5.2-5.2M11.4 12l5.2 5.2"/></symbol>
+  <symbol id="i-nb" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h4"/></symbol>
+  <symbol id="i-ls" viewBox="0 0 24 24"><path d="M9 15 15 9"/><path d="M11 6.5 12.5 5a3.5 3.5 0 0 1 5 5L16 11.5M13 17.5 11.5 19a3.5 3.5 0 0 1-5-5L8 12.5"/></symbol>
+  <symbol id="i-sql" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></symbol>
+  <symbol id="i-tb" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M9 10v9"/></symbol>
+  <symbol id="i-ws" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></symbol>
+  <symbol id="i-fd" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-lh" viewBox="0 0 24 24"><path d="M3 15c2 0 2-2 4.5-2S10 15 12 15s2.5-2 4.5-2 2.5 2 4.5 2M3 19c2 0 2-2 4.5-2S10 19 12 19s2.5-2 4.5-2 2.5 2 4.5 2"/><path d="M12 4v7M8.5 7.5 12 4l3.5 3.5"/></symbol>
+  <symbol id="i-wh" viewBox="0 0 24 24"><path d="M3 10 12 4l9 6v10H3z"/><path d="M8 20v-6h8v6"/></symbol>
+  <symbol id="i-tr" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></symbol>
+  <symbol id="i-vl" viewBox="0 0 24 24"><path d="M8 4H6a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h2M16 4h2a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-2"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+  <symbol id="i-ok" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></symbol>
+</svg>
+
+<div class="shell">
+<aside>
+  <div class="brand">T.EN Digiteam · Data platform v1 → v2<b>DPV1 Migration Hub</b></div>
+  <nav class="nav" aria-label="Sections">
+    <button data-v="overview" class="on"><span class="dot"></span>Overview</button>
+    <button data-v="process"><span class="dot"></span>Process</button>
+    <button data-v="projects"><span class="dot"></span>Projects</button>
+    <button data-v="mapper"><span class="dot"></span>Migration mapper</button>
+    <div class="subnav" id="subnav"><span class="sc" id="subscope"></span><a href="#m-summary">Summary</a><a href="#m-scenario">Scenario</a><a href="#m-found">Identification</a><a href="#m-arch">As-is vs To-be</a><a href="#m-compare">Details</a><a href="#m-objects">Object mapping</a></div>
+    <button data-v="refresh"><span class="dot"></span>Refresh</button>
+  </nav>
+  <div class="foot" id="foot"></div>
+</aside>
+
+<main>
+<!-- ============ OVERVIEW ============ -->
+<section class="view on" id="v-overview">
+  <p class="eyebrow">T.EN Digiteam · Synapse DPV1 → Microsoft Fabric DPV2</p>
+  <h1>Migrating DPV1 to Fabric: simplify first, then move one project at a time</h1>
+  <p class="lead">This hub plans the migration of code and architecture from Azure Synapse to Microsoft Fabric. It reads the DPV1 repository, splits every project into a source dataset and a data product, and shows where each object lands in Fabric. Data movement comes in a later phase.</p>
+  <hr class="rule">
+  <div class="kpis" id="ovk"></div>
+
+  <h2>1. What this is about</h2>
+  <p class="sub">Three principles drive the migration.</p>
+  <div class="pillars">
+    <div class="card pl"><span class="lbl">Simplify</span><h3>Remove hops before translating</h3><p>CURATED, STG and the SPOT copy-back disappear. Six steps and six data copies become three, because OneLake lets the Warehouse read the Lakehouse in place.</p></div>
+    <div class="card pl"><span class="lbl">Code first</span><h3>The legacy code is the specification</h3><p>Scripts read pipelines, SQL and notebooks to find every object and its lineage. People decide only what scripts cannot: naming, model choices, open points.</p></div>
+    <div class="card pl"><span class="lbl">One at a time</span><h3>One project per run, with a review gate</h3><p>A developer migrates one source dataset or one data product, checks the plan, then builds. GAIA is the pilot.</p></div>
+  </div>
+  <div class="scopebox">
+    <div class="card"><span class="pill a-reuse">In scope · this phase</span><ul><li>Inventory, lineage and object mapping of every DPV1 project</li><li>Fabric workspaces, Lakehouses, Warehouses, database projects, pipelines, notebooks, connections, variable libraries</li><li>T-SQL stays T-SQL: dedicated-pool code moves through DACPAC to the Fabric Warehouse, with dialect fixes</li><li>Spark notebooks ported to Fabric; data flows, external tables and CETAS replaced</li><li>Equivalence tests, written but not run</li></ul></div>
+    <div class="card def"><span class="pill a-review">Deferred · later phase</span><ul><li><b>No historical or live data is copied from ADLS or the Synapse databases</b></li><li>History back-fill, parallel run and reconciliation</li><li>Consumer cut-over (Power BI, Dataiku, DataGalaxy)</li><li>Synapse decommissioning</li></ul></div>
+  </div>
+
+  <h2>2. From six hops to three</h2>
+  <p class="sub">Every DPV1 project follows the same chain, with a boundary at SPOT_DB source. In Fabric the intermediate copies go away.</p>
+  <div class="card chainbox"><div class="ch"><b>Synapse · DPV1</b><span class="dur" style="background:var(--rd-bg);color:var(--rd-tx)">≈ 3h30 end to end · 6 data copies</span></div>
+    <div class="chain">
+      <div class="nd" style="background:var(--subtle);border-color:#CBD2DB">Sources<small>Oracle, API, SFTP…</small></div><div class="ar">→</div>
+      <div class="nd" style="background:var(--v1-bg);border-color:var(--v1-bd);color:var(--v1-tx)">RAW<small>ADLS parquet</small></div><div class="ar">→</div>
+      <div class="nd" style="background:var(--v1-bg);border-color:var(--v1-bd);color:var(--v1-tx)">CLEANSED<small>Delta + history</small></div><div class="ar">→</div>
+      <div class="nd" style="background:var(--dd-bg);border-color:var(--dd-bd);color:var(--dd-tx)">SPOT_DB source<small>serverless</small></div><div class="bd">║</div>
+      <div class="nd" style="background:var(--v1-bg);border-color:var(--v1-bd);color:var(--v1-tx)">INP / LDW<small>views</small></div><div class="ar">→</div>
+      <div class="nd" style="background:var(--v1-bg);border-color:var(--v1-bd);color:var(--v1-tx)">CURATED<small>CETAS</small></div><div class="ar">→</div>
+      <div class="nd" style="background:var(--dd-bg);border-color:var(--dd-bd);color:var(--dd-tx)">STG</div><div class="ar">→</div>
+      <div class="nd" style="background:var(--dd-bg);border-color:var(--dd-bd);color:var(--dd-tx)">DW<small>dedicated</small></div><div class="ar">→</div>
+      <div class="nd" style="background:var(--dd-bg);border-color:var(--dd-bd);color:var(--dd-tx)">DM</div><div class="ar">→</div>
+      <div class="nd" style="background:var(--rd-bg);border-color:var(--rd-bd);color:var(--rd-tx)">SPOT_DB DWH<small>copy-back</small></div>
+    </div></div>
+  <div class="card chainbox"><div class="ch"><b>Microsoft Fabric · DPV2</b><span class="dur" style="background:var(--gr-bg);color:var(--gr-tx)">≈ 1h30 end to end · 3 data copies · ~2h saved</span></div>
+    <div class="chain">
+      <div class="nd" style="background:var(--subtle);border-color:#CBD2DB">Sources<small>via gateway</small></div><div class="ar">→</div>
+      <div class="nd" style="background:var(--br-bg);border-color:var(--br-bd);color:var(--br-tx)">Landing<small>source format</small></div><div class="ar">→</div>
+      <div class="nd" style="background:var(--br-bg);border-color:var(--br-bd);color:var(--br-tx)">RAW<small>always parquet</small></div><div class="ar">→</div>
+      <div class="nd" style="background:var(--br-bg);border-color:var(--br-bd);color:var(--br-tx)">Tables<small>LH_SDS</small></div><div class="bd">║</div>
+      <div class="nd gone">INP / LDW</div><div class="ar"></div><div class="nd gone">CURATED</div><div class="ar"></div><div class="nd gone">STG</div><div class="ar">→</div>
+      <div class="nd" style="background:var(--si-bg);border-color:var(--si-bd);color:var(--si-tx)">CDP · silver<small>WH_DPG</small></div><div class="ar">→</div>
+      <div class="nd" style="background:var(--go-bg);border-color:var(--go-bd);color:var(--go-tx)">CRDP · gold<small>views</small></div><div class="ar">→</div>
+      <div class="nd gone">SPOT_DB DWH</div>
+    </div></div>
+  <div class="layers">
+    <div class="ly b"><span class="pill o">Bronze</span><h3>Source dataset · SDS</h3><dl><dt>Item</dt><dd><code>LH_SDS_&lt;SOURCE&gt;</code>: Files/raw (parquet; APIs and files also Files/landing as delivered), tables. No cleansed zone.</dd><dt>Replaces</dt><dd>RAW, CLEANSED, SPOT_DB source, external tables</dd><dt>Workspace</dt><dd><code>DP_SDS_&lt;DOMAIN&gt;</code>, one per domain</dd></dl></div>
+    <div class="ly s"><span class="pill o">Silver</span><h3>Curated data product · CDP</h3><dl><dt>Item</dt><dd><code>WH_DPG_&lt;GROUP&gt;</code> + DACPAC database project</dd><dt>Replaces</dt><dd>INP, LDW, CURATED, STG, DW: one load per table</dd><dt>Workspace</dt><dd><code>DP_DPG_&lt;GROUP&gt;</code>, one per group</dd></dl></div>
+    <div class="ly g"><span class="pill o">Gold</span><h3>Consumption-ready · CRDP</h3><dl><dt>Item</dt><dd>Views in the same Warehouse</dd><dt>Replaces</dt><dd>DM schemas and the SPOT_DB DWH copy</dd><dt>Exposed by</dt><dd>SQL endpoint, shortcuts, semantic models</dd></dl></div>
+  </div>
+
+  <h2>3. Where a project lands in Fabric</h2>
+  <p class="sub">The workspace and repository layout defined in the Fabric conventions, filled in by every migration.</p>
+  <div class="wsorg">
+    <div class="card"><span class="lbl">Fabric workspaces</span><div class="tree" style="margin-top:8px">
+      <details open><summary><svg class="ic c-wh"><use href="#i-ws"/></svg><span class="ws">DP_SDS_&lt;DOMAIN&gt;_&lt;ENV&gt;</span><span class="from">Source Data workspace</span></summary>
+        <details open><summary><svg class="ic c-fd"><use href="#i-fd"/></svg><span class="fd">&lt;SOURCE&gt;</span><span class="from">one folder per source</span></summary>
+          <div class="node"><svg class="ic c-tb"><use href="#i-lh"/></svg><span class="t">LH_SDS_&lt;SOURCE&gt;</span><span class="from">Files/landing → Files/raw → tables</span></div>
+          <div class="node"><svg class="ic c-fd"><use href="#i-fd"/></svg><span class="t">0-ORCHESTRATION</span><span class="from">PL_&lt;SRC&gt;_MASTER_ORCHESTRATOR</span></div>
+          <div class="node"><svg class="ic c-fd"><use href="#i-fd"/></svg><span class="t">1-SOURCE_TO_RAW</span><span class="from">PL_&lt;SRC&gt;_SOURCE_TO_RAW</span></div>
+          <div class="node"><svg class="ic c-fd"><use href="#i-fd"/></svg><span class="t">2-RAW_TO_DELTA</span><span class="from">PL / NB_&lt;SRC&gt;_RAW_TO_DELTA, NB_&lt;SRC&gt;_FLATTEN (APIs, files)</span></div></details>
+        <div class="node"><svg class="ic c-vl"><use href="#i-vl"/></svg><span class="t">VL_MAIN</span></div></details>
+      <details open><summary><svg class="ic c-wh"><use href="#i-ws"/></svg><span class="ws">DP_DPG_&lt;GROUP&gt;_&lt;ENV&gt;</span><span class="from">Data Product Group workspace</span></summary>
+        <div class="node"><svg class="ic c-fd"><use href="#i-fd"/></svg><span class="t">ORCHESTRATION</span><span class="from">PL_&lt;GROUP&gt;_PROCESS_DATA_PRODUCT</span></div>
+        <div class="node"><svg class="ic c-tb"><use href="#i-lh"/></svg><span class="t">LH_INP_SDS_&lt;SOURCE&gt;</span><span class="from">internal shortcuts, no copy</span></div>
+        <div class="node"><svg class="ic c-wh"><use href="#i-wh"/></svg><span class="t">WH_DPG_&lt;GROUP&gt;</span><span class="from">silver + gold</span></div>
+        <div class="node"><svg class="ic c-vl"><use href="#i-vl"/></svg><span class="t">VL_MAIN</span></div></details>
+    </div></div>
+    <div class="card"><span class="lbl">Migration deployment repository</span><div class="tree" style="margin-top:8px">
+      <details open><summary><svg class="ic c-fd"><use href="#i-fd"/></svg><span class="fd">fabric-deployment</span></summary>
+        <div class="node"><svg class="ic c-fd"><use href="#i-fd"/></svg><span class="t">DP_SDS_&lt;DOMAIN&gt;/&lt;SOURCE&gt;/</span><span class="from">.Lakehouse, .DataPipeline, .Notebook</span></div>
+        <div class="node"><svg class="ic c-fd"><use href="#i-fd"/></svg><span class="t">DP_DPG_&lt;GROUP&gt;/</span><span class="from">.Warehouse, .DataPipeline</span></div>
+        <details open><summary><svg class="ic c-sql"><use href="#i-sql"/></svg><span class="t">database-projects/DPG-&lt;GROUP&gt;/</span><span class="from">DACPAC</span></summary>
+          <div class="node"><svg class="ic c-fd"><use href="#i-fd"/></svg><span class="t">00-global</span><span class="from">schemas, utilities</span></div>
+          <div class="node"><svg class="ic c-fd"><use href="#i-fd"/></svg><span class="t">01-silver-&lt;product&gt;</span><span class="from">1-input · 2-intermediate · 3-processing · 4-output · 5-access-rules</span></div>
+          <div class="node"><svg class="ic c-fd"><use href="#i-fd"/></svg><span class="t">02-gold-&lt;product&gt;</span><span class="from">views</span></div></details>
+        <div class="node"><svg class="ic c-fd"><use href="#i-fd"/></svg><span class="t">ci-cd/</span><span class="from">fabric-cicd + DACPAC</span></div></details>
+    </div></div>
+  </div>
+
+  <h2>4. Migration patterns</h2>
+  <p class="sub">The same rule is applied to every Synapse component, in every project.</p>
+  <div class="tbl"><table><thead><tr><th>Synapse component</th><th>Fabric target</th><th>Action</th></tr></thead><tbody id="ovpat"></tbody></table></div>
+
+  <h3 style="margin:22px 0 4px">Build scenarios: what each project needs</h3>
+  <p class="sub">Every source dataset and data product is classified from its DPV1 code (<code>classify_scenarios.py</code>): where its logic lives, how it loads, what else it does. The scenario tells the agent what to build and how; open a project to see its scenario, its modifiers and what is still open. Definitions: <code>2-config/migration/scenarios.json</code>; catalogs: <code>5-migration-hub/scenario-catalog-source-dataset.md</code> and <code>scenario-catalog-data-product.md</code>.</p>
+  <div id="ovscn"></div>
+
+  <h2>5. How the migration runs</h2>
+  <p class="sub">Two service offerings, four workflows, five agents. How each element is identified, how each service runs step by step, and how a source dataset hands over to its data products: see the <a href="#process" data-go="process">Process</a> tab.</p>
+  <div class="steps3">
+    <div class="card step"><span class="n">1</span><h3>Migrate the source dataset</h3><p>Ingested directly from the source into <code>LH_SDS_&lt;SOURCE&gt;</code>: landing, raw (parquet), tables. No shortcut. It publishes a contract for the data products.</p></div>
+    <div class="card step"><span class="n">2</span><h3>Expose it to the data product</h3><p><code>LH_INP_SDS_&lt;SOURCE&gt;</code> in the product workspace, with one OneLake shortcut per table the product reads, built from the contract.</p></div>
+    <div class="card step"><span class="n">3</span><h3>Migrate the data product</h3><p>Silver load procedures replace INP, LDW, CURATED and STG; DM becomes gold views; T-SQL stays T-SQL, through the DACPAC.</p></div>
+  </div>
+
+  <h2>6. Fabric features used (FabCon Europe 2026)</h2>
+  <p class="sub">Features from the September 2026 announcements that simplify the migration. Preview features are optional. Full list with sources: <code>2-config/migration/fabric-features.md</code>.</p>
+  <div class="tbl"><table><thead><tr><th>Feature</th><th>Status</th><th>Used in</th></tr></thead><tbody>
+    <tr><td>Copy job SCD Type 2 (CDC, audit columns)</td><td><span class="pill a-reuse">GA</span> (CDC: not stated)</td><td>S2 option for incremental database tables</td></tr>
+    <tr><td>Pipeline retry with back-off</td><td><span class="pill a-inline">not stated</span></td><td>All generated pipelines</td></tr>
+    <tr><td>Workspace monitoring, Activator job alerts, operations agent</td><td><span class="pill a-inline">not stated</span></td><td>S4, D4: replace DPV1 mail and log wrappers</td></tr>
+    <tr><td>Git compare and commit, selective branching</td><td><span class="pill a-reuse">GA</span></td><td>Repository and deployment</td></tr>
+    <tr><td>Spark Runtime 2.0 (Delta Lake 4.2, liquid clustering)</td><td><span class="pill a-reuse">GA</span></td><td>S3 notebooks</td></tr>
+    <tr><td>Data Engineering Agent (Project Osmos)</td><td><span class="pill a-review">preview</span></td><td>S3 optional notebook draft, reviewed like any output</td></tr>
+    <tr><td>Migration Assistant for Fabric Data Warehouse</td><td><span class="pill a-reuse">available</span></td><td>wf-4 optional cross-check</td></tr>
+  </tbody></table></div>
+
+  <h2>7. High-level analysis of DPV1</h2>
+  <p class="sub">Measured on the repository at the last refresh. Much of the gain comes from code that can be removed, not converted.</p>
+  <div class="tiles" id="ovt"></div>
+
+  <h2>8. Roadmap</h2>
+  <p class="sub">Framework first, a pilot, then waves ordered by how many products depend on each source.</p>
+  <div class="road">
+    <div class="card wave"><span class="pill a-merge">Wave 0</span><b>Framework</b><p>DPV2 repo, two service workflows, skills, this hub.</p></div>
+    <div class="card wave"><span class="pill a-merge">Wave 1</span><b>Pilot: GAIA</b><p>Source and product end to end in DEV. No cross-scope links.</p></div>
+    <div class="card wave"><span class="pill a-merge">Wave 2</span><b>Shared sources</b><p>Migrate EPV2, PEOPLECONNECT, INTELEX, CV_PARTNER, JANUS as source datasets.</p></div>
+    <div class="card wave"><span class="pill a-merge">Wave 3+</span><b>Product groups</b><p>ERP_CLOUD_BI, ESG, QHSES, EPV2 BI, then by priority.</p></div>
+    <div class="card wave p2"><span class="pill a-review">Later phase</span><b>Data and cut-over</b><p>Schedules activated, back-fill, parallel run, Synapse retired.</p></div>
+  </div>
+</section>
+
+<!-- ============ PROCESS ============ -->
+<section class="view" id="v-process">
+  <p class="eyebrow">Process · from a name to ready-to-deploy, for each service offering</p>
+  <h1>Two services, one chain: sources are migrated first, data products reuse what the source migration published</h1>
+  <p class="lead">This tab explains how the migration works, step by step: how every DPV1 element is found, how a source dataset and a data product are migrated, and how the two are linked by lineage. The same logic runs in the repository scripts, so what you read here is what the agents do.</p>
+  <hr class="rule">
+  <div class="kpis" id="pk"></div>
+  <div class="wsorg" style="margin-top:14px">
+    <div class="card" style="padding:16px 18px;border-top:3px solid var(--br-bd)"><span class="lbl">Rule · Source Dataset Migration</span><h3 style="margin:6px 0 6px;font-size:16px">Only the source dataset, end to end</h3><p class="sub" style="margin:0">Identifies, maps and builds only the objects of the source and their lineage, in <code>source-dataset/&lt;SOURCE&gt;/</code>. Product steps reached from a source master are left to Data Product Migration; the products that read the source are listed for analysis only.</p></div>
+    <div class="card" style="padding:16px 18px;border-top:3px solid var(--si-bd)"><span class="lbl">Rule · Data Product Migration</span><h3 style="margin:6px 0 6px;font-size:16px">Sources first, then the product</h3><p class="sub" style="margin:0">Focuses on the product, its dependencies and its interactions with other products. It starts only when every source it is produced from is migrated. Otherwise the scripts stop before writing anything and name the missing sources; the developer confirms and migrates them first, in their own <code>source-dataset</code> folder.</p></div>
+  </div>
+
+  <h2>1. The process in one picture</h2>
+  <p class="sub">Framing decides what moves; build stages produce Fabric items; two levels of review decide whether it can be deployed.</p>
+  <div class="card chainbox"><div class="ch"><b>From request to ready-to-deploy</b><span class="dur" style="background:var(--blue50);color:#0B4F9C">every step logged in the change log</span></div>
+    <div class="pflow">
+      <div class="st2"><b>Request</b><small>Service + name, or a brief copied from the mapper</small></div><div class="ar">→</div>
+      <div class="st2 f"><b>wf-1 framing</b><small>F1–F4: scope, mapping, trees, target design, plan</small></div><div class="ar">→</div>
+      <div class="st2 g"><b>Gate</b><small>framing_approved by the owner</small></div><div class="ar">→</div>
+      <div class="st2 s"><b>wf-2 build</b><small>source dataset S1–S4</small><br><b style="margin-top:6px;color:var(--si-tx)">wf-3 + wf-4</b><small>data product D1–D5, DACPAC K1–K4</small></div><div class="ar">→</div>
+      <div class="st2"><b>Stage review</b><small>after every stage</small></div><div class="ar">→</div>
+      <div class="st2 r"><b>Gap review</b><small>whole migration, S5 / D6</small></div><div class="ar">⇄</div>
+      <div class="st2 r"><b>Bug fix</b><small>fixes from the review, then review again</small></div><div class="ar">→</div>
+      <div class="st2 g"><b>Ready</b><small>all gates ✅</small></div>
+    </div></div>
+
+  <h2>2. How the two service offerings are linked</h2>
+  <p class="sub">A DPV1 project is cut at SPOT_DB source. Below the cut is the source dataset, above it the data product. They meet in one place: the source dataset contract.</p>
+  <div class="card chainbox"><div class="ch"><b>Lineage in Fabric, and the hand-over between the services</b><span class="dur" style="background:var(--gr-bg);color:var(--gr-tx)">no data copy between services</span></div>
+    <div class="pflow">
+      <div class="st2"><b>Source system</b><small>Oracle, API, SFTP… through a gateway</small></div><div class="ar">→</div>
+      <div class="st2 s"><b>LH_SDS_&lt;SRC&gt;</b><small>landing → raw (parquet) → dbo tables · Source Dataset Migration</small></div><div class="ar">→</div>
+      <div class="st2 g"><b>source-dataset-contract</b><small>tables, DPV1 access paths, VL_MAIN names, consumers, readiness</small></div><div class="ar">→</div>
+      <div class="st2 d"><b>LH_INP_SDS_&lt;SRC&gt;</b><small>OneLake shortcuts, one per table used · Data Product Migration</small></div><div class="ar">→</div>
+      <div class="st2 d"><b>WH_DPG_&lt;GROUP&gt;</b><small>silver procedures, gold views (T-SQL)</small></div>
+    </div></div>
+  <div class="tbl" style="margin-top:14px"><table><thead><tr><th></th><th>Source Dataset Migration</th><th>Data Product Migration</th></tr></thead><tbody>
+    <tr><td class="k">Input</td><td>Domain + source name, e.g. <code>PC</code> + <code>GEOS</code></td><td>Project, master pipeline or DW schema, e.g. <code>DW_GAIA</code></td></tr>
+    <tr><td class="k">DPV1 scope</td><td>Source → RAW → CLEANSED → SPOT_DB source</td><td>SPOT_DB source → INP / LDW → CURATED → STG → DW → DM</td></tr>
+    <tr><td class="k">Fabric target</td><td><code>DP_SDS_&lt;DOMAIN&gt;</code> · <code>LH_SDS_&lt;SOURCE&gt;</code></td><td><code>DP_DPG_&lt;GROUP&gt;</code> · <code>WH_DPG_&lt;GROUP&gt;</code> · <code>DPG-&lt;GROUP&gt;</code></td></tr>
+    <tr><td class="k">Data access</td><td><b>Ingested directly from the source.</b> No shortcut, no ADLS linked service, no dataset</td><td><b>Shortcuts only here:</b> <code>LH_INP_SDS_&lt;SOURCE&gt;</code>, built from the contract</td></tr>
+    <tr><td class="k">The other service</td><td>Lists the data products that read it in DPV1, for analysis only. <b>Never builds anything of a data product.</b></td><td>Reads the contract of each input source. <b>Never rebuilds a source</b>; if a source is not migrated, the workflow stops and asks to migrate it first.</td></tr>
+    <tr><td class="k">Hand-over</td><td>Publishes <code>source-dataset-contract.json</code> at the end of S4</td><td>Uses it in framing (06), D3 (input Lakehouse) and D2 (<code>build-notes/3-build/build-notes/build-notes.md#D3-table-mapping</code>)</td></tr>
+    <tr><td class="k">Folder</td><td class="nm">source-dataset/&lt;SOURCE&gt;/</td><td class="nm">data-product/&lt;PROJECT&gt;/</td></tr>
+  </tbody></table></div>
+  <h3 style="margin-top:22px">Which data products read which source in DPV1</h3>
+  <p class="sub">Found in the DPV1 code (step 6 below). Example: GSP_ANALYSIS reads 14 GEOS tables through the <code>rpl_geos</code> views; in Fabric it will read them through <code>LH_INP_SDS_GEOS</code>.</p>
+  <div class="toolbar"><label class="search"><svg class="ic"><use href="#i-search"/></svg><input type="search" id="lq" placeholder="Filter a source or a data product" aria-label="Filter lineage"></label><span class="count" id="lc"></span></div>
+  <div class="tbl" style="max-height:420px"><table><thead><tr><th>Source dataset</th><th>Read by data products</th><th>How (DPV1 evidence)</th></tr></thead><tbody id="lrows"></tbody></table></div>
+
+  <h2>3. How every element is identified, step by step</h2>
+  <p class="sub">The scope engine (<code>dpv1_mapping.py</code>) reads the whole Synapse export on every refresh. Each step adds objects with their evidence ("Found by"), so a reviewer can check that nothing is left behind.</p>
+  <div class="lanes">
+    <div class="lane"><div class="lh"><b>1 · Scope folder</b><span>where the object lives</span></div><div class="ls">
+      <div class="stg"><b>Source dataset</b><span class="o"><code>01_CORE_DATA/NN_&lt;SRC&gt;</code>, <code>01_GLOBAL_DATA_SOURCES/NN_&lt;SRC&gt;</code></span></div>
+      <div class="stg"><b>Data product</b><span class="o"><code>02_PROJECTS/&lt;X&gt;</code>, <code>03_INTEGRATION_PROJECTS</code>, <code>05_BUSR</code></span></div>
+      <div class="stg"><b>Entry orchestration</b><span class="o"><code>99_EXTERNAL_ORCHESTRATION/&lt;X&gt;</code></span></div></div></div>
+    <div class="lane"><div class="lh"><b>2 · Entry points</b><span>what starts a scope</span></div><div class="ls">
+      <div class="stg"><b>Triggers</b><span class="o">schedule and tumbling-window triggers, started or stopped</span></div>
+      <div class="stg"><b>External masters</b><span class="o">pipelines in the external-orchestration folder</span></div>
+      <div class="stg"><b>Roots</b><span class="o">pipelines no other pipeline calls</span></div></div></div>
+    <div class="lane"><div class="lh"><b>3 · Call chain</b><span>everything reached</span></div><div class="ls">
+      <div class="stg"><b>Execute Pipeline</b><span class="o">closure from the entry points</span></div>
+      <div class="stg"><b>Notebook activities</b><span class="o">and notebook names passed as parameters (e.g. <code>IngestionNotebook</code>)</span></div>
+      <div class="stg"><b>Notebook → notebook</b><span class="o"><code>mssparkutils.notebook.run</code>, <code>%run</code> (e.g. <code>NTBK_COMMON_CHILD_META_RAW_TO_CLEAN</code>)</span></div>
+      <div class="stg"><b>Boundary</b><span class="o">source steps stay in the source dataset, product steps go to the product (<code>upstream</code> / <code>product</code>)</span></div></div></div>
+    <div class="lane"><div class="lh"><b>4 · Dependencies</b><span>used along the chain</span></div><div class="ls">
+      <div class="stg"><b>Data flows, datasets, linked services</b><span class="o">from each activity</span></div>
+      <div class="stg"><b>Triggers</b><span class="o">that start a pipeline of the scope</span></div>
+      <div class="stg"><b>Catalog tables</b><span class="o">rows of DPV1 <code>Catalog_&lt;SRC&gt;</code> (commented-out rows skipped)</span></div>
+      <div class="stg"><b>SQL objects</b><span class="o">created in the scope's schemas, or read but defined in the database</span></div></div></div>
+    <div class="lane"><div class="lh"><b>5 · Name check</b><span>nothing left behind</span></div><div class="ls">
+      <div class="stg"><b>Same name, other place</b><span class="o">every object whose name or folder matches the scope: in the other service, in another scope, or <b>not included</b></span></div>
+      <div class="stg"><b>Gate</b><span class="o"><code>name_check_resolved</code>: no "not included" object left</span></div></div></div>
+    <div class="lane"><div class="lh"><b>6 · Data lineage</b><span>who reads whose data</span></div><div class="ls">
+      <div class="stg"><b>Source tokens</b><span class="o">ADLS folder <code>DATASOURCE=&lt;X&gt;</code>, SPOT lake database <code>&lt;Prefix&gt;_&lt;Project&gt;</code>, <code>rpl_&lt;src&gt;</code> views</span></div>
+      <div class="stg"><b>Consumers</b><span class="o">data products whose pipelines, SQL scripts or notebooks name a token</span></div>
+      <div class="stg"><b>Result</b><span class="o">the source lists its consumers; the product gets the source as an input</span></div></div></div>
+    <div class="lane"><div class="lh"><b>7 · Rules and decisions</b><span>one action per object</span></div><div class="ls">
+      <div class="stg"><b>Mapping rules</b><span class="o">action and Fabric target per object type (patterns below)</span></div>
+      <div class="stg"><b>Shared framework</b><span class="o">generic pipelines get an explicit replacement (mail → Activator, catalog creation → catalog view, copy-back → dropped)</span></div>
+      <div class="stg"><b>Owner decisions</b><span class="o"><code>2-config/migration/scope-decisions.json</code>, applied on every refresh</span></div></div></div>
+    <div class="lane"><div class="lh"><b>8 · Estate register</b><span>the whole export</span></div><div class="ls">
+      <div class="stg"><b>Every object accounted for</b><span class="o">in a scope, shared framework, platform, unused, or to decide (table below, <code>5-migration-hub/estate-coverage.md</code>)</span></div>
+      <div class="stg"><b>Platform</b><span class="o">self-hosted IR → gateway, Spark configurations → Environment, managed private endpoints, workspace identity</span></div></div></div>
+  </div>
+  <h3 style="margin-top:22px">Estate coverage: every object of the Synapse export</h3>
+  <div class="tbl"><table><thead><tr><th>Object type</th><th class="n">In the export</th><th class="n">In a scope</th><th class="n">Shared framework</th><th class="n">Unused</th><th class="n">To decide</th></tr></thead><tbody id="erows"></tbody></table></div>
+  <div id="ecats" style="margin-top:12px"></div>
+  <h3 style="margin-top:22px">What each action means</h3>
+  <div class="gloss" id="gloss"></div>
+
+  <h2>4. Source Dataset Migration, step by step</h2>
+  <p class="sub">Workflows <code>wf-1-framing</code> then <code>wf-2-migration-source-dataset</code>. Example: GEOS.</p>
+  <div class="lanes">
+    <div class="lane"><div class="lh"><b>F1–F4 · Framing</b><span>analysis only</span></div><div class="ls">
+      <div class="stg"><i>F1</i><b>Request</b><span class="o">source name, domain code, catalog warehouse</span></div>
+      <div class="stg"><i>F2</i><b>Scope analysis</b><span class="o"><code>frame_scope.py</code>: scope card with the data products that read the source (analysis only), identification, as-is tree, object mapping</span></div>
+      <div class="stg"><i>F3</i><b>Target design</b><span class="o">to-be tree, names per conventions, owner decisions</span></div>
+      <div class="stg"><i>F4</i><b>Plan</b><span class="o">gate <code>framing_approved</code></span></div></div></div>
+    <div class="lane"><div class="lh"><b>S1–S4 · Build</b><span>LH_SDS_&lt;SRC&gt;</span></div><div class="ls">
+      <div class="stg"><i>S1</i><b>Catalog view and Lakehouse</b><span class="o"><code>create_catalog_view.py</code>: <code>[CATALOG].[&lt;source&gt;_catalog]</code>; <code>build_source_dataset.py</code>: <code>LH_SDS_&lt;SRC&gt;</code></span></div>
+      <div class="stg"><i>S2</i><b>Source → landing → RAW</b><span class="o">catalog Lookup, one Copy per table into <code>Files/landing</code> (source format), parquet into <code>Files/raw</code></span></div>
+      <div class="stg"><i>S3</i><b>RAW → tables</b><span class="o">notebook: latest RAW partition → <code>dbo.&lt;table&gt;</code>, DPV1 behaviour kept, <code>meta_*</code> columns</span></div>
+      <div class="stg"><i>S4</i><b>Orchestration, VL_MAIN, hand-over</b><span class="o">master pipeline, schedule documented, VL_MAIN, <b>source dataset contract</b></span></div></div></div>
+    <div class="lane"><div class="lh"><b>S5 · Readiness</b><span>gap review</span></div><div class="ls">
+      <div class="stg"><i>S5</i><b>Gap review and fixes</b><span class="o"><code>review_scope.py</code> → reviewer → bug-fixer until no ❌; gate <code>gap_review_passed</code></span></div></div></div>
+  </div>
+
+  <h2>5. Data Product Migration, step by step</h2>
+  <p class="sub">Workflows <code>wf-1-framing</code> then <code>wf-3-migration-data-product</code>, with <code>wf-4-migration-dacpac</code> for dedicated-pool code. Example: GAIA.</p>
+  <div class="lanes">
+    <div class="lane"><div class="lh"><b>F1–F4 · Framing</b><span>analysis only</span></div><div class="ls">
+      <div class="stg"><i>F1</i><b>Prerequisite check</b><span class="o"><code>source_contract.py show</code>: every input source migrated? If not: stop, name it, ask to migrate it first</span></div>
+      <div class="stg"><i>F2</i><b>Scope analysis</b><span class="o">structure, dependencies, input sources (contracts), products it reads and products that read it</span></div>
+      <div class="stg"><i>F3</i><b>Target design</b><span class="o">silver procedures and gold views; INP / LDW / CURATED / STG become CTEs</span></div>
+      <div class="stg"><i>F4</i><b>Plan</b><span class="o">gates <code>framing_approved</code>; <code>sources_available</code> waits for the contracts</span></div></div></div>
+    <div class="lane"><div class="lh"><b>D1–D5 · Build</b><span>WH_DPG_&lt;GROUP&gt;</span></div><div class="ls">
+      <div class="stg"><i>D1</i><b>Extract legacy code</b><span class="o"><code>extract_scope_code.py</code>, including T-SQL hidden in pipelines</span></div>
+      <div class="stg"><i>D2</i><b>Translate T-SQL</b><span class="o">T-SQL stays T-SQL; DACPAC via wf-4; DPV1 reads re-pointed to the <code>[INP_&lt;SRC&gt;]</code> views over <code>LH_INP_SDS_&lt;SRC&gt;</code> (shortcuts to <code>LH_SDS_&lt;SRC&gt;</code>)</span></div>
+      <div class="stg"><i>D3</i><b>Database project and inputs</b><span class="o"><code>build_input_lakehouse.py</code>: <code>LH_INP_SDS_&lt;SRC&gt;</code> shortcuts from each contract; Warehouse</span></div>
+      <div class="stg"><i>D4</i><b>Pipelines and VL_MAIN</b><span class="o">master + process pipelines, procedure batches</span></div>
+      <div class="stg"><i>D5</i><b>Equivalence tests</b><span class="o">written now, run in the data phase</span></div></div></div>
+    <div class="lane"><div class="lh"><b>K1–K4 · DACPAC</b><span>wf-4</span></div><div class="ls">
+      <div class="stg"><i>K1–K2</i><b>Get and retarget</b><span class="o"><code>dacpac_retarget.py</code> → <code>DPG-&lt;GROUP&gt;</code></span></div>
+      <div class="stg"><i>K3–K4</i><b>Fix and build</b><span class="o"><code>tsql_fabric_lint.py</code> until 0 blocking; <code>dotnet build</code></span></div></div></div>
+    <div class="lane"><div class="lh"><b>D6 · Readiness</b><span>gap review</span></div><div class="ls">
+      <div class="stg"><i>D6</i><b>Gap review and fixes</b><span class="o">coverage, lint, build, every input contract ready; gate <code>gap_review_passed</code></span></div></div></div>
+  </div>
+
+  <h2>6. The source dataset contract: gathered once, reused by every data product</h2>
+  <p class="sub"><code>source-dataset/&lt;SRC&gt;/source-dataset-contract.json</code> (+ <code>.md</code>), published by <code>build_source_dataset.py</code> at S4 and refreshed by every review.</p>
+  <div class="tbl"><table><thead><tr><th>Field</th><th>Gathered during Source Dataset Migration</th><th>Reused during Data Product Migration</th></tr></thead><tbody>
+    <tr><td class="nm">lakehouse, workspace, schema</td><td>S1 Lakehouse item</td><td>target of the OneLake shortcuts (D3)</td></tr>
+    <tr><td class="nm">tables[].dpv1 → fabric</td><td>catalog rows (S1), table names kept</td><td>one shortcut per table used; three-part names in T-SQL (D2)</td></tr>
+    <tr><td class="nm">tables[].dpv1_access</td><td>ADLS folders, SPOT lake database, <code>rpl_</code> views of the source</td><td><code>build-notes/3-build/build-notes/build-notes.md#D3-table-mapping</code>: every DPV1 reference → <code>LH_INP_SDS_&lt;SRC&gt;.dbo.&lt;table&gt;</code></td></tr>
+    <tr><td class="nm">vl_main_for_products</td><td>names of the variables</td><td>product VL_MAIN: <code>LH_SDS_&lt;SRC&gt;_ID</code>, <code>_WORKSPACE_ID</code>, <code>LH_INP_SDS_&lt;SRC&gt;_ID</code></td></tr>
+    <tr><td class="nm">consumers</td><td>data lineage (analysis only)</td><td>confirms the product is an expected consumer, with the tables it uses</td></tr>
+    <tr><td class="nm">readiness</td><td>stages S1–S4 completed, gap review</td><td>gate <code>sources_available</code></td></tr>
+  </tbody></table></div>
+  <div class="code" style="margin-top:14px"><button class="btn sm" data-cp><svg class="ic"><use href="#i-copy"/></svg>Copy</button><span class="ct">python -I 0-shared/scripts/source_contract.py publish --id GEOS               # source side (also run by build_source_dataset.py S4)
+python -I 0-shared/scripts/source_contract.py show --product GSP_ANALYSIS     # product side: inputs, readiness, tables used
+python -I 0-shared/scripts/build_input_lakehouse.py --id GAIA                 # D3: input Lakehouses + build-notes/3-build/build-notes/build-notes.md#D3-table-mapping</span></div>
+
+  <h2>7. Seven agents: two entry points, five specialists</h2>
+  <p class="sub">Agents hand off with buttons in VS Code Copilot Chat (<code>.github/agents/</code>); in Claude Code, read the agent file and follow it. Stage files stay the source of truth.</p>
+  <div class="agents" style="grid-template-columns:repeat(4,1fr)">
+    <div class="card agent"><span class="em">📦</span><b>m-source-dataset</b><p>Entry point of the Source Dataset service: checks the knowledge, frames, builds S1-S4, reviews and fixes, publishes the contract.</p><span class="w">source-dataset/&lt;SOURCE&gt;/</span></div>
+    <div class="card agent"><span class="em">🏗️</span><b>m-data-product</b><p>Entry point of the Data Product service: checks every input source is ready, frames, builds D1-D5 with the DACPAC, reviews and fixes.</p><span class="w">data-product/&lt;PROJECT&gt;/</span></div>
+    <div class="card agent"><span class="em">🔄</span><b>m-scope-refresher</b><p>On demand: refreshes the hub, the knowledge base (one JSON per scope) and the scope index from DPV1, verifies them, answers dependencies.</p><span class="w">5-migration-hub/</span></div>
+    <div class="card agent"><span class="em">🧭</span><b>m-framer</b><p>Asks what to migrate, resolves the scope, writes the framing pack and trees, records owner decisions and approval.</p><span class="w">1-framing/, scope-decisions.json</span></div>
+    <div class="card agent"><span class="em">🛠️</span><b>m-builder</b><p>Builds one stage of wf-2, wf-3 or wf-4 with the scripts and skills; runs independent stages as parallel subagents.</p><span class="w">2-legacy-code/, 3-build/, 4-dacpac/, contract</span></div>
+    <div class="card agent"><span class="em">🔎</span><b>m-reviewer</b><p><b>Stage review</b> after each stage, or <b>gap review</b> of a whole service offering: coverage, artifacts, deployment risks, lineage, bugs. Asks the service and name.</p><span class="w">build-notes.md#&lt;stage&gt;-review, review/gap-review.*</span></div>
+    <div class="card agent"><span class="em">🩹</span><b>m-bug-fixer</b><p>Reads the latest review, applies the script-level fixes, makes the code fixes by hand, logs each one and hands back for a new review.</p><span class="w">review/&lt;date&gt;-fix-log.md</span></div>
+  </div>
+
+  <h2>8. Where everything is written</h2>
+  <p class="sub">One folder per service offering, then one per project. A project folder reads as the complete record of its migration.</p>
+  <div class="split">
+    <div class="dtree"><span class="k">4-migration-project-deliverables/</span>
+├── <span class="s">migration-portfolio.md</span>          <span class="c">all projects, both services</span>
+├── <span class="k">source-dataset/</span>
+│   └── <span class="g">GEOS/</span>
+│       ├── 0_progress_tracking/     <span class="c">geos_tracking.md (status + change log), progress.json</span>
+│       ├── 1-framing/               <span class="c">01-scope-analysis, 02-object-mapping, 03-target-design-and-plan</span>
+│       ├── 2-legacy-code/           <span class="c">read-only copy of the DPV1 code</span>
+│       ├── 3-build/                 <span class="c">fabric-deployment/ (REPO-FABRIC-DEPLOYMENT layout) · build-notes/</span>
+│       ├── review/                  <span class="c">latest review and fix log</span>
+│       └── <span class="s">source-dataset-contract.json</span> <span class="c">hand-over to data products</span>
+└── <span class="k">data-product/</span>
+    └── <span class="g">GAIA/</span>
+        ├── 0_progress_tracking/ · 1-framing/ · 2-legacy-code/
+        ├── 3-build/                 <span class="c">fabric-deployment/ (DP_DPG_GAIA/, database-projects/) · build-notes/</span>
+        ├── 4-dacpac/                <span class="c">lint and retarget reports</span>
+        └── review/</div>
+    <div class="card expl"><span class="lbl">What each folder holds</span><dl style="margin-top:10px">
+      <dt>0_progress_tracking</dt><dd>Written by <code>track.py</code> only: stage status, gates, inputs, risks, and the change log in chronological order.</dd>
+      <dt>1-framing</dt><dd>Scope card with the lineage to the other service, identification evidence, as-is tree, object mapping, variable library preview, to-be tree, plan.</dd>
+      <dt>2-legacy-code</dt><dd>Pipelines, notebooks, data flows, SQL scripts and the T-SQL hidden in pipeline activities, one file per object.</dd>
+      <dt>3-build</dt><dd><code>fabric-deployment/</code>: every Fabric item in Fabric Git format, in exactly the REPO-FABRIC-DEPLOYMENT layout (workspace folders, <code>database-projects/</code>), ready to copy. <code>build-notes/</code>: what each stage did.</dd>
+      <dt>4-dacpac</dt><dd>Data products only: retarget, lint and build reports (the database project itself is in <code>fabric-deployment/database-projects/</code>).</dd>
+      <dt>contract</dt><dd>Source datasets only: what data products reuse.</dd>
+      <dt>review</dt><dd>Latest review (md for people, json for the bug-fixer) and fix log.</dd></dl></div>
+  </div>
+
+  <h2>9. Tracking, change log and gates</h2>
+  <p class="sub">Nothing is edited by hand. Scripts log their own activity; agents log stage status, decisions and issues with <code>track.py</code>.</p>
+  <div class="wsorg">
+    <div class="card"><span class="lbl">Mandatory gates · source dataset</span><div class="tbl" style="margin-top:8px"><table><thead><tr><th>Gate</th><th>Set by</th></tr></thead><tbody>
+      <tr><td>Framing approved</td><td>owner, via the framer</td></tr><tr><td>Name check resolved</td><td class="nm">frame_scope.py</td></tr>
+      <tr><td>Catalog view rows = DPV1 script</td><td class="nm">create_catalog_view.py</td></tr><tr><td>VL_MAIN complete for DEV</td><td class="nm">create_variable_library.py</td></tr>
+      <tr><td>Gap review: no ❌ left</td><td class="nm">review_scope.py</td></tr></tbody></table></div></div>
+    <div class="card"><span class="lbl">Mandatory gates · data product</span><div class="tbl" style="margin-top:8px"><table><thead><tr><th>Gate</th><th>Set by</th></tr></thead><tbody>
+      <tr><td>Framing approved · name check</td><td>owner · frame_scope.py</td></tr><tr><td>Input sources available (contracts ready)</td><td class="nm">build_input_lakehouse.py</td></tr>
+      <tr><td>T-SQL lint: 0 blocking</td><td class="nm">dacpac_retarget.py</td></tr><tr><td>Database project builds</td><td>reviewer</td></tr>
+      <tr><td>VL_MAIN complete · gap review passed</td><td class="nm">create_variable_library.py · review_scope.py</td></tr></tbody></table></div></div>
+  </div>
+  <div class="legend"><span>✅ completed</span><span>🟡 in progress</span><span>⚪ not started / waiting</span><span>⚠️ blocked or warning</span><span>❌ failure (blocks deployment)</span><span>⚫ n/a</span></div>
+  <p class="sub" style="margin-top:12px">Per project: <code>&lt;project&gt;_tracking.md</code> (status, then the change log). For every project of both services: <code>migration-portfolio.md</code> (stages, gates, risks, change-log index). A deployment is allowed only when every gate is ✅.</p>
+
+  <h2>10. Rules that never change</h2>
+  <p class="sub">These rules apply to every project and every agent. The gap review checks most of them automatically.</p>
+  <div class="rules">
+    <div class="card rule"><b>T-SQL stays T-SQL</b><p>Procedures, views and tables are translated to Fabric Warehouse T-SQL, never to notebooks. Dedicated-pool code moves through the DACPAC.</p></div>
+    <div class="card rule"><b>No cleansed zone</b><p>Database → Files/raw (parquet, written once); API or files → Files/landing (as delivered) → Files/raw (parquet); then Lakehouse tables. Only the tables that copied are loaded; a failed table is listed with its error and the others still load. One loader notebook per source (plus a FLATTEN notebook for APIs and files), only where DPV1 had one. CLEANSED logic moves into RAW → tables.</p></div>
+    <div class="card rule n"><b>No shortcut in a source dataset</b><p>Source datasets ingest directly from the source. Shortcuts exist only in data products, through <code>LH_INP_SDS_&lt;SOURCE&gt;</code>.</p></div>
+    <div class="card rule n"><b>Each service stays in its lane</b><p>A source migration lists its consumers but builds nothing of them; a product migration reads contracts but never rebuilds a source.</p></div>
+    <div class="card rule n"><b>Sources before products</b><p>A data product starts only when all its source datasets are migrated. The scripts stop and name the missing ones; they are migrated first, in their own folder.</p></div>
+    <div class="card rule n"><b>No ADLS linked service, no dataset</b><p>DPV1 ADLS zones were Synapse storage: OneLake is built into the Lakehouse and reached by path. Fabric has no datasets.</p></div>
+    <div class="card rule g"><b>Every parameter from VL_MAIN</b><p>DEV, UAT and PRD value sets. Pipelines read <code>@pipeline().libraryVariables.X</code>, notebooks <code>vl.X</code>; Lakehouse and warehouse connections too (workspace <code>@pipeline().DataFactory</code>), so every item deploys in one Git sync.</p></div>
+    <div class="card rule g"><b>Nothing left behind</b><p>Every object of the export is in a scope, the shared framework or the platform, or listed with a reason in the estate register.</p></div>
+    <div class="card rule n"><b>One project migration at a time</b><p>Framing and build scripts stop while another project has a stage in progress. Finish it or pause it; <code>--parallel</code> only when the owner agrees.</p></div>
+    <div class="card rule"><b>DPV1 is read-only</b><p>Scripts read the export; nothing is written back. Every output goes to the project folder.</p></div>
+  </div>
+
+  <h2>11. Variable library and catalog view: every id read at run time</h2>
+  <p class="sub">Nothing environment-specific is written in a pipeline or notebook. Example from GEOS: 10 variables, 25 catalog rows.</p>
+  <div class="wsorg">
+    <div class="card"><span class="lbl">VL_MAIN · DP_SDS_PC</span><div class="tbl" style="margin-top:8px"><table><thead><tr><th>Variable</th><th>DEV value</th></tr></thead><tbody>
+      <tr><td class="nm">WORKSPACE_ID</td><td>&lt;to set&gt;</td></tr>
+      <tr><td class="nm">LH_SDS_GEOS_ID</td><td>&lt;to set&gt;</td></tr><tr><td class="nm">GEOS_CATALOG_VIEW_NAME</td><td class="nm">CATALOG.geos_catalog</td></tr>
+      <tr><td class="nm">GEOS_CATALOG_WAREHOUSE_NAME</td><td class="nm">WH_CATALOG_GEOS</td></tr><tr><td class="nm">GEOS_CATALOG_WAREHOUSE_ID · _SQL_ENDPOINT · _CONN_ID</td><td>&lt;to set&gt;</td></tr>
+      <tr><td class="nm">GEOS_LH_CONN_ID</td><td>&lt;to set&gt; (Lakehouse connection of the GEOS Copy activities)</td></tr>
+      <tr><td class="nm">GEOS_ORACLE_CONN_ID / _NAME</td><td>&lt;to set&gt; / CONN_GEOS_ORACLE_DEV</td></tr></tbody></table></div>
+      <p class="note" style="margin-top:10px">The catalog view <code>[CATALOG].[&lt;source&gt;_catalog]</code> holds the tables, load mode, active flag and watermark; VL_MAIN only says where the view is. Each source has its own warehouse <code>WH_CATALOG_&lt;SOURCE&gt;</code> in its workspace for now; to move to the common warehouse, set <code>catalog_warehouse_location = shared</code> in <code>2-config/migration/shared-platform.json</code> and re-generate.</p></div>
+    <div><div class="code"><button class="btn sm" data-cp><svg class="ic"><use href="#i-copy"/></svg>Copy</button><span class="ct">SELECT * FROM @{pipeline().libraryVariables.GEOS_CATALOG_VIEW_NAME} WHERE isActive = 1</span></div><div class="code"><button class="btn sm" data-cp><svg class="ic"><use href="#i-copy"/></svg>Copy</button><span class="ct">vl = notebookutils.variableLibrary.getLibrary(&quot;VL_MAIN&quot;)
+lakehouse_id = vl.LH_SDS_GEOS_ID</span></div><div class="code"><button class="btn sm" data-cp><svg class="ic"><use href="#i-copy"/></svg>Copy</button><span class="ct">// Lakehouse connection in a pipeline: no id in the file, so every item deploys in one Git sync
+"typeProperties": {"artifactId": "@pipeline().libraryVariables.LH_SDS_GEOS_ID",
+                   "workspaceId": "@pipeline().DataFactory", "rootFolder": "Files"}</span></div><div class="code"><button class="btn sm" data-cp><svg class="ic"><use href="#i-copy"/></svg>Copy</button><span class="ct">// shortcuts.metadata.json of LH_INP_SDS_GEOS (data product)
+{"name": "ap_terms", "path": "/Tables/dbo",
+ "target": {"type": "OneLake", "oneLake": {"path": "Tables/dbo/ap_terms",
+   "itemId": "$(/**/VL_MAIN/LH_SDS_GEOS_ID)", "workspaceId": "$(/**/VL_MAIN/LH_SDS_GEOS_WORKSPACE_ID)"}}}</span></div></div>
+  </div>
+
+  <h2>12. Commands</h2>
+  <p class="sub">Run from the repository root, or in VS Code: Terminal → Run Task → "Migration: …". Agents run the same commands.</p>
+  <div class="wsorg">
+    <div><span class="lbl">Source dataset · GEOS</span><div class="code"><button class="btn sm" data-cp><svg class="ic"><use href="#i-copy"/></svg>Copy</button><span class="ct">python -I 0-shared/scripts/frame_scope.py --service sds --id GEOS --domain PC
+python -I 0-shared/scripts/create_catalog_view.py --id GEOS
+python -I 0-shared/scripts/extract_scope_code.py --service sds --id GEOS
+python -I 0-shared/scripts/create_variable_library.py --service sds --id GEOS
+python -I 0-shared/scripts/build_source_dataset.py --id GEOS
+python -I 0-shared/scripts/review_scope.py --service sds --id GEOS
+python -I 0-shared/scripts/fix_from_review.py --service sds --id GEOS</span></div></div>
+    <div><span class="lbl">Data product · GAIA</span><div class="code"><button class="btn sm" data-cp><svg class="ic"><use href="#i-copy"/></svg>Copy</button><span class="ct">python -I 0-shared/scripts/frame_scope.py --service dp --id DW_GAIA --group GAIABI
+python -I 0-shared/scripts/source_contract.py show --product GAIA
+python -I 0-shared/scripts/extract_scope_code.py --service dp --id GAIA
+python -I 0-shared/scripts/dacpac_retarget.py --flat 4-migration-project-deliverables/data-product/GAIA/2-legacy-code/embedded-sql --group GAIABI --product gaia --project GAIA
+python -I 0-shared/scripts/build_input_lakehouse.py --id GAIA
+python -I 0-shared/scripts/create_variable_library.py --service dp --id GAIA
+python -I 0-shared/scripts/review_scope.py --service dp --id GAIA</span></div></div>
+  </div>
+  <div><span class="lbl">Tracking and refresh</span><div class="code"><button class="btn sm" data-cp><svg class="ic"><use href="#i-copy"/></svg>Copy</button><span class="ct">python -I 0-shared/scripts/refresh_hub.py                  # mapping, estate register, this page
+python -I 0-shared/scripts/track.py report --service sds --project GEOS
+python -I 0-shared/scripts/track.py gate --service sds --project GEOS --gate framing_approved --evidence &quot;&lt;owner&gt;, &lt;date&gt;&quot;
+python -I 0-shared/scripts/track.py log --service sds --project GEOS --stage S2 --type decision --text &quot;&lt;what&gt;&quot;</span></div></div>
+
+  <h2>13. Key learnings from the pilots</h2>
+  <p class="sub">What the GAIA and GEOS runs taught, and how the framework handles it now.</p>
+  <div class="learn">
+    <div class="card lrn rd"><span class="lbl">Completeness</span><b>Scopes alone missed 7% of the estate</b><p>About 240 objects (pipelines, notebooks, triggers, scripts) were in no scope. The estate register now accounts for every object of the export.</p></div>
+    <div class="card lrn rd"><span class="lbl">Call chain</span><b>Notebooks call notebooks</b><p><code>NTBK_COMMON_CHILD_META_RAW_TO_CLEAN</code> was run by another notebook, so GEOS missed it. <code>notebook.run</code>, <code>%run</code> and notebook names in parameters are now traced.</p></div>
+    <div class="card lrn ok"><span class="lbl">Lineage</span><b>Consumers are found from the data, not only the calls</b><p>No pipeline links GEOS to GSP_ANALYSIS, yet 8 GSP views read <code>rpl_geos</code>. Data tokens find it: 14 of 25 GEOS tables are used.</p></div>
+    <div class="card lrn ok"><span class="lbl">Coverage</span><b>The review measures what is built, not what is planned</b><p>GEOS: 34 of 34 objects built after S4. GAIA: 117 of 133 SQL objects already in the DACPAC.</p></div>
+    <div class="card lrn rd"><span class="lbl">Deployment risk</span><b>Dedicated-pool DDL does not deploy as is</b><p>GAIA: 96 blocking lint findings, mostly DISTRIBUTION and HEAP options, listed with file and fix.</p></div>
+    <div class="card lrn"><span class="lbl">Shared framework</span><b>"Migrated once" needs an owner</b><p>Mail, catalog-creation and copy-back pipelines used by many scopes now each have an explicit Fabric replacement or drop.</p></div>
+    <div class="card lrn"><span class="lbl">Catalog</span><b>Catalog scripts hide traps</b><p>Doubled quotes inside sp_executesql and commented-out INSERT rows. Rows are counted against DPV1 (25 = 25 for GEOS).</p></div>
+    <div class="card lrn"><span class="lbl">Deployment</span><b>Not every value can be a VL expression</b><p>Fabric rejects variable library expressions for artifactId and endpoint in pipeline connections. Deploy tokens filled from VL_MAIN keep one place per value.</p></div>
+    <div class="card lrn"><span class="lbl">Decisions</span><b>Legacy parallel paths need a person</b><p><code>Get_Geos_Data</code> was dropped; the <code>rpl_geos</code> scripts are left to GSP_ANALYSIS, which will read GEOS through <code>LH_INP_SDS_GEOS</code>.</p></div>
+  </div>
+
+  <h2>14. What changed in this version</h2>
+  <p class="sub">Framework changes of 2026-10-24 to 2026-10-29, newest first. Each is applied in the scripts, workflows, agents and this hub; details in <code>backlog.md</code>.</p>
+  <ul class="chg">
+    <li><span class="id">B66</span><span class="ar2">Deployability</span><span>Found by the RMA data product: the sync failed because the shortcut targets of <code>LH_INP_SDS_RMA</code> were placeholder ids. Now the build knows before the sync: placeholder import ids, references the database project does not create and a Lakehouse read outside the <code>[INP_&lt;SRC&gt;]</code> input views fail the review and block the publish (<code>deploy_gate.py</code>); <code>resolve_upstream.py</code> finds the source ids (by hand, source <code>VL_MAIN</code>, Fabric commits, Fabric) and asks on a conflict; a data product gets a master and a child pipeline; <code>deploy_preflight.py</code> checks each step and writes the runbook with the order of the deployment.</span></li>
+    <li><span class="id">B65</span><span class="ar2">Mixed, data product SQL</span><span>A source with a database and files (GAIA: Oracle plus SharePoint CSV) is built as one source with two input groups: catalog rows by connection key, a second Lookup and Copy, FLATTEN for the files, one loader, the file tables in the contract. <code>convert_serverless_sql.py</code> turns the serverless LDW and OUT code and the dedicated loaders into Warehouse T-SQL: GAIA 67 views and 48 loaders (42 dimensions, 6 facts) with 0 unmapped reads and lint clean; RMA 18 views and 18 loads. Two review checks guard it.</span></li>
+    <li><span class="id">B64</span><span class="ar2">Catalog</span><span>The catalog parser and the hub read every DPV1 catalog layout; seven sources had no catalog rows in the hub and five built an empty catalog view. The source contract now sees <code>&lt;TABLE&gt;_VW</code> reads (GAIA 46 of 53 tables, was 24).</span></li>
+    <li><span class="id">B63</span><span class="ar2">REST incremental</span><span>The DPV1 request of an incremental API is carried with the live watermark (<code>item().WatermarkNow</code>): derived for ONEGBS, EPTW and ECOSYS_COSTCONTROL, an <code>override</code> for SERVICENOW and OCTOPASS. Review check on the request.</span></li>
+    <li><span class="id">B62</span><span class="ar2">Framing</span><span>Key reference questions for every project (<code>04-key-reference-questions.md</code>), filled with evidence from DPV1 and the deployment repo; data products wait for the answers (gate <code>reference_questions_answered</code>).</span></li>
+    <li><span class="id">B61</span><span class="ar2">Scenarios</span><span>Every source dataset (55) and data product (39) is classified from its DPV1 code into a build scenario with modifiers, so a project picked later is built the right way. Each scenario says how it is built, which tools exist and what is still open; data products also get the code source of the DACPAC (scripts complete, DDL only, or the live pool is needed: EPV2, DAMS, DATAPLATFORM_MONITORING, EASYTENDER, ECOSYS_COSTCONTROL) and the DPV1 objects named after a project that no project lists. Shown in the Overview, the Projects table and on every project page. <code>classify_scenarios.py</code>, <code>2-config/migration/scenarios.json</code>.</span></li>
+    <li><span class="id">B60</span><span class="ar2">Ingestion</span><span>DPV1 per-table queries (a Switch on the table name whose Copies run their own query) are extracted automatically into <code>extract-queries/&lt;SRC&gt;.json</code> and returned by the catalog Lookup as <code>ExtractQuery</code>; one Copy replaces the branches. Incremental tables keep the query, wrapped with the watermark filter. Review check "DPV1 per-table queries carried into the catalog Lookup". Found in RMA, ECOSYS_COSTCONTROL and RAPID7.</span></li>
+    <li><span class="id">B59</span><span class="ar2">Deployment</span><span>A Lakehouse or Warehouse without <code>externalReferences.connection</code> makes Fabric's Git import fail with "Failed to discover dependencies: Object reference not set" (RMA). The catalog warehouse connection and <code>&lt;SRC&gt;_CATALOG_WAREHOUSE_CONN_ID</code> are back; the check lives in <code>common.one_sync_findings</code>, used by the review and by <code>deploy_publish.py</code>, which now copies nothing while a pipeline has a finding.</span></li>
+    <li><span class="id">B56</span><span class="ar2">Open</span><span>Sources with a landing zone and no DPV1 notebook (ILEARN type): the S3 Copy reads parquet from <code>Files/raw</code> while S2 lands files as delivered in <code>Files/landing</code>.</span></li>
+    <li><span class="id">B57, B58</span><span class="ar2">VL_MAIN, parallel</span><span>One VL_MAIN per workspace, merged with the deployment repo; variables that differ per source carry it (<code>&lt;SRC&gt;_CATALOG_VIEW_NAME</code>, <code>&lt;SRC&gt;_LH_CONN_ID</code>), declared in each pipeline under the same name. Tables load in parallel in one Spark session: <code>MaxParallel</code>, largest first, a scheduler pool per table, one run of a source at a time.</span></li>
+    <li><span class="id">B55</span><span class="ar2">Ingestion</span><span>Only the tables that copied go to the lakehouse: SOURCE_TO_RAW returns <code>LoadedTables</code> and <code>FailedTables</code> (with the error); RAW_TO_DELTA has no catalog Lookup; APIs and files run <code>NB_&lt;SRC&gt;_FLATTEN</code> (landing ⇒ flattened raw parquet) before the loader; watermarks move only for loaded tables; the master ends Failed and lists every failed table.</span></li>
+    <li><span class="id">B54</span><span class="ar2">Deliverables</span><span>Fewer, shorter pages: three framing pages, one <code>build-notes.md</code> plus <code>connections.md</code>, one tracking page per project, one portfolio page; reference detail in <code>analysis/</code> folders.</span></li>
+    <li><span class="id">B52, B53</span><span class="ar2">Build</span><span>Connection setup sheet per source (name per environment, DPV1 values, Key Vault secret, VL_MAIN variable); the loader notebook is seven short cells built from reusable DPV1 functions, one <code>clean()</code> line per DPV1 rule.</span></li>
+    <li><span class="id">B48–B51</span><span class="ar2">Deployment</span><span>One Git sync deploys every item (ids read from VL_MAIN at run time, no <code>parameter.yml</code>); a catalog warehouse <code>WH_CATALOG_&lt;SOURCE&gt;</code> per source while migrating; lowercase paths fixed in Git; a refresh with nothing new changes no file.</span></li>
+    <li><span class="id">B40–B45</span><span class="ar2">Framing, ingestion</span><span>Framing always asks five inputs as selection lists; <code>deploy_publish.py</code> copies the build to the deployment repo; lowercase repo names; four ingestion methods from the DPV1 code (structured / semi-structured, full / incremental).</span></li>
+    <li><span class="id">B31–B37</span><span class="ar2">Knowledge</span><span>Folder tree follows DPV1; knowledge base per scope; <code>m-source-dataset</code> and <code>m-data-product</code> entry agents; status definitions in every tracking file; stricter contract readiness.</span></li>
+    <li><span class="id">B7–B9</span><span class="ar2">Deliverables</span><span>Folders by service offering; chronological change logs; one tracking page per project and one portfolio page.</span></li>
+    <li><span class="id">B8, B14</span><span class="ar2">VL_MAIN</span><span>Catalog view <code>&lt;source&gt;_catalog</code> holds the details; VL_MAIN only locates items; ADLS, DPV1 and batch-size variables removed.</span></li>
+    <li><span class="id">B12, B13</span><span class="ar2">Architecture</span><span>No ADLS linked service, no dataset, no shortcut in source datasets; shortcuts only in data products.</span></li>
+    <li><span class="id">B10, B11</span><span class="ar2">Review</span><span><code>review_scope.py</code> and <code>fix_from_review.py</code>; one reviewer agent with stage and gap modes, plus the bug-fixer.</span></li>
+    <li><span class="id">B17–B20</span><span class="ar2">Build</span><span><code>build_source_dataset.py</code> S1–S4, one-sync deployment (ids read at run time), as-is and to-be trees.</span></li>
+    <li><span class="id">B21</span><span class="ar2">Decisions</span><span><code>scope-decisions.json</code> applied on every refresh.</span></li>
+    <li><span class="id">B23</span><span class="ar2">Completeness</span><span>Notebook-to-notebook calls, shared framework rules, platform objects and the estate register: every DPV1 object accounted for.</span></li>
+    <li><span class="id">B24</span><span class="ar2">Lineage</span><span>Data lineage between sources and products, the source dataset contract and <code>build_input_lakehouse.py</code>.</span></li>
+    <li><span class="id">B30</span><span class="ar2">Reference</span><span>m-scope-refresher agent and <code>migration-scope-index.md</code>; <code>refresh_hub.py --check</code>; agents confirm key inputs instead of trusting the hub; service change logs are indexes, details stay per project.</span></li>
+    <li><span class="id">B29</span><span class="ar2">Layout</span><span>Build output follows the REPO-FABRIC-DEPLOYMENT layout: <code>3-build/fabric-deployment/&lt;WORKSPACE&gt;/</code> (VL_MAIN and catalog warehouse at the root, one folder per source) and <code>database-projects/</code>; stage notes in <code>3-build/build-notes/</code>.</span></li>
+    <li><span class="id">B28</span><span class="ar2">Rules</span><span>Sources before products: <code>source_contract.require_sources</code> in every data product script; product-to-product lineage in the mapping; GAIA and GEOS outputs cleaned and GEOS re-run from the start.</span></li>
+    <li><span class="id">B27</span><span class="ar2">Focus</span><span>One project migration at a time, enforced by the scripts; GAIA paused while GEOS is finished.</span></li>
+    <li><span class="id">B25</span><span class="ar2">Tidy-up</span><span>m-reviewer agents merged; duplicate stage-0 files, the old approach page and a duplicated skill removed; Overview no longer repeats this tab.</span></li>
+  </ul>
+</section>
+
+<!-- ============ PROJECTS ============ -->
+<section class="view" id="v-projects">
+  <p class="eyebrow">Synapse DPV1 → Microsoft Fabric</p>
+  <h1>Every DPV1 project, ready to migrate one at a time</h1>
+  <p class="lead">The list below is read from the DPV1 repository and compared with the team's project register. Open a project to see what exists in Synapse and where each object lands in Fabric.</p>
+  <hr class="rule">
+  <div class="kpis" id="kpis"></div>
+  <h2>Projects</h2>
+  <p class="sub">Complexity is measured from the repository (pipelines + activities + DWH tables; ≤ 50 Small, ≤ 150 Medium). Hover a value to see the register figure.</p>
+  <div class="toolbar">
+    <label class="search"><svg class="ic"><use href="#i-search"/></svg><input type="search" id="pq" placeholder="Search a project" aria-label="Search a project"></label>
+    <div class="chips" id="pf"></div>
+    <button class="btn sm" id="pcopy"><svg class="ic"><use href="#i-copy"/></svg>Copy list</button>
+  </div>
+  <div class="tbl"><table><thead><tr><th>Project</th><th>Register</th><th>Domain</th><th class="n">Objects</th><th>Complexity</th><th>Scenario</th><th>Migrate</th></tr></thead><tbody id="prows"></tbody></table></div>
+</section>
+
+<!-- ============ MAPPER ============ -->
+<section class="view" id="v-mapper">
+  <p class="eyebrow">Migration mapper</p>
+  <h1>See a scope in Synapse and in Fabric, side by side</h1>
+  <p class="lead">Pick the service, then a name. A data product can also be found by its master pipeline or its DW schema.</p>
+  <hr class="rule">
+  <div class="picker">
+    <div class="seg" id="seg"><button class="on" data-s="sds"><svg class="ic"><use href="#i-lh"/></svg>Source dataset</button><button data-s="dp"><svg class="ic"><use href="#i-wh"/></svg>Data product</button></div>
+    <label class="search"><svg class="ic"><use href="#i-search"/></svg><input id="q" list="ql" autocomplete="off" aria-label="Scope name"></label>
+    <datalist id="ql"></datalist>
+    <button class="btn pri" id="go">Show mapping<svg class="ic"><use href="#i-arrow"/></svg></button>
+  </div>
+  <div class="resolved" id="resolved"></div>
+  <div id="out"><div class="empty card" style="margin-top:20px"><b>No scope selected</b>Choose a source dataset or a data product above, or open one from the Projects list.</div></div>
+</section>
+
+<!-- ============ REFRESH ============ -->
+<section class="view" id="v-refresh">
+  <p class="eyebrow">Refresh</p>
+  <h1>Rebuild this page from the latest DPV1 repository</h1>
+  <p class="lead">The page is generated. Pull DPV1, run one command, and every project, count and mapping is rebuilt. New projects show up as "Not in register".</p>
+  <hr class="rule">
+  <h2>From GitHub Copilot</h2>
+  <ol class="how"><li>Open FABRIC-REPO-MIGRATION-AI in VS Code, Copilot Chat in agent mode.</li><li>Select the <b>m-scope-refresher</b> agent and say "refresh", or paste the prompt below.</li></ol>
+  <div class="code" id="ghcp"></div>
+  <h2>From a terminal</h2>
+  <p class="sub">Or in VS Code: Terminal → Run Task → "Migration: refresh hub".</p>
+  <div class="code" id="cli"></div>
+  <h2>Files you maintain</h2>
+  <div class="tbl"><table><thead><tr><th>File</th><th>Purpose</th></tr></thead><tbody>
+    <tr><td class="nm">2-config/migration/project-register.json</td><td>The team's project register: type, domain, counts, complexity.</td></tr>
+    <tr><td class="nm">2-config/migration/scope-target-map.json</td><td>Confirmed domains and data product group names. They override the register.</td></tr>
+    <tr><td class="nm">5-migration-hub/refresh-report.md</td><td>Written by each refresh: scopes added, removed or changed since the last run.</td></tr>
+  </tbody></table></div>
+</section>
+</main>
+</div>
+<div class="toast" id="toast"><svg class="ic"><use href="#i-ok"/></svg><span></span></div>
+
+<script id="hubdata" type="application/json">/*DATA*/</script>
+<script>
+const D=JSON.parse(document.getElementById('hubdata').textContent),O=D.objects,P=D.projects;
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ic=(id,c='')=>`<svg class="ic ${c}"><use href="#${id}"/></svg>`;
+const pill=(a,t)=>`<span class="pill a-${esc(a)}">${esc(t||a)}</span>`;
+const uniq=a=>[...new Set(a.filter(Boolean))];
+const tn=s=>s.replace(/-/g,'_');
+const ACT={translate:'Converted to the Fabric equivalent',merge:'Several objects become one',collapse:'Hop absorbed into silver procedures',rebuild:'Orchestration rebuilt',replace:'Replaced by DACPAC, catalog view or OneLake',reuse:'Existing Fabric item reused',rewrite:'Rewritten, no Fabric equivalent',inline:'Absorbed into an activity',upstream:'Handled by Source Dataset Migration',product:'Handled by Data Product Migration',shared:'Shared framework, migrated once',drop:'Not migrated',review:'Needs a manual decision'};
+const ORDER=Object.keys(ACT);
+function toast(t){const e=$('#toast');e.querySelector('span').textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),1700)}
+function copy(text,msg){const ok=()=>toast(msg||'Copied');(navigator.clipboard?navigator.clipboard.writeText(text):Promise.reject()).then(ok).catch(()=>{const t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();try{document.execCommand('copy');ok()}catch(e){toast('Copy failed: select the text manually')}t.remove()})}
+const md=(h,rows)=>'| '+h.join(' | ')+' |\n|'+h.map(()=>'---').join('|')+'|\n'+rows.map(r=>'| '+r.map(c=>String(c==null?'':c).replace(/\|/g,'\\|').replace(/\n/g,' ')).join(' | ')+' |').join('\n');
+
+/* ---------- as-is / to-be trees (same lines as 1-framing/03 and 06, from scope_tree.py) ---------- */
+function treeHtml(lines){const w=Math.min(64,Math.max(...lines.map(l=>(l[0]+l[1]).length))+2);
+ return lines.map(([p,n,k,c])=>`<span class="tp">${esc(p)}</span><span class="tn-${k}">${esc(n)}</span>${c?`<span class="tp">${' '.repeat(Math.max(2,w-(p+n).length))}</span><span class="tc"># ${esc(c)}</span>`:''}`).join('\n')}
+function treeText(lines){const w=Math.min(64,Math.max(...lines.map(l=>(l[0]+l[1]).length))+2);return lines.map(([p,n,k,c])=>c?(p+n).padEnd(w)+'  # '+c:p+n).join('\n')}
+function treeView(kind,scope){const t=((D.trees||{})[kind]||{})[scope];if(!t)return'';
+ return `<h3 style="margin:26px 0 4px">The same scope as two trees: where every DPV1 object lives today, and where it lands in Fabric</h3><p class="sub">The trees are also written to <code>1-framing/01-scope-analysis.md</code> and <code>03-target-design-and-plan.md</code>. 🟢 converted · 🔵 merged · 🟣 replaced · ⚪ handled elsewhere · 🟠 decision · 🔴 not migrated.</p>
+ <div class="trees"><div><div class="th"><span class="pill o badge">Synapse · as-is</span><button class="btn sm" data-tree="asis">${ic('i-copy')}Copy</button></div><div class="dtree">${treeHtml(t.asis)}</div></div>
+ <div><div class="th"><span class="pill o badge">Fabric · to-be</span><button class="btn sm" data-tree="tobe">${ic('i-copy')}Copy</button></div><div class="dtree">${treeHtml(t.tobe)}</div></div></div>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-tree]');if(b&&cur){const t=D.trees[cur.kind][cur.scope];copy(treeText(t[b.dataset.tree]),'Tree copied')}});
+
+/* ---------- navigation ---------- */
+let cur=null;
+function show(v){$$('.nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));$$('.view').forEach(x=>x.classList.toggle('on',x.id==='v-'+v));
+ $('#subnav').classList.toggle('on',v==='mapper'&&!!cur);try{history.replaceState(null,'','#'+v+(v==='mapper'&&cur?'/'+cur.kind+'/'+cur.scope:''))}catch(e){}window.scrollTo(0,0)}
+$$('.nav button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.v)));
+$('#foot').innerHTML=`Generated ${esc(D.meta.generated_at||'')}<br>${D.meta.pipelines_total} pipelines · ${D.meta.notebooks_total} notebooks · ${D.meta.sqlscripts_total} SQL scripts scanned`;
+
+/* ---------- projects ---------- */
+const ST={registered:['Registered','#1E7F3C'],new:['Not in register','#C08A00'],missing:['Not found in repo','#C8102E']};
+const stOf=p=>p.status.startsWith('registered')?'registered':p.status.startsWith('new')?'new':'missing';
+let pf='all';
+function kpis(){const n=k=>P.filter(p=>stOf(p)===k).length;
+ $('#kpis').innerHTML=[[D.meta.sds_scopes,'source datasets found in the repository',''],[D.meta.dp_scopes,'data products found in the repository',''],[n('new'),'in the repository but not in the register','am'],[n('missing'),'in the register but not found in the repository','rd']]
+ .map(([v,l,c])=>`<div class="card kpi"><div class="v ${c}">${v}</div><p>${l}</p></div>`).join('')}
+function pfilters(){const c={all:P.length,registered:0,new:0,missing:0};P.forEach(p=>c[stOf(p)]++);
+ $('#pf').innerHTML=[['all','All'],['registered','Registered'],['new','Not in register'],['missing','Not found']].map(([k,l])=>`<button class="fchip ${pf===k?'on':''}" data-f="${k}">${l} <span>${c[k]}</span></button>`).join('')}
+function plist(){const q=$('#pq').value.trim().toUpperCase();return P.filter(p=>(pf==='all'||stOf(p)===pf)&&(!q||p.scope.includes(q)||(p.register||[]).some(r=>r.project.toUpperCase().includes(q)))).sort((a,b)=>((b.detected||{}).objects||0)-((a.detected||{}).objects||0))}
+function renderProjects(){pfilters();const rows=plist();
+ $('#prows').innerHTML=rows.map(p=>{const s=ST[stOf(p)],d=p.detected,r=(p.register||[])[0];
+  const alias=(p.register||[]).map(x=>x.project).filter(n=>n.toUpperCase()!==p.scope);
+  const regTip=r?`Register: ${r.pipelines} pipelines, ${r.activities} activities, ${r.dwh_tables??'–'} DWH tables, ${r.objects} objects, ${r.complexity}`:'Not in the register';
+  const mig=(p.has_sds?`<button class="btn link sm" data-o="sds" data-s="${esc(p.scope)}">Source ${ic('i-arrow')}</button>`:'')+(p.has_dp?`<button class="btn link sm" data-o="dp" data-s="${esc(p.scope)}">Product ${ic('i-arrow')}</button>`:'')||(p.name_hits&&p.name_hits.length?`<span class="mute" style="font-size:12px">Only found in: ${esc(p.name_hits.slice(0,2).join(', '))}</span>`:'<span class="mute">–</span>');
+  return `<tr><td class="k">${esc(p.scope)}${alias.length?`<div class="mute" style="font-weight:400;font-size:12px">${esc(alias.join(', '))}</div>`:''}</td>
+   <td><span class="st"><i style="background:${s[1]}"></i>${s[0]}</span></td>
+   <td>${esc(p.domain_name||'–')}</td>
+   <td class="n" title="${esc(regTip)}">${d?d.objects:'–'}${r?`<div class="mute" style="font-size:11.5px">reg. ${r.objects}</div>`:''}</td>
+   <td>${d?`<span class="pill cx-${d.complexity}" title="${esc(regTip)}">${d.complexity}</span>`:(r?`<span class="pill cx-${r.complexity}">${r.complexity}</span> <span class="mute" style="font-size:11.5px">register</span>`:'–')}</td>
+   <td style="font-size:11.5px">${[['sds','Source'],['dp','Product']].map(([k,l])=>{const v=(SC[k]||{})[p.scope];return v?`<div><span class="mute">${l}</span> <span class="scn-id" title="${esc(((SD[k].scenarios[v.scenario]||{}).title)||'')}">${esc(v.scenario)}</span></div>`:''}).join('')||'–'}</td>
+   <td>${mig}</td></tr>`}).join('')||`<tr><td colspan="7"><div class="empty"><b>No project matches</b>Try another name or filter.</div></td></tr>`}
+$('#pq').addEventListener('input',renderProjects);
+$('#pf').addEventListener('click',e=>{const b=e.target.closest('[data-f]');if(b){pf=b.dataset.f;renderProjects()}});
+$('#prows').addEventListener('click',e=>{const b=e.target.closest('[data-o]');if(b)openScope(b.dataset.o,b.dataset.s)});
+$('#pcopy').addEventListener('click',()=>copy(md(['Project','Status','Source dataset','Data product','Domain','Objects (repo)','Complexity (repo)','Register'],plist().map(p=>[p.scope,ST[stOf(p)][0],p.has_sds?'yes':'',p.has_dp?'yes':'',p.domain_name||'',p.detected&&p.detected.objects,p.detected&&p.detected.complexity,(p.register||[]).map(r=>r.project+' ('+r.complexity+')').join(', ')])),'Project list copied as Markdown'));
+
+/* ---------- picker ---------- */
+let svc='sds';
+function opts(){let o=svc==='sds'?Object.values(D.sds).map(s=>[s.scope,'Source dataset · '+s.domain]):Object.values(D.dp).map(s=>[s.scope,'Data product · '+s.group]);
+ if(svc==='dp')Object.entries(D.lookup).forEach(([k,v])=>o.push([k,(/^D[WM]_/.test(k)?'DW schema':'Master pipeline')+' → '+v]));
+ $('#ql').innerHTML=o.map(([v,l])=>`<option value="${esc(v)}" label="${esc(l)}">`).join('');
+ $('#q').placeholder=svc==='sds'?'Source name, e.g. GAIA':'Project, master pipeline or DW schema, e.g. DW_GAIA'}
+$('#seg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;svc=b.dataset.s;$$('#seg button').forEach(x=>x.classList.toggle('on',x===b));opts();$('#q').value='';$('#resolved').textContent=''});
+function resolve(q){q=q.trim().toUpperCase();if(!q)return null;
+ if(svc==='sds'){if(D.sds[q])return{s:q};const k=Object.keys(D.sds).find(s=>s.includes(q));return k?{s:k,how:'closest match'}:null}
+ if(D.dp[q])return{s:q};if(D.lookup[q])return{s:D.lookup[q],how:(/^D[WM]_/.test(q)?'DW schema ':'master pipeline ')+q};
+ const k=Object.keys(D.dp).find(s=>s.includes(q));if(k)return{s:k,how:'closest match'};const l=Object.keys(D.lookup).find(s=>s.includes(q));return l?{s:D.lookup[l],how:'closest match '+l}:null}
+function go(){const r=resolve($('#q').value);if(!r){$('#resolved').innerHTML=`<span style="color:var(--rd-tx)">Nothing matches. Try the other service.</span>`;return}
+ $('#resolved').textContent=r.how?`Resolved from ${r.how} → ${r.s}`:'';render(svc,r.s)}
+$('#go').addEventListener('click',go);$('#q').addEventListener('keydown',e=>{if(e.key==='Enter')go()});$('#q').addEventListener('change',go);
+function openScope(k,s){svc=k;$$('#seg button').forEach(x=>x.classList.toggle('on',x.dataset.s===k));opts();$('#q').value=s;$('#resolved').textContent='';render(k,s);show('mapper')}
+
+/* ---------- as-is / to-be architecture ---------- */
+const MAXC=12;
+const chips=(list,max=MAXC)=>{const l=uniq(list);if(!l.length)return '';return `<div class="ents">${l.slice(0,max).map(x=>`<span class="ent">${esc(x)}</span>`).join('')}${l.length>max?`<span class="ent more">+${l.length-max} more</span>`:''}</div>`};
+const box=(tone,title,sub,ents,o={})=>`<div class="fb t-${tone}${o.ghost?' ghost':''}"><div class="fb-h"><b>${esc(title)}</b>${o.badge?`<span class="pill o">${esc(o.badge)}</span>`:''}</div>${sub?`<div class="fb-s">${sub}</div>`:''}${ents||''}${o.foot?`<div class="fb-f">${o.foot}</div>`:''}</div>`;
+const chg=(t,a)=>`<div class="fc"><span class="fc-a">${ic('i-arrow')}</span>${a?pill(a,t):`<span class="fc-t">${esc(t)}</span>`}</div>`;
+const objName=k=>k.split('.').slice(1).join('.');
+function srcSystems(S){const out=[];S.linked_services.forEach(n=>{const l=O.linkedService[n];if(!l||/AzureBlobFS|AzureSqlDW|AzureKeyVault|AzureSqlDatabase/.test(l.type))return;out.push({type:l.type,name:n,onprem:/SelfHosted/i.test(l.runtime)})});return out}
+function funcRows(S){
+ const sys=srcSystems(S),sysNames=uniq(sys.map(s=>s.type)),onprem=sys.some(s=>s.onprem);
+ if(S.kind==='sds'){const tabs=S.catalog.map(c=>c.table),schemas=uniq(S.catalog.map(c=>c.schema)),inc=S.catalog.filter(c=>c.incremental).length;
+  const ext=S.pipelines.filter(n=>/RAW|TO_ADLS|EXTRACT/i.test(n)&&!/CLN|CLEAN/i.test(n)),cln=uniq([...S.notebooks.filter(n=>/CLEAN|RAW_TO/i.test(n)),...S.pipelines.filter(n=>/CLN|CLEAN|RAW_TO/i.test(n))]);
+  const tabsTxt=tabs.length?`${tabs.length} tables · ${inc} incremental, ${tabs.length-inc} full`:'table list in the metabase';
+  return [
+   ['Source systems','Where the data comes from',box('src','Source systems',`${sysNames.join(', ')||'–'}${schemas.length?` · schema ${esc(schemas.join(', '))}`:''}`,chips(sys.map(s=>s.name)),{foot:onprem?'Self-hosted integration runtime':'Azure integration runtime'}),chg('same sources'),box('src','Source systems',`${sysNames.join(', ')||'–'}${schemas.length?` · schema ${esc(schemas.join(', '))}`:''}`,chips(S.rows.filter(r=>r.v1t==='Linked service'&&r.v2t==='Connection'&&sys.some(s=>s.name===r.v1)).map(r=>r.v2.split(' (')[0])),{foot:onprem?'On-premises data gateway':'Cloud connection'})],
+   ['Ingestion','Extract and land raw files',box('v1','Extract to RAW',`${ext.length} pipeline${ext.length===1?'':'s'} · ADLS raw zone, parquet`,chips(ext)),chg(`${ext.length} → 1 pipeline`,'merge'),box('br','Source to RAW',`PL_${esc(S.folder)}_SOURCE_TO_RAW → <code>Files/raw/${esc(S.scope.toLowerCase())}/&lt;table&gt;</code> (database, parquet once) or <code>Files/landing/${esc(S.scope.toLowerCase())}/&lt;run&gt;</code> (API, files)`,chips(['full / incremental per catalog row']),{badge:'Phase 2'})],
+   ['Source dataset','Tables with history',box('v1','CLEANSED zone',`Delta + history · ${tabsTxt}`,chips(tabs)+`<div class="fb-f">Built by ${esc(cln.join(', ')||'–')}</div>`),chg('rebuilt on RAW','translate'),box('br',S.lakehouse,`Tables <code>dbo</code> built on RAW (parquet), ingested directly from the source · no cleansed zone, no shortcut`,chips(tabs.map(t=>t.toLowerCase())))],
+   ['Exposure','How others read it',box('dd','SPOT_DB source','Serverless SQL views over CLEANSED'),chg('no copy'),box('br','SQL endpoint',`Data products read it in place through their own input Lakehouse <code>LH_INP_SDS_${esc(S.folder)}</code> (shortcuts created by Data Product Migration)`)],
+   ['Consumers','Who uses this source',box('si','Synapse data products',S.downstream.length?'':'none detected in the repository',chips(S.downstream)),chg('re-pointed'),box('si','Data Product Group workspaces',S.downstream.length?'':'none detected',chips(S.downstream.map(d=>'DP_DPG_'+((D.dp[d]||{}).group||tn(d))))) ]]}
+ const q=S.sqlobjects.map(k=>[k,O.sql[k]]),f=fn=>q.filter(([k,v])=>fn(v)).map(([k])=>k);
+ const prep=f(v=>/^(inp|ldw|proj|c_|cur)/.test(v.schema)||v.kind==='VIEW'&&!/^(dw|dm|out|stg)/.test(v.schema)),stg=f(v=>/^(out|stg|stage)/.test(v.schema));
+ const dwT=f(v=>/^dw/.test(v.schema)&&/TABLE|REF/.test(v.kind)),dwP=f(v=>/^dw/.test(v.schema)&&v.kind==='PROC'),dm=f(v=>/^(dm|gsp|spbi)/.test(v.schema));
+ const dims=dwT.map(objName).filter(n=>/dim/i.test(n)),facts=dwT.map(objName).filter(n=>/fact/i.test(n)),oth=dwT.map(objName).filter(n=>!/dim|fact/i.test(n));
+ const spot=S.rows.filter(r=>r.a==='drop'&&/SPOT|CETAS/i.test(r.v1)).map(r=>r.v1),pbi=S.pipelines.filter(n=>/POWERBI|REFRESH/i.test(n));
+ const schemaOf=l=>uniq(l.map(k=>k.split('.')[0])).join(', ');
+ const dwEnts=`${dims.length?`<div class="lbl" style="margin:8px 0 4px">Dimensions · ${dims.length}</div>${chips(dims)}`:''}${facts.length?`<div class="lbl" style="margin:8px 0 4px">Facts · ${facts.length}</div>${chips(facts)}`:''}${oth.length?`<div class="lbl" style="margin:8px 0 4px">Other tables · ${oth.length}</div>${chips(oth)}`:''}`;
+ const noDDL=!dwT.length&&!dwP.length?'<div class="fb-f warn">DDL not in the repository: extract it from the Synapse database.</div>':'';
+ return [
+  ['Inputs','Source datasets read',box('dd','SPOT_DB source',`${S.upstream.length} source dataset${S.upstream.length===1?'':'s'}`,chips(S.upstream)),chg('internal shortcuts'),box('br','Input Lakehouses','Shortcuts to the source Lakehouses, no copy',chips(S.upstream.map(u=>'LH_INP_SDS_'+tn(u))))],
+  ['Preparation','Business rules before the model',box('v1','INP / LDW views',`Serverless pool · ${prep.length} objects${prep.length?' · '+esc(schemaOf(prep)):''}`,chips(prep.map(objName),6)),chg('collapsed','collapse'),box('si','Inside silver load procedures',`${prep.length} views become CTEs in <code>01-silver-*/2-intermediate</code>`,'',{ghost:true})],
+  ['Staging','Intermediate copies',box('v1','CURATED · OUT · STG',`CETAS and staging copies · ${stg.length} objects`,chips(stg.map(objName),6)),chg('removed','drop'),box('si','No staging layer','Silver reads the input Lakehouses directly','',{ghost:true})],
+  ['Curated · silver','The data model',box('dd','Data warehouse',`Dedicated pool · ${dwT.length} tables, ${dwP.length} procedures${dwT.length?' · '+esc(schemaOf(dwT)):''}`,dwEnts+noDDL),chg('translated','translate'),box('si',`CDP · ${S.warehouse}`,`Moved through DACPAC (T-SQL stays T-SQL) · ${dwT.length} tables in <code>4-output</code>, ${dwP.length} procedures in <code>3-processing</code>`,dwEnts)],
+  ['Consumption · gold','What users query',box('dd','Data marts + SPOT copy',`${dm.length} DM objects${spot.length?` · copy-back ${spot.length}`:''}`,chips([...dm.map(objName),...spot])),chg('views, no copy','translate'),box('go','CRDP gold views',dm.length?`${dm.length} views in <code>02-gold-*</code>`:'Gold views defined per consumer',chips(dm.map(objName)))],
+  ['Consumers','Reports and tools',box('src','Power BI, Dataiku, self-service',pbi.length?`${pbi.length} refresh pipeline${pbi.length>1?'s':''} in scope`:'Read SPOT_DB DWH or the dedicated pool',chips(pbi)),chg('re-pointed'),box('gr','Semantic models, SQL endpoint',`Consumers read <code>${esc(S.warehouse)}</code> directly`)]]}
+function funcView(S){return `<div class="fx">${funcRows(S).map(([l,d,a,c,b],i)=>`<div class="fr"><div class="fl"><span class="fn">${i+1}</span><div><b>${esc(l)}</b><small>${esc(d)}</small></div></div>${a}${c}${b}</div>`).join('')}</div>`}
+
+const T=(label,cls,icon,kids,open=false,meta='')=>kids&&kids.length?`<details ${open?'open':''}><summary>${ic(icon,cls)}<span class="${/ws|fd/.test(cls)?'':'t'}">${label}</span>${meta?`<span class="from">${meta}</span>`:''}</summary>${kids.join('')}</details>`:`<div class="node">${ic(icon,cls)}<span class="t">${label}</span>${meta?`<span class="from">${meta}</span>`:''}</div>`;
+const G=(label,count,kids,open=false)=>`<details ${open?'open':''}><summary>${ic('i-fd','c-fd')}<span class="fd">${esc(label)}</span><span class="from">${count}</span></summary>${kids.join('')||'<div class="node mute">none</div>'}</details>`;
+function techAsIs(S){const ls=S.linked_services.map(n=>[n,O.linkedService[n]||{}]);
+ const pipeKids=n=>{const p=O.pipeline[n]||{children:[]};return p.children.map(c=>T(esc(c),'c-pl','i-pl',(O.pipeline[c]||{children:[]}).children.map(g=>T(esc(g),'c-pl','i-pl'))))};
+ const roots=S.entry.length?S.entry:S.pipelines.slice(0,8);
+ let store;
+ if(S.kind==='sds')store=[T('ADLS raw zone · parquet','c-tb','i-fd'),T('ADLS cleansed zone · Delta + history','c-tb','i-fd',S.catalog.map(c=>T(esc(c.table),'c-tb','i-tb'))),T('Serverless SQL · SPOT_DB source views','c-sql','i-sql')];
+ else{const by={};S.sqlobjects.forEach(k=>{const v=O.sql[k];(by[v.schema]=by[v.schema]||[]).push(v)});
+  const sch=(pool,re)=>Object.keys(by).filter(s=>re.test(s)).sort().map(s=>{const c=by[s].reduce((a,v)=>(a[v.kind]=(a[v.kind]||0)+1,a),{});return T(esc(s),'c-sql','i-sql',by[s].slice(0,60).map(v=>T(esc(v.name),v.kind==='PROC'?'c-sql':'c-tb',v.kind==='PROC'?'i-sql':'i-tb',null,false,v.kind==='REF'?'referenced':v.kind.toLowerCase())),false,Object.entries(c).map(([k,n])=>`${n} ${k==='REF'?'referenced':k.toLowerCase()}`).join(' · '))});
+  const ss=sch('s',/^(inp|ldw|proj|c_|cur|out|spot)/),dd=sch('d',/^(dw|dm|stg|gsp|spbi)/);
+  store=[G('Serverless SQL pool',ss.length+' schemas',ss),G('Dedicated SQL pool',dd.length+' schemas',dd,true)]}
+ return `<div class="tree"><details open><summary>${ic('i-ws','c-wh')}<span class="ws">Synapse workspace · DPV1</span></summary>
+  ${G('Integration runtimes',uniq(ls.map(([n,l])=>l.runtime)).length,uniq(ls.map(([n,l])=>l.runtime)).map(r=>T(esc(r),'c-ls','i-ls')))}
+  ${G('Linked services',ls.length,ls.map(([n,l])=>T(esc(n),'c-ls','i-ls',null,false,esc(l.type))))}
+  ${G('Pipelines',S.pipelines.length+' · '+roots.length+' entry',roots.map(r=>T(esc(r),'c-pl','i-pl',pipeKids(r),false,(O.pipeline[r]||{}).triggers?.length?'⏱ '+esc(O.pipeline[r].triggers.join(', ')):'')),true)}
+  ${G('Notebooks',S.notebooks.length,S.notebooks.map(n=>T(esc(n),'c-nb','i-nb',null,false,(O.notebook[n]||{}).lines?O.notebook[n].lines+' lines':'')))}
+  ${S.dataflows.length?G('Data flows',S.dataflows.length,S.dataflows.map(n=>T(esc(n),'c-sql','i-sql'))):''}
+  ${G('Storage',S.kind==='sds'?'ADLS + serverless':S.sqlobjects.length+' SQL objects',store,true)}
+  ${G('Triggers',S.triggers.length,S.triggers.map(n=>T(esc(n),'c-tr','i-tr',null,false,esc((O.trigger[n]||{}).state||''))))}
+ </details></div>`}
+function wsItems(S){const f=new Map(),add=(k,item,src,a)=>{if(!f.has(k))f.set(k,new Map());const m=f.get(k);if(!m.has(item))m.set(item,[]);if(src)m.get(item).push([src,a])};
+ if(S.kind==='sds'){['0-ORCHESTRATION','1-SOURCE_TO_RAW','2-RAW_TO_DELTA'].forEach(k=>f.set(k,new Map()));S.rows.forEach(r=>{if(['Pipeline','Notebook','Data flow'].includes(r.v1t)&&/^\d-[A-Z_]+\//.test(r.v2)){const [k,it]=r.v2.split('/');add(k,it,r.v1,r.a)}})}
+ else S.rows.forEach(r=>{if(['Pipeline','Notebook'].includes(r.v1t)&&/^ORCHESTRATION\//.test(r.v2))add('ORCHESTRATION',r.v2.split('/')[1].replace(/ \(.*\)$/,'').replace(/ · .*/,''),r.v1,r.a)});
+ const item=(name,srcs)=>T(esc(name),/^NB_/.test(name)?'c-nb':'c-pl',/^NB_/.test(name)?'i-nb':'i-pl',srcs.map(([s,a])=>`<div class="node">${pill(a)}<span class="t mute">${esc(s)}</span></div>`),false,srcs.length?`from ${srcs.length} DPV1 object${srcs.length>1?'s':''}`:'');
+ return [...f].map(([k,m])=>G(k,m.size+' item'+(m.size===1?'':'s'),[...m].map(([n,s])=>item(n,s)),true))}
+function techToBe(S){const conns=uniq(S.rows.filter(r=>r.v1t==='Linked service'&&r.v2t==='Connection').map(r=>r.v2));
+ const vl=S.vl.map(v=>T(esc(v.var),'c-vl','i-vl'));
+ let stores;
+ if(S.kind==='sds'){const t=S.catalog.map(c=>c.table.toLowerCase());
+  const cw=D.meta.catalog||{};stores=[T(esc((cw.warehouse||'WH_CATALOG_<SOURCE>').replace('<SOURCE>',S.scope)),'c-wh','i-wh',[T('['+esc(cw.schema||'CATALOG')+'].['+esc((cw.view_pattern||'{source}_catalog').replace('{source}',S.folder.toLowerCase()).replace('{SOURCE}',S.folder))+']','c-sql','i-sql',null,false,t.length+' tables from DPV1 Catalog script')],true,(cw.location==='shared'?'shared workspace':'catalog warehouse, same workspace for now')),T(esc(S.lakehouse),'c-tb','i-lh',[G('Files/landing/'+S.scope.toLowerCase(),'APIs and files only: the run, as delivered',[]),G('Files/raw/'+S.scope.toLowerCase(),'parquet: one folder per table (databases), per run (APIs, files)',[]),G('dbo',t.length+' tables built on RAW',t.map(x=>T(esc(x),'c-tb','i-tb')))],true)]}
+ else{const tree={};S.rows.filter(r=>r.v2&&r.v2.startsWith(S.dbproject+'/')&&/^SQL/.test(r.v1t)).forEach(r=>{const p=r.v2.split('/').slice(1);let t=tree;p.slice(0,-1).forEach(k=>t=t[k]=t[k]||{});(t._=t._||[]).push([p[p.length-1],r])});
+  const rec=t=>Object.keys(t).filter(k=>k!=='_').sort().map(k=>G(k,(t[k]._||[]).length||'',[...rec(t[k]),...(t[k]._||[]).slice(0,80).map(([n,r])=>T(esc(n),/proc/i.test(r.v1t)?'c-sql':'c-tb',/proc/i.test(r.v1t)?'i-sql':'i-tb'))]));
+  stores=[...S.upstream.map(u=>T('LH_INP_SDS_'+esc(tn(u)),'c-tb','i-lh',null,false,'→ LH_SDS_'+esc(tn(u)))),T(esc(S.warehouse),'c-wh','i-wh',null,false,'Warehouse'),T(esc(S.dbproject)+' · DACPAC','c-sql','i-sql',[T('00-global','c-fd','i-fd',null,false,'schemas, utilities'),...rec(tree)],true)]}
+ return `<div class="tree"><details open><summary>${ic('i-ws','c-wh')}<span class="ws">Microsoft Fabric · DPV2</span></summary>
+  ${G('Connections',conns.length,conns.map(c=>T(esc(c),'c-ls','i-ls')))}
+  <details open><summary>${ic('i-ws','c-wh')}<span class="ws">${esc(S.ws)}</span><span class="from">${S.kind==='sds'?'Source Data workspace':'Data Product Group workspace'}</span></summary>
+   ${S.kind==='sds'?G(S.folder,'source folder',[...wsItems(S),...stores],true):[...wsItems(S),...stores].join('')}
+   ${T('VL_MAIN','c-vl','i-vl',vl,false,S.vl.length+' variables')}
+  </details>
+ </details></div>`}
+function archView(S){return `
+ <div class="card ab">
+  <div class="ab-h"><div></div><div class="ab-col v1"><span class="pill o">As-is</span><b>Synapse · DPV1</b></div><div></div><div class="ab-col v2"><span class="pill o">To-be</span><b>Microsoft Fabric · DPV2</b></div></div>
+  <div class="ab-sec"><h3>Functional architecture</h3><p>Business layers and the data they hold, aligned row by row.</p></div>
+  ${funcView(S)}
+  <div class="ab-sec"><h3>Technical architecture</h3><p>Platform components and how they are organised. Expand a folder to see its objects.</p></div>
+  <div class="tx"><div class="tx-c">${techAsIs(S)}</div><div class="tx-c">${techToBe(S)}</div></div>
+ </div>`}
+
+/* ---------- panes ---------- */
+const row=(S,n)=>S.rows.find(r=>r.v1===n);
+const table=(h,rows,empty)=>rows.length?`<div class="tbl"><table><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`:`<div class="empty"><b>Nothing here</b>${empty||'No object of this type in the scope.'}</div>`;
+function lineage(S){const seen0=new Set();
+ const node=(n,d,seen)=>{const p=O.pipeline[n],r=row(S,n);
+  const head=`${ic('i-pl','c-pl')}<span class="t">${esc(n)}</span>${r?pill(r.a):''}${p&&p.triggers.length?`<span class="from">${ic('i-tr','c-tr')} ${esc(p.triggers.join(', '))}</span>`:''}${r&&r.v2&&r.v2!=='-'?`<span class="to">→ <b>${esc(r.v2)}</b></span>`:''}`;
+  if(!p||d>7||seen.has(n))return `<div class="node">${head}</div>`;
+  const leaves=[...p.notebooks.map(nb=>{const x=row(S,nb);return `<div class="node">${ic('i-nb','c-nb')}<span class="t">${esc(nb)}</span>${x?pill(x.a):''}${x&&x.v2!=='-'?`<span class="to">→ <b>${esc(x.v2)}</b></span>`:''}</div>`}),...p.dataflows.map(f=>`<div class="node">${ic('i-sql','c-sql')}<span class="t">${esc(f)}</span>${pill('rewrite')}</div>`)];
+  if(!p.children.length&&!leaves.length)return `<div class="node">${head}</div>`;const ns=new Set(seen).add(n);
+  return `<details ${d<2?'open':''}><summary>${head}</summary>${p.children.map(c=>node(c,d+1,ns)).join('')}${leaves.join('')}</details>`};
+ const roots=S.entry.length?S.entry:S.pipelines.slice(0,10),walk=x=>{if(seen0.has(x)||!O.pipeline[x])return;seen0.add(x);O.pipeline[x].children.forEach(walk)};roots.forEach(walk);
+ const rest=S.pipelines.filter(x=>!seen0.has(x));
+ return `<p class="note">Call tree from ${roots.length} entry point${roots.length>1?'s':''}. Each object shows its action and, in blue, where it goes in Fabric.</p><div class="tree">${roots.map(r=>node(r,0,new Set())).join('')}${rest.length?`<details><summary><span class="fd">Not reached from an entry point (${rest.length})</span></summary>${rest.map(r=>node(r,1,new Set())).join('')}</details>`:''}</div>`}
+function v1Tabs(S){const t=[['Lineage',null,()=>lineage(S)],
+ ['Connections',S.linked_services.length,()=>table(['Linked service','Type','Runtime','Connection details'],S.linked_services.map(n=>{const l=O.linkedService[n]||{};const det=Object.entries(l.details||{}).map(([k,v])=>`<span class="mute">${esc(k)}</span> ${esc(v)}`).join('<br>');return `<tr><td class="nm">${esc(n)}</td><td>${esc(l.type)}</td><td>${esc(l.runtime)}</td><td style="font-size:12.5px">${det||'–'}${(l.kv_secrets||[]).length?`<br><span class="mute">Key Vault</span> ${esc(l.kv_secrets.join(', '))}`:''}</td></tr>`}))],
+ ['Notebooks',S.notebooks.length,()=>table(['Notebook','Lines','Uses','Called by'],S.notebooks.map(n=>{const b=O.notebook[n]||{};return `<tr><td class="nm">${esc(n)}</td><td class="n">${b.lines||''}</td><td style="font-size:12.5px">${[b.mssparkutils&&'mssparkutils',b.jdbc&&'JDBC',(b.abfss||[]).length&&'ADLS paths'].filter(Boolean).join(', ')||'–'}</td><td class="nm">${esc((b.called_by||[]).slice(0,2).join(', '))}</td></tr>`}))]];
+ if(S.kind==='sds')t.push(['Source tables',S.catalog.length,()=>table(['Source schema','Table','Load'],S.catalog.map(c=>`<tr><td>${esc(c.schema)}</td><td class="nm">${esc(c.table)}</td><td>${c.incremental?pill('merge','incremental'):pill('inline','full')}</td></tr>`),'No CATALOG table list in the repository. It is in the metabase database.')]);
+ else t.push(['SQL objects',S.sqlobjects.length,()=>table(['Object','Kind','Defined in'],S.sqlobjects.map(k=>{const v=O.sql[k]||{};return `<tr><td class="nm">${esc(k)}</td><td>${v.kind==='REF'?'<span class="mute">referenced</span>':esc(v.kind.toLowerCase())}</td><td class="nm mute">${v.ref_only?'not in repo: extract from database':esc((v.defined_in||[])[0]||'')}</td></tr>`}),'No SQL definitions in the repository. Extract the DDL from the Synapse databases.')]);
+ t.push(['Triggers',S.triggers.length,()=>table(['Trigger','State','Schedule'],S.triggers.map(n=>{const x=O.trigger[n]||{};return `<tr><td class="nm">${esc(n)}</td><td>${x.state==='Started'?pill('reuse','Started'):pill('inline',x.state)}</td><td style="font-size:12.5px">${esc(x.schedule)}</td></tr>`}),'No trigger in the repository. The scope is started externally or by hand.')]);
+ return t}
+function wsTree(S){const f=new Map(),add=(k,item,src,a)=>{if(!f.has(k))f.set(k,new Map());const m=f.get(k);if(!m.has(item))m.set(item,[]);if(src)m.get(item).push([src,a])};
+ if(S.kind==='sds'){['0-ORCHESTRATION','1-SOURCE_TO_RAW','2-RAW_TO_DELTA'].forEach(k=>f.set(k,new Map()));S.rows.forEach(r=>{if(['Pipeline','Notebook','Data flow'].includes(r.v1t)&&/^\d-[A-Z_]+\//.test(r.v2)){const [k,it]=r.v2.split('/');add(k,it,r.v1,r.a)}})}
+ else S.rows.forEach(r=>{if(['Pipeline','Notebook'].includes(r.v1t)&&/^ORCHESTRATION\//.test(r.v2))add('ORCHESTRATION',r.v2.split('/')[1].replace(/ \(.*\)$/,'').replace(/ · .*/,''),r.v1,r.a)});
+ const item=(name,icon,cls,srcs=[])=>srcs.length?`<details><summary>${ic(icon,cls)}<span class="t">${esc(name)}</span><span class="from">from ${srcs.length} DPV1 object${srcs.length>1?'s':''}</span></summary>${srcs.map(([s,a])=>`<div class="node">${pill(a)}<span class="t mute">${esc(s)}</span></div>`).join('')}</details>`:`<div class="node">${ic(icon,cls)}<span class="t">${esc(name)}</span></div>`;
+ const folders=[...f].map(([k,m])=>`<details open><summary>${ic('i-fd','c-fd')}<span class="fd">${esc(k)}</span></summary>${[...m].map(([n,s])=>item(n,/^NB_/.test(n)?'i-nb':'i-pl',/^NB_/.test(n)?'c-nb':'c-pl',s)).join('')||'<div class="node mute">empty</div>'}</details>`).join('');
+ let body;
+ if(S.kind==='sds')body=`<details open><summary>${ic('i-fd','c-fd')}<span class="fd">${esc(S.folder)}</span><span class="from">one folder per source</span></summary>${item(S.lakehouse,'i-lh','c-tb')}${folders}</details>`;
+ else body=folders+S.upstream.map(u=>item('LH_INP_SDS_'+tn(u),'i-lh','c-tb')).join('')+item(S.warehouse,'i-wh','c-wh');
+ return `<p class="note">${S.kind==='sds'?'Source Data workspace, one per domain.':'Data Product Group workspace.'} Expand an item to see which DPV1 objects it replaces.</p><div class="tree"><details open><summary>${ic('i-ws','c-wh')}<span class="ws">${esc(S.ws)}</span></summary>${body}${item('VL_MAIN','i-vl','c-vl')}</details></div>`}
+function dacpac(S){const tree={};S.rows.filter(r=>r.v2&&r.v2.startsWith(S.dbproject+'/')&&/^SQL/.test(r.v1t)).forEach(r=>{const p=r.v2.split('/').slice(1);let t=tree;p.slice(0,-1).forEach(k=>t=t[k]=t[k]||{});(t._=t._||[]).push([p[p.length-1],r])});
+ const rec=(t,d)=>Object.keys(t).filter(k=>k!=='_').sort().map(k=>`<details ${d<2?'open':''}><summary>${ic('i-fd','c-fd')}<span class="fd">${esc(k)}</span>${t[k]._?`<span class="from">${t[k]._.length}</span>`:''}</summary>${rec(t[k],d+1)}${(t[k]._||[]).map(([n,r])=>`<div class="node">${ic(/proc/i.test(r.v1t)?'i-sql':'i-tb',/proc/i.test(r.v1t)?'c-sql':'c-tb')}<span class="t">${esc(n)}</span><span class="from">from ${esc(r.v1)}</span></div>`).join('')}</details>`).join('');
+ const inner=rec(tree,0);
+ return `<p class="note">Database project deployed as a DACPAC to <code>${esc(S.warehouse)}</code>.</p><div class="tree"><details open><summary>${ic('i-sql','c-sql')}<span class="ws">${esc(S.dbproject)}</span></summary><div class="node">${ic('i-doc')}<span class="t">${esc(S.dbproject)}.sqlproj</span></div><div class="node">${ic('i-fd','c-fd')}<span class="t">00-global</span><span class="from">schemas, utilities</span></div>${inner||'<div class="node mute">No SQL objects resolved from the repository. Extract the DDL from the Synapse databases.</div>'}</details></div>`}
+function v2Tabs(S){const conn=S.rows.filter(r=>r.v1t==='Linked service');
+ const t=[['Workspace',null,()=>wsTree(S)],
+ ['Variables',S.vl.length,()=>`<p class="note"><code>VL_MAIN</code> in ${esc(S.ws)}. Value sets Default (= DEV), DEV, UAT, PRD. Values shown as &lt;guid&gt; are set once the items exist.</p>`+table(['Variable','DEV','UAT','PRD'],S.vl.map(v=>`<tr><td class="nm"><b>${esc(v.var)}</b></td><td class="nm">${esc(v.values.DEV||'')}</td><td class="nm">${esc(v.values.UAT||'')}</td><td class="nm">${esc(v.values.PRD||'')}</td></tr>`))],
+ ['Connections',conn.length,()=>table(['From linked service','Action','Fabric'],conn.map(r=>`<tr><td class="nm">${esc(r.v1)}</td><td>${pill(r.a)}</td><td style="font-size:13px">${esc(r.v2)}</td></tr>`))]];
+ if(S.kind==='sds')t.push(['Lakehouse',S.catalog.length,()=>`<p class="note"><code>${esc(S.lakehouse)}</code>: ingested directly from the source: databases straight to parquet in <code>Files/raw</code>, APIs and files through <code>Files/landing</code>, then built as tables in <code>dbo</code>. No shortcut.</p>`+table(['Source table','Landing => RAW','Lakehouse table'],S.catalog.map(c=>`<tr><td class="nm">${esc(c.schema+'.'+c.table)}</td><td class="nm">${esc(S.scope.toLowerCase()+'/'+c.table.toLowerCase())}</td><td class="nm">dbo.${esc(c.table.toLowerCase())}</td></tr>`),'The table list comes from the DPV1 catalog script (catalog view).')]);
+ else t.push(['Warehouse',S.sqlobjects.length,()=>dacpac(S)]);
+ return t}
+function tabs(el,list){const bar=el.querySelector('.tabs'),body=el.querySelector('.pbody');
+ bar.innerHTML=list.map(([n,c],i)=>`<button class="tab ${i?'':'on'}" data-i="${i}">${esc(n)}${c!=null?`<em>${c}</em>`:''}</button>`).join('');
+ const open=i=>{bar.querySelectorAll('.tab').forEach((b,j)=>b.classList.toggle('on',j===i));body.innerHTML=list[i][2]();body.scrollTop=0};bar.onclick=e=>{const b=e.target.closest('.tab');if(b)open(+b.dataset.i)};open(0)}
+
+/* ---------- brief ---------- */
+function brief(S){const p=P.find(x=>x.scope===S.scope)||{},d=p.detected||{},isS=S.kind==='sds',L=[];
+ L.push(`<!-- Paste into Copilot Chat with the ${isS?'m-source-dataset':'m-data-product'} agent in FABRIC-REPO-MIGRATION-AI -->`,'',`# Migration brief: ${isS?'Source Dataset Migration':'Data Product Migration'} · ${S.scope}`,'',`Generated by the DPV1 Migration Hub on ${D.meta.generated_at||''} from \`${D.meta.source_root}\`.`,'');
+ L.push('## Ask','',isS?`Run **wf-1-framing** for source dataset **${S.scope}**, domain **${S.domain}**${S.domain_confirmed?'':' (to confirm)'}, then **wf-2-migration-source-dataset**. Write outputs to \`4-migration-project-deliverables/source-dataset/${S.scope}/\`. Ingest directly from the source: no shortcut, no ADLS linked service, no dataset.`:`Run **wf-1-framing** for data product **${S.scope}**, group **${S.group}**${S.group_confirmed?'':' (to confirm)'}, then **wf-3-migration-data-product** (dedicated-pool code through **wf-4-migration-dacpac**). T-SQL stays T-SQL. Write outputs to \`4-migration-project-deliverables/data-product/${S.scope}/\`. Expose each source with an input Lakehouse \`LH_INP_SDS_<SOURCE>\` (shortcuts). Required source datasets: ${S.upstream.join(', ')||'none'}.`,'');
+ L.push('## Target','',...(isS?[`- Workspace \`${S.ws}\`, folder \`${S.folder}\``,`- Lakehouse \`${S.lakehouse}\`: Files/raw (parquet; Files/landing first for APIs and files) => \`dbo\` tables, one notebook per source only where DPV1 had one, no shortcut`,'- Folders `0-ORCHESTRATION`, `1-SOURCE_TO_RAW`, `2-RAW_TO_DELTA`, variable library `VL_MAIN` (DEV, UAT, PRD; every parameter read from it)',`- Catalog view \`[${(D.meta.catalog||{}).schema||'CATALOG'}].[${((D.meta.catalog||{}).view_pattern||'{source}_catalog').replace('{source}',S.folder.toLowerCase()).replace('{SOURCE}',S.folder)}]\` in \`${(D.meta.catalog||{}).warehouse||'WH_CATALOG'}\`, built from DPV1 \`Catalog_${S.scope}\` (${S.catalog.length} tables)`,`- VL_MAIN holds only ${S.folder}_CATALOG_VIEW_NAME, ${S.folder}_CATALOG_WAREHOUSE_NAME, ${S.folder}_CATALOG_WAREHOUSE_ID, _SQL_ENDPOINT and _CONN_ID for the catalog (names carry the source: one VL_MAIN per workspace)`,`- Progress: \`4-migration-project-deliverables/source-dataset/${S.scope}/0_progress_tracking/\``]:[`- Workspace \`${S.ws}\``,`- Warehouse \`${S.warehouse}\`, database project \`${S.dbproject}\``,`- Input Lakehouses ${S.upstream.map(u=>'`LH_INP_SDS_'+tn(u)+'`').join(', ')||'none'}`,`- Pipelines \`PL_${S.group}_MASTER_ORCHESTRATOR\`, \`PL_${S.group}_PROCESS_DATA_PRODUCT\`, variable library \`VL_MAIN\``]),'');
+ L.push('## Lineage with the other service','',...(isS?[(S.consumers||[]).length?`- Read in DPV1 by: ${S.consumers.map(c=>c.dp+' ('+c.evidence.length+' objects)').join(', ')}. Analysis only: do not migrate any data product object in this workflow.`:'- No data product reads it in DPV1.',
+   '- At the end of S4, publish `source-dataset-contract.json` (source_contract.py): tables, DPV1 access paths, VL_MAIN names, consumers.']
+  :[`- Input source datasets: ${S.upstream.join(', ')||'none'}${(S.upstream_data||[]).length?' (found from the data it reads: '+S.upstream_data.join(', ')+')':''}.`,
+   '- First check that every input source is migrated (source_contract.py show). If one is not: stop and ask to migrate it first (Source Dataset Migration, in its own folder).','- Read each one from its `source-dataset/<SRC>/source-dataset-contract.json`; build `LH_INP_SDS_<SRC>` with build_input_lakehouse.py (D3). Never rebuild a source here.',`- Reads other data products: ${(S.reads_products||[]).map(x=>x.dp).join(', ')||'none found'}; read by: ${(S.read_by_products||[]).map(x=>x.dp).join(', ')||'none found'}`]),'');
+ L.push('## DPV1 today','',`- Entry points: ${S.entry.map(x=>'`'+x+'`').join(', ')||'none'}`,`- Triggers: ${S.triggers.map(t=>t+' ('+((O.trigger[t]||{}).state||'')+')').join(', ')||'none in repo'}`,
+  `- ${S.pipelines.length} pipelines, ${S.notebooks.length} notebooks, ${S.dataflows.length} data flows, ${S.linked_services.length} linked services, ${isS?S.catalog.length+' source tables':S.sqlobjects.length+' SQL objects ('+S.schemas.join(', ')+')'}`,
+  `- Complexity ${d.complexity||'n/a'} (${d.objects||0} objects)${(p.register||[]).length?'; register: '+p.register.map(r=>r.project+' '+r.complexity).join(', '):'; not in the register'}`,isS?`- Feeds: ${S.downstream.join(', ')||'none found'}`:`- Reads: ${S.upstream.join(', ')||'none found'}`,'');
+ const miss=(S.candidates||[]).filter(c=>c.status==='not included');
+ L.push('## How the scope was identified','',...methodSteps(S).map(([t,dsc,n],i)=>`${i+1}. **${t}** (${n}): ${dsc.replace(/<\/?code>/g,'`').replace(/<[^>]+>/g,'')}`),'',
+  `Name check: ${(S.candidates||[]).length} other DPV1 objects match "${S.scope}"; ${miss.length} not included${miss.length?' and must be confirmed out of scope:':'.'}`,...miss.map(c=>`- ${c.kind} \`${c.name}\` (${c.folder||'no folder'})`),'');
+ L.push('## Object mapping','',md(['DPV1 type','DPV1 object','Found by','Action','Fabric type','Fabric target','Note'],S.rows.map(r=>[r.v1t,r.v1,r.by,r.a,r.v2t,r.v2,r.n])),'');
+ L.push('## Variable library','',md(['Variable','DEV','UAT','PRD'],S.vl.map(v=>[v.var,v.values.DEV,v.values.UAT,v.values.PRD])),'');
+ const rev=S.rows.filter(r=>r.a==='review'),gap=isS?!S.catalog.length&&'No catalog script in the repository: take the table list from the metabase and build the catalog view from it.':!S.sqlobjects.length&&'No SQL definitions in the repository: extract the DDL from the Synapse databases.';
+ L.push('## Open points','',...rev.map(r=>`- Review ${r.v1t.toLowerCase()} \`${r.v1}\`: ${r.n}`),...(gap?['- '+gap]:[]),...(!rev.length&&!gap?['- None flagged.']:[]));
+ return L.join('\n')}
+
+/* ---------- identification (how the scope boundary was found) ---------- */
+function methodSteps(S){const n=k=>(S.identified||{})[k]||0,isS=S.kind==='sds',tok=S.scope.replace(/-/g,'_');
+ return isS?[
+  ['Scope folder',`Pipelines, notebooks and SQL scripts in <code>01_CORE_DATA/NN_${esc(tok)}</code> or <code>01_GLOBAL_DATA_SOURCES/NN_${esc(tok)}</code> (numeric prefix and spelling variants normalised).`,n('Scope folder')],
+  ['Entry point','Pipelines started by a trigger, placed in <code>99_EXTERNAL_ORCHESTRATION</code>, or called by no other pipeline.',n('Entry point')],
+  ['Called by',`Every pipeline reached from the entry points through Execute Pipeline. RAW→CLEANSED steps stored in a project folder are kept. Product steps found on the way are handed to Data Product Migration.`,n('Called by')],
+  ['Used by','Notebooks, data flows, datasets and linked services used by those pipelines, and the triggers that start them.',n('Used by')+n('Starts')],
+  ['Catalog table',`Source tables listed in <code>CATALOG.${esc(tok)}</code> (table, full or incremental).`,n('Catalog table')]]:[
+  ['Scope folder',`Pipelines and SQL scripts in <code>02_PROJECTS/${esc(tok)}</code>, plus source-folder pipelines that run product steps (e.g. a master that calls the DW load).`,n('Scope folder')],
+  ['Entry point','Masters started by a trigger, placed in <code>99_EXTERNAL_ORCHESTRATION</code>, or called by no other pipeline. Copy-back roots named after the scope are added.',n('Entry point')],
+  ['Called by','Every pipeline reached from the entry points. Source steps (RAW, CLEANSED) are marked upstream and left to Source Dataset Migration.',n('Called by')],
+  ['Used by','Notebooks, data flows, datasets, linked services and triggers used by those pipelines. Pipelines that deploy product DDL (<code>EXECUTE_*_SCRIPT</code>, <code>DB_BUILD</code>) are included.',n('Used by')+n('Starts')],
+  ['Defined in',`SQL objects created in the scope schemas (${esc(S.schemas.join(', ')||'none')}) by those pipelines or scripts.`,n('Defined in')],
+  ['Referenced by','Tables read by the scope whose DDL is not in the repository. Their definition must be extracted from the Synapse database.',n('Referenced by')]]}
+function foundView(S){const cand=S.candidates||[],miss=cand.filter(c=>c.status==='not included'),other=cand.filter(c=>c.status!=='not included'),tot=Object.values(S.identified||{}).reduce((a,b)=>a+b,0);
+ const tok=S.scope.replace(/-/g,'_'),otherName=S.kind==='sds'?'Data Product Migration':'Source Dataset Migration';
+ return `<div class="card found">
+  <div class="fd-steps">${methodSteps(S).map(([t,d,n],i)=>`<div class="fd-step"><span class="fn">${i+1}</span><div><b>${esc(t)}</b><p>${d}</p></div><span class="fd-n">${n}</span></div>`).join('')}</div>
+  <div class="fd-check">
+   <div class="ck ok">${ic('i-ok')}<div><b>${tot} objects identified</b><span>Each object in the mapping table shows the rule that found it in the "Found by" column.</span></div></div>
+   <div class="ck ${miss.length?'warn':'ok'}">${ic(miss.length?'i-search':'i-ok')}<div><b>Name check: ${cand.length} other object${cand.length===1?'':'s'} in DPV1 match "${esc(tok)}"</b><span>${cand.filter(c=>c.status==='other service').length} belong to ${otherName}, ${cand.filter(c=>/^in /.test(c.status)).length} to other scopes. ${miss.length?`<b style="color:#9A6B00">${miss.length} are not included: review them below</b>`:'None is left out.'}</span></div></div>
+  </div>
+  ${cand.length?`<details class="fd-list" ${miss.length?'open':''}><summary>Objects matching the scope name outside this scope</summary>
+   <div class="toolbar" style="margin:10px 0"><div class="chips" id="cf"><button class="fchip ${miss.length?'on':''}" data-c="not included">Not included <span>${miss.length}</span></button><button class="fchip ${miss.length?'':'on'}" data-c="">All <span>${cand.length}</span></button></div><button class="btn sm" id="cc" style="margin-left:auto">${ic('i-copy')}Copy list</button></div>
+   <div class="tbl" style="max-height:340px"><table><thead><tr><th>Object</th><th>Kind</th><th>Folder</th><th>Status</th></tr></thead><tbody id="cr"></tbody></table></div></details>`:''}
+ </div>`}
+
+/* ---------- scenarios ---------- */
+const SC=D.scenarios||{sds:{},dp:{}},SD=D.scenario_defs||{sds:{scenarios:{},modifiers:{}},dp:{scenarios:{},modifiers:{},dacpac_source:{}}};
+const scp=t=>`<span class="scp ${esc(t)}">${esc(t)}</span>`;
+function scnOverview(){const tb=(k,label)=>{const defs=SD[k].scenarios,by={},mc={};Object.entries(SC[k]).forEach(([s,v])=>{(by[v.scenario]=by[v.scenario]||[]).push(s);v.modifiers.forEach(m=>(mc[m]=mc[m]||[]).push(s))});
+  const link=(s)=>`<a href="#mapper/${k}/${esc(s)}" data-open="${k}/${esc(s)}">${esc(s)}</a>`;
+  return `<h4 style="margin:16px 0 6px">${label} (${Object.keys(SC[k]).length})</h4><div class="tbl"><table><thead><tr><th>Scenario</th><th>Status</th><th class="n">Projects</th><th>Which</th><th>Open</th></tr></thead><tbody>${Object.entries(defs).map(([id,d])=>{const ks=by[id]||[];return `<tr><td><span class="scn-id">${esc(id)}</span><div class="mute" style="font-size:12px">${esc(d.title)}</div></td><td>${scp(d.status)}</td><td class="n">${ks.length}</td><td style="font-size:12.5px">${ks.map(link).join(', ')||'–'}</td><td style="font-size:12.5px">${(d.open||[]).map(esc).join('<br>')||'–'}</td></tr>`}).join('')}</tbody></table></div>
+  <div class="tbl" style="margin-top:8px"><table><thead><tr><th>Modifier</th><th>Status</th><th class="n">Projects</th><th>How it is handled</th></tr></thead><tbody>${Object.entries(SD[k].modifiers).map(([id,d])=>{const ks=mc[id]||[];return `<tr><td><span class="scn-id">${esc(id)}</span><div class="mute" style="font-size:12px">${esc(d.title)}</div></td><td>${scp(d.status)}</td><td class="n" title="${esc(ks.join(', '))}">${ks.length}</td><td style="font-size:12.5px">${esc(d.how)}</td></tr>`}).join('')}</tbody></table></div>`};
+ return Object.keys(SC.sds).length?tb('sds','Source datasets')+tb('dp','Data products'):'<p class="mute">Run refresh_hub.py to classify the projects.</p>'}
+function scenarioView(kind,scope){const v=(SC[kind]||{})[scope];if(!v)return '';const defs=SD[kind],d=defs.scenarios[v.scenario]||{},ev=v.evidence||{};
+ const mods=v.modifiers.map(m=>{const x=defs.modifiers[m]||{};return `<li><span class="scn-id">${esc(m)}</span> ${scp(x.status||'partial')} ${esc(x.title||'')}<div class="mute" style="font-size:12.5px">${esc(x.how||'')}</div></li>`}).join('');
+ const dac=kind==='dp'?`<p><b>DACPAC code source:</b> <span class="scn-id">${esc(v.dacpac_source)}</span> ${esc((defs.dacpac_source||{})[v.dacpac_source]||'')}${ev.procs_missing_count?` <span class="mute">(${ev.procs_missing_count} of ${ev.procs_called} called procedures have no code in the repo, for example ${esc((ev.procs_missing||[]).slice(0,3).join(', '))})</span>`:''}</p>`:'';
+ const nums=Object.entries(ev).filter(([k,x])=>typeof x==='number'&&x>0).map(([k,x])=>`<span class="pill o">${esc(k.replace(/_/g,' '))} ${x}</span>`).join(' ');
+ const orph=(v.orphans||[]).length?`<div class="scn-open"><b>${v.orphans.length} DPV1 object(s) named after this project that no project lists</b>: confirm at framing whether they belong here. ${v.orphans.slice(0,8).map(o=>`<code>${esc(o)}</code>`).join(' ')}${v.orphans.length>8?' ...':''}</div>`:'';
+ const mn=(ev.modeling_notebook_count||0)?`<div class="scn-open">${ev.modeling_notebook_count} modeling notebook(s) are listed in this source dataset (${(ev.modeling_notebooks||[]).slice(0,3).map(o=>`<code>${esc(o)}</code>`).join(' ')}): they belong to the data product.</div>`:'';
+ return `<h2 id="m-scenario">Scenario: how this project is built</h2><p class="sub">Classified from the DPV1 code of this project. Definitions in <code>2-config/migration/scenarios.json</code>.</p>
+ <div class="card" style="padding:14px 16px"><div><span class="scn-id" style="font-size:14px">${esc(v.scenario)}</span> ${scp(d.status||'partial')} <b>${esc(d.title||'')}</b></div>
+  <p style="margin:8px 0 4px"><b>Detected when:</b> ${esc(d.detect||'')}</p><b>How it is built</b><ol class="scn-list">${(d.build||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ol>
+  <p style="margin:8px 0 4px"><b>Tools:</b> ${(d.tools||[]).map(t=>`<code>${esc(t)}</code>`).join(' ')||'none'} &nbsp; <b>Skills:</b> ${(d.refs||[]).map(t=>`<code>${esc(t)}</code>`).join(' ')||'none'}</p>
+  ${(d.open||[]).map(o=>`<div class="scn-open">Open: ${esc(o)}</div>`).join('')}${dac}
+  ${mods?`<b>Modifiers</b><ul class="scn-list" style="list-style:none;padding-left:0">${mods}</ul>`:''}${mn}${orph}
+  <div style="margin-top:8px">${nums}</div></div>`}
+
+/* ---------- render scope ---------- */
+let mf;
+function render(kind,scope){const S=(kind==='sds'?D.sds:D.dp)[scope];if(!S)return;cur={kind,scope};$('#subscope').textContent=scope;$('#subnav').classList.add('on');
+ const p=P.find(x=>x.scope===scope)||{},d=p.detected||{},isS=kind==='sds',c=S.counts,reg=p.register||[];
+ const migrated=S.rows.filter(r=>!['drop','upstream','product','shared','review'].includes(r.a)).length,gone=(c.drop||0),rev=(c.review||0);
+ const crumbs=isS?`<span class="c-ws">${esc(S.ws)}</span><span class="sep">/</span><span class="c-sds">${esc(S.folder)}</span><span class="sep">/</span><span class="c-sds">${esc(S.lakehouse)}</span>`:`<span class="c-ws">${esc(S.ws)}</span><span class="sep">·</span><span class="c-dp">${esc(S.warehouse)}</span><span class="sep">·</span><span class="c-go">${esc(S.dbproject)}</span>`;
+ const other=isS?(D.dp[scope]&&`<button class="btn link" data-o="dp" data-s="${esc(scope)}">Its data product ${ic('i-arrow')}</button>`):(D.sds[scope]&&`<button class="btn link" data-o="sds" data-s="${esc(scope)}">Its source dataset ${ic('i-arrow')}</button>`);
+ const rel=isS?S.downstream:S.upstream,relT=isS?'Feeds':'Reads';
+ $('#out').innerHTML=`
+ <div class="card summary ${kind}" id="m-summary"><div class="bar"></div>
+  <div class="top"><div><span class="pill o">${isS?'Source Dataset Migration · until SPOT_DB source':'Data Product Migration · SPOT_DB source → DW / DM'}</span><h2>${esc(scope)}</h2><div class="crumbs">${crumbs}</div></div>
+   <div class="actions"><button class="btn pri" id="cb">${ic('i-copy')}Copy migration brief</button><button class="btn" id="cm">Copy mapping</button></div></div>
+  <div class="facts"><div><span class="lbl">DPV1 objects</span><b>${S.rows.length}</b><small>${S.pipelines.length} pipelines</small></div><div><span class="lbl">Migrated</span><b>${migrated}</b><small>translated, merged, collapsed…</small></div><div><span class="lbl">Not migrated</span><b>${gone}</b><small>dropped in Fabric</small></div><div><span class="lbl">To review</span><b style="${rev?'color:#9A6B00':''}">${rev}</b><small>manual decision</small></div></div>
+  <div class="meta"><span>${isS?'Domain':'Group'} <b>${esc(isS?S.domain:S.group)}</b>${(isS?S.domain_confirmed:S.group_confirmed)?'':' <span class="warn">· to confirm</span>'}</span><span>Complexity <span class="pill cx-${d.complexity||'Small'}">${esc(d.complexity||'n/a')}</span></span><span>Register <b>${reg.length?esc(reg.map(r=>r.project).join(', ')):'<span class="warn">not registered</span>'}</b></span><span>${relT} <b>${esc(rel.join(', ')||'none')}</b></span>${other?`<span style="margin-left:auto">${other}</span>`:''}</div></div>
+
+ ${scenarioView(kind,scope)}
+
+ <h2 id="m-found">How these objects were identified</h2><p class="sub">The rules applied to the DPV1 repository to draw the scope boundary, and a name check to confirm that no object is left behind.</p>
+ ${foundView(S)}
+
+ <h2 id="m-arch">As-is vs To-be</h2><p class="sub">${isS?'Source ingestion in Synapse today and in the Source Data workspace tomorrow.':'The data product in Synapse today and in the Data Product Group workspace tomorrow.'}</p>
+ ${archView(S)}
+ ${treeView(kind,scope)}
+
+ <h2 id="m-compare">Details</h2><p class="sub">Connection details, notebooks, tables, variables and triggers, side by side.</p>
+ <div class="compare"><div class="card side v1" id="pa"><div class="side-h"><span class="pill o badge">Synapse</span><h3>What exists today</h3></div><div class="tabs"></div><div class="pbody"></div></div>
+  <div class="card side v2" id="pb"><div class="side-h"><span class="pill o badge">Fabric</span><h3>Where it lands</h3></div><div class="tabs"></div><div class="pbody"></div></div></div>
+
+ <h2 id="m-objects">Object mapping</h2><p class="sub">Every DPV1 object in the scope, the action applied and its Fabric target.</p>
+ <div class="toolbar"><label class="search"><svg class="ic"><use href="#i-search"/></svg><input type="search" id="mq" placeholder="Filter objects" aria-label="Filter objects"></label>
+  <select id="mt" aria-label="Object type"><option value="">All types</option>${uniq(S.rows.map(r=>r.v1t)).map(t=>`<option>${esc(t)}</option>`).join('')}</select>
+  <button class="btn sm" id="mc">${ic('i-copy')}Copy rows</button></div>
+ <div class="chips" id="ma" style="margin:-2px 0 12px"></div>
+ <div class="tbl" style="max-height:560px"><table><thead><tr><th>DPV1 object</th><th>Type</th><th>Found by</th><th>Action</th><th>Fabric target</th><th>Note</th></tr></thead><tbody id="mr"></tbody></table></div>`;
+ const cand=S.candidates||[];let cf=cand.some(c=>c.status==='not included')?'not included':'';
+ const drawC=()=>{const el=$('#cr');if(!el)return;const rs=cand.filter(c=>!cf||c.status===cf);el.innerHTML=rs.map(c=>`<tr><td class="nm">${esc(c.name)}</td><td>${esc(c.kind)}</td><td style="font-size:12px" class="mute">${esc(c.folder||'–')}</td><td>${c.status==='not included'?pill('review','not included'):c.status==='other service'?pill('upstream',S.kind==='sds'?'in data product':'in source dataset'):pill('inline',c.status.replace(/sds:/g,'source ').replace(/dp:/g,'product '))}</td></tr>`).join('')||`<tr><td colspan="4"><div class="empty">Nothing in this filter.</div></td></tr>`};
+ drawC();if($('#cf'))$('#cf').onclick=e=>{const b=e.target.closest('[data-c]');if(!b)return;cf=b.dataset.c;$$('#cf .fchip').forEach(x=>x.classList.toggle('on',x===b));drawC()};
+ if($('#cc'))$('#cc').onclick=()=>copy(md(['Object','Kind','Folder','Status'],cand.filter(c=>!cf||c.status===cf).map(c=>[c.name,c.kind,c.folder,c.status])),'Name-check list copied');
+ tabs($('#pa'),v1Tabs(S));tabs($('#pb'),v2Tabs(S));
+ mf={a:'',t:'',q:''};const sel=()=>S.rows.filter(r=>(!mf.a||r.a===mf.a)&&(!mf.t||r.v1t===mf.t)&&(!mf.q||(r.v1+' '+r.v2+' '+r.n).toUpperCase().includes(mf.q)));
+ const draw=()=>{$('#ma').innerHTML=`<button class="fchip ${mf.a?'':'on'}" data-a="">All <span>${S.rows.length}</span></button>`+ORDER.filter(a=>c[a]).map(a=>`<button class="fchip ${mf.a===a?'on':''}" data-a="${a}" title="${esc(ACT[a])}">${a} <span>${c[a]}</span></button>`).join('');
+  const rs=sel();$('#mr').innerHTML=rs.slice(0,1500).map(r=>`<tr><td class="nm">${esc(r.v1)}</td><td style="font-size:12.5px">${esc(r.v1t)}</td><td style="font-size:12px;color:var(--muted);max-width:240px">${esc(r.by||'–')}</td><td>${pill(r.a)}</td><td class="nm">${r.v2==='-'?'<span class="mute">–</span>':esc(r.v2)}</td><td style="font-size:12.5px;color:var(--muted)">${esc(r.n)}</td></tr>`).join('')||`<tr><td colspan="6"><div class="empty"><b>No object matches</b>Change the filters.</div></td></tr>`};
+ draw();$('#ma').onclick=e=>{const b=e.target.closest('[data-a]');if(b){mf.a=b.dataset.a;draw()}};$('#mq').oninput=e=>{mf.q=e.target.value.trim().toUpperCase();draw()};$('#mt').onchange=e=>{mf.t=e.target.value;draw()};
+ const H=['DPV1 type','DPV1 object','Found by','Action','Fabric type','Fabric target','Note'],R=rs=>rs.map(r=>[r.v1t,r.v1,r.by,r.a,r.v2t,r.v2,r.n]);
+ $('#cb').onclick=()=>copy(brief(S),'Brief copied. Paste it into the DPV2 repo chat.');$('#cm').onclick=()=>copy(md(H,R(S.rows)),'Mapping copied as Markdown');$('#mc').onclick=()=>copy(md(H,R(sel())),'Filtered rows copied');
+ try{history.replaceState(null,'','#mapper/'+kind+'/'+scope)}catch(e){}}
+$('#out').addEventListener('click',e=>{const b=e.target.closest('[data-o]');if(b)openScope(b.dataset.o,b.dataset.s)});
+
+
+/* ---------- overview ---------- */
+function overview(){const m=D.meta,o=m.overview||{},z=o.zones||{},f=o.sql_features||{};
+ $('#ovk').innerHTML=[[m.pipelines_total,'Synapse pipelines, '+(o.activities||0).toLocaleString()+' activities',''],[m.sqlscripts_total,'SQL scripts',''],[m.notebooks_total+' · '+(m.dataflows_total||0),'notebooks · Mapping Data Flows',''],[m.sds_scopes+' · '+m.dp_scopes,'source datasets · data products found','']]
+  .map(([v,l,c])=>`<div class="card kpi"><div class="v ${c}">${v}</div><p>${l}</p></div>`).join('');
+ $('#ovt').innerHTML=[
+  ['r',o.copyback,'Copy-back pipelines','DWH → SPOT and CETAS exports. OneLake makes them unnecessary.'],
+  ['r',o.unreachable,'Not reached by a trigger','No trigger or external master leads to them. Decommission candidates, to confirm with run history.'],
+  ['r',o.mail_calls,'Wrapper calls','Per-pipeline mail and log wrappers, replaced by one shared framework.'],
+  ['a',o.env_ifchain,'Environment if-chains','Pipelines choosing DEV/UAT/PRD values in code. They become VL_MAIN variables.'],
+  ['a',o.embedded_ddl,'Pipelines hiding DDL','More than 20 KB of SQL inside pipeline activities. Extracted to the database project.'],
+  ['a',(f.DISTRIBUTION||0)+' · '+(f.IDENTITY||0)+' · '+(f.TEMP_TABLE||0),'Dialect fixes','SQL scripts using DISTRIBUTION, IDENTITY or #temp tables.'],
+  ['a',(f.EXTERNAL_TABLE||0)+' · '+(f.OPENROWSET||0),'External tables · OPENROWSET','Reads over ADLS, replaced by Lakehouse tables (input Lakehouse shortcuts in data products).'],
+  ['n',(o.triggers_started||0)+' / '+(o.triggers||0),'Triggers started',`Most schedules run from outside the repository (${z.EXT||0} external-orchestration pipelines).`]]
+  .map(([c,v,t,p])=>`<div class="card tile ${c}"><div class="v">${v??'–'}</div><b>${t}</b><p>${p}</p></div>`).join('');
+ $('#ovscn').innerHTML=scnOverview();
+ $('#ovpat').innerHTML=[
+  ['Self-hosted IR, linked services','Gateway, Fabric connections, VL_MAIN','translate'],
+  ['RAWDATA / CLNDATA pipelines and notebooks','PL_&lt;SRC&gt;_SOURCE_TO_RAW (landing, raw), NB/PL_&lt;SRC&gt;_RAW_TO_DELTA (tables)','merge'],
+  ['ADLS linked services (RAW, CLEANSED zones)','Not migrated: OneLake is built into the Lakehouse, reached by path','drop'],
+  ['Datasets','Not migrated: Fabric has no datasets; settings sit in the activity','drop'],
+  ['CLEANSED zone, SPOT_DB source views','LH_SDS_&lt;SRC&gt; tables built on RAW, ingested directly from the source; no cleansed zone','translate'],
+  ['Catalog_&lt;SRC&gt; SQL script, METABASE catalog','View [CATALOG].[&lt;source&gt;_catalog] in the catalog warehouse','replace'],
+  ['SPOT_DB source read by a data product','LH_INP_SDS_&lt;SRC&gt;: input Lakehouse with shortcuts, in the product workspace','translate'],
+  ['INP / LDW views, CURATED (CETAS), STG','Silver load procedures (CTEs)','collapse'],
+  ['Dedicated pool DACPAC: DW tables and procedures (T-SQL)','Fabric Warehouse DACPAC DPG-&lt;GROUP&gt;, still T-SQL (wf-4-migration-dacpac)','translate'],
+  ['DM schemas','CRDP gold views','translate'],
+  ['DWH → SPOT copy-back','Not needed: shortcuts and SQL endpoint','drop'],
+  ['Mapping Data Flows (not T-SQL)','Fabric notebook, or T-SQL procedure when the logic is relational','rewrite'],
+  ['DDL deployed by pipelines','DACPAC CI/CD','replace'],
+  ['Masters, triggers, external orchestration','PL_&lt;X&gt;_MASTER_ORCHESTRATOR + schedule','rebuild']]
+  .map(([a,b,c])=>`<tr><td>${a}</td><td class="nm">${b}</td><td>${pill(c)}</td></tr>`).join('')}
+
+/* ---------- glossary + refresh ---------- */
+$('#gloss').innerHTML=ORDER.map(a=>`<div>${pill(a)}<span>${esc(ACT[a])}</span></div>`).join('');
+const GHCP=`Refresh the migration scope (m-scope-refresher).
+1. python -I 0-shared/scripts/refresh_hub.py --check   (exit 2 = older than the DPV1 export)
+2. If stale, or asked: python -I 0-shared/scripts/refresh_hub.py [--pull]
+3. Verify: knowledge/index.json has every scope; python -I 0-shared/scripts/knowledge.py check --service <sds|dp> --id <NAME> says current.
+4. Read 5-migration-hub/refresh-report.md and migration-scope-index.md: scopes added, removed or changed, projects not in the register, what can start next.
+5. Do not edit DPV1 or the generated files by hand.`;
+const CLI=`python -I 0-shared/scripts/refresh_hub.py          # rebuild from DPV1 as it is
+python -I 0-shared/scripts/refresh_hub.py --pull   # git pull DPV1 first`;
+$('#ghcp').innerHTML=`<button class="btn sm" data-c="g">${ic('i-copy')}Copy</button>`+esc(GHCP);$('#cli').innerHTML=`<button class="btn sm" data-c="c">${ic('i-copy')}Copy</button>`+esc(CLI);
+document.addEventListener('click',e=>{const b=e.target.closest('[data-c]');if(b)copy(b.dataset.c==='g'?GHCP:CLI,'Copied');
+ const k=e.target.closest('[data-cp]');if(k)copy(k.parentElement.querySelector('.ct').textContent,'Copied');
+ const g=e.target.closest('[data-go]');if(g){e.preventDefault();show(g.dataset.go)}});
+
+
+/* ---------- process: lineage between services, estate coverage ---------- */
+function processView(){
+ const E=D.estate||{totals:{},rows:[]},T=E.totals,sum=k=>Object.values(T).reduce((a,v)=>a+(v[k]||0),0);
+ const links=Object.values(D.sds).filter(s=>(s.consumers||[]).length);
+ $('#pk').innerHTML=[[2,'service offerings, linked by the source dataset contract'],[`${Object.keys(D.sds).length} · ${Object.keys(D.dp).length}`,'source datasets · data products found in DPV1'],
+  [links.length,'sources read by at least one data product (data lineage)'],[sum('total'),`DPV1 objects accounted for, ${sum('to_decide')} still to decide`]]
+  .map(([v,p])=>`<div class="card kpi"><div class="v">${v}</div><p>${p}</p></div>`).join('');
+ const lin=links.flatMap(s=>s.consumers.map(c=>[s.scope,c.dp,c.evidence])).sort((a,b)=>a[0].localeCompare(b[0])||a[1].localeCompare(b[1]));
+ const draw=()=>{const q=($('#lq').value||'').toUpperCase(),r=lin.filter(([s,d])=>!q||s.includes(q)||d.includes(q));
+  $('#lc').textContent=`${r.length} of ${lin.length} links`;
+  $('#lrows').innerHTML=r.map(([s,d,ev])=>`<tr><td class="nm"><a href="#mapper/sds/${esc(s)}" data-open="sds/${esc(s)}">${esc(s)}</a></td><td class="nm"><a href="#mapper/dp/${esc(d)}" data-open="dp/${esc(d)}">${esc(d)}</a></td><td>${esc(ev[0]||'')}${ev.length>1?` <span class="mute">+${ev.length-1} more</span>`:''}</td></tr>`).join('')||'<tr><td colspan="3" class="mute">No link found.</td></tr>'};
+ $('#lq').addEventListener('input',draw);draw();
+ $('#erows').innerHTML=Object.entries(T).map(([k,v])=>`<tr><td class="k">${esc(k)}</td><td class="n">${v.total}</td><td class="n">${v.in_scope}</td><td class="n">${v.shared}</td><td class="n">${v.unused}</td><td class="n">${v.to_decide?`<b style="color:#9A6B00">${v.to_decide}</b>`:0}</td></tr>`).join('')+
+  `<tr><td class="k">Total</td><td class="n"><b>${sum('total')}</b></td><td class="n"><b>${sum('in_scope')}</b></td><td class="n"><b>${sum('shared')}</b></td><td class="n"><b>${sum('unused')}</b></td><td class="n"><b>${sum('to_decide')}</b></td></tr>`;
+ const cats={};E.rows.forEach(r=>(cats[r.cat]=cats[r.cat]||[]).push(r));
+ $('#ecats').innerHTML=Object.entries(cats).sort((a,b)=>(a[0].startsWith('name')-b[0].startsWith('name'))||b[1].length-a[1].length).map(([c,rs])=>`<details class="card" style="margin:6px 0;padding:8px 14px"><summary style="cursor:pointer;font-weight:700;font-size:14px">${esc(c)} <span class="mute">(${rs.length})</span></summary>
+  <div class="tbl" style="margin:8px 0 6px;max-height:320px"><table><thead><tr><th>Type</th><th>Object</th><th>Action</th><th>Fabric target</th><th>Note</th></tr></thead><tbody>${rs.map(r=>`<tr><td>${esc(r.kind)}</td><td class="nm">${esc(r.name)}</td><td>${pill(r.a)}</td><td>${esc(r.v2)}</td><td>${esc(r.n)}</td></tr>`).join('')}</tbody></table></div></details>`).join('');
+}
+document.addEventListener('click',e=>{const o=e.target.closest('[data-open]');if(o){e.preventDefault();const [k,sc]=o.dataset.open.split('/');openScope(k,sc)}});
+
+/* ---------- boot ---------- */
+kpis();renderProjects();opts();overview();processView();
+(()=>{const [v,k,s]=decodeURIComponent(location.hash.slice(1)).split('/');if(v==='mapper'&&k&&s&&(k==='sds'?D.sds:D.dp)[s])openScope(k,s);else if(['overview','process','projects','mapper','refresh'].includes(v))show(v)})();
+</script>
+</body>
+</html>

@@ -1,0 +1,362 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "name": "Set run partition",
+        "type": "SetVariable",
+        "dependsOn": [],
+        "description": "Run folder yyyy/MM/dd/HHhmm: given by the master orchestrator (same folder for both children), or from the trigger time.",
+        "typeProperties": {
+          "variableName": "Run",
+          "value": {
+            "value": "@if(empty(pipeline().parameters.RunPartition), concat(formatDateTime(pipeline().TriggerTime, 'yyyy/MM/dd'), '/', formatDateTime(pipeline().TriggerTime, 'HH'), 'h', formatDateTime(pipeline().TriggerTime, 'mm')), pipeline().parameters.RunPartition)",
+            "type": "Expression"
+          }
+        }
+      },
+      {
+        "name": "GET TABLES FROM CATALOG VIEW",
+        "type": "Lookup",
+        "dependsOn": [
+          {
+            "activity": "Set run partition",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "description": "Active tables of WPS from the catalog view (with the extract query and the watermark), names from VL_MAIN.",
+        "policy": {
+          "timeout": "0.00:10:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 30
+        },
+        "typeProperties": {
+          "source": {
+            "type": "DataWarehouseSource",
+            "partitionOption": "None",
+            "queryTimeout": "02:00:00",
+            "sqlReaderQuery": {
+              "value": "SELECT c.*,\n       CONVERT(varchar(33), CAST('2000-01-01' AS datetime2(6)), 126) AS Since,\n       CASE WHEN c.LoadMethod = 'incremental' AND c.WatermarkColumn IS NOT NULL\n     THEN CONCAT('SELECT * FROM ', CONCAT('\"', c.SchemaName, '\".\"', c.SourceName, '\"'), ' WHERE ', CONCAT('NVL(\"', c.WatermarkColumn, '\", DATE ''2000-01-01'')'), ' > ', CONCAT('TO_TIMESTAMP(''', CONVERT(varchar(19), CAST('2000-01-01' AS datetime2(6)), 120), ''', ''YYYY-MM-DD HH24:MI:SS'')'))\n     ELSE CONCAT('SELECT * FROM ', CONCAT('\"', c.SchemaName, '\".\"', c.SourceName, '\"')) END AS ExtractQuery\nFROM @{pipeline().libraryVariables.WPS_CATALOG_VIEW_NAME} AS c\nWHERE c.Active = 1",
+              "type": "Expression"
+            }
+          },
+          "firstRowOnly": false,
+          "datasetSettings": {
+            "type": "DataWarehouseTable",
+            "schema": [],
+            "annotations": [],
+            "typeProperties": {},
+            "connectionSettings": {
+              "name": "wh_catalog_common",
+              "properties": {
+                "annotations": [],
+                "type": "DataWarehouse",
+                "typeProperties": {
+                  "artifactId": "@pipeline().libraryVariables.CATALOG_WAREHOUSE_ID",
+                  "endpoint": "@pipeline().libraryVariables.CATALOG_WAREHOUSE_SQL_ENDPOINT",
+                  "workspaceId": "@pipeline().DataFactory"
+                },
+                "externalReferences": {
+                  "connection": "@pipeline().libraryVariables.CATALOG_WAREHOUSE_CONN_ID"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "ForEach table in WPS",
+        "type": "ForEach",
+        "dependsOn": [
+          {
+            "activity": "GET TABLES FROM CATALOG VIEW",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "description": "One Copy per catalog row, 20 in parallel. A table that copied is added to LoadedTables (only those go to the lakehouse); a table that failed is added to FailedTables with its error, and the others carry on.",
+        "typeProperties": {
+          "isSequential": false,
+          "batchCount": 20,
+          "items": {
+            "value": "@activity('GET TABLES FROM CATALOG VIEW').output.value",
+            "type": "Expression"
+          },
+          "activities": [
+            {
+              "name": "Extract to RAW parquet",
+              "type": "Copy",
+              "dependsOn": [],
+              "policy": {
+                "timeout": "7.00:00:00",
+                "retry": 3,
+                "retryIntervalInSeconds": 60
+              },
+              "description": "Runs the ExtractQuery of the catalog row (full table, or changes since the watermark minus 1 day) and writes parquet once, straight to Files/raw (DPV1: Copy into RAW/DATASOURCE=…).",
+              "typeProperties": {
+                "source": {
+                  "type": "OracleSource",
+                  "partitionOption": "None",
+                  "queryTimeout": "02:00:00",
+                  "sqlReaderQuery": {
+                    "value": "@item().ExtractQuery",
+                    "type": "Expression"
+                  },
+                  "numberPrecision": 38,
+                  "numberScale": 10,
+                  "datasetSettings": {
+                    "type": "OracleTable",
+                    "annotations": [],
+                    "externalReferences": {
+                      "connection": "@pipeline().libraryVariables.WPS_ORACLE_CONN_ID"
+                    },
+                    "typeProperties": {
+                      "schema": {
+                        "value": "@item().SchemaName",
+                        "type": "Expression"
+                      },
+                      "table": {
+                        "value": "@item().SourceName",
+                        "type": "Expression"
+                      }
+                    }
+                  }
+                },
+                "sink": {
+                  "type": "ParquetSink",
+                  "formatSettings": {
+                    "type": "ParquetWriteSettings",
+                    "enableVertiParquet": true
+                  },
+                  "storeSettings": {
+                    "type": "LakehouseWriteSettings",
+                    "copyBehavior": "PreserveHierarchy"
+                  },
+                  "datasetSettings": {
+                    "type": "Parquet",
+                    "typeProperties": {
+                      "location": {
+                        "type": "LakehouseLocation",
+                        "folderPath": {
+                          "value": "@{pipeline().parameters.RawRoot}/@{item().EntityName}@{item().FolderTail}",
+                          "type": "Expression"
+                        },
+                        "fileName": {
+                          "value": "@{item().EntityName}.parquet",
+                          "type": "Expression"
+                        }
+                      },
+                      "compressionCodec": "snappy"
+                    },
+                    "schema": [],
+                    "connectionSettings": {
+                      "name": "lh_sds_wps",
+                      "properties": {
+                        "annotations": [],
+                        "type": "Lakehouse",
+                        "typeProperties": {
+                          "workspaceId": "@pipeline().DataFactory",
+                          "artifactId": "@pipeline().libraryVariables.LH_SDS_WPS_ID",
+                          "rootFolder": "Files"
+                        },
+                        "externalReferences": {
+                          "connection": "@pipeline().libraryVariables.WPS_LH_CONN_ID"
+                        }
+                      }
+                    },
+                    "annotations": []
+                  }
+                },
+                "enableStaging": false,
+                "translator": {
+                  "type": "TabularTranslator",
+                  "typeConversion": true,
+                  "typeConversionSettings": {
+                    "allowDataTruncation": true,
+                    "treatBooleanAsNumber": false
+                  }
+                }
+              }
+            },
+            {
+              "name": "Add to loaded tables",
+              "type": "AppendVariable",
+              "dependsOn": [
+                {
+                  "activity": "Extract to RAW parquet",
+                  "dependencyConditions": [
+                    "Succeeded"
+                  ]
+                }
+              ],
+              "description": "The catalog row of a table that copied: the notebook loads it with its keys and load method.",
+              "typeProperties": {
+                "variableName": "LoadedTables",
+                "value": {
+                  "value": "@string(item())",
+                  "type": "Expression"
+                }
+              }
+            },
+            {
+              "name": "Add to failed tables",
+              "type": "AppendVariable",
+              "dependsOn": [
+                {
+                  "activity": "Extract to RAW parquet",
+                  "dependencyConditions": [
+                    "Failed"
+                  ]
+                }
+              ],
+              "description": "The table and the Copy error: listed in the failure message of the master.",
+              "typeProperties": {
+                "variableName": "FailedTables",
+                "value": {
+                  "value": "@concat(item().SchemaName, '.', item().TableName, ' (copy): ', activity('Extract to RAW parquet').error.message)",
+                  "type": "Expression"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "Return loaded and failed tables",
+        "type": "SetVariable",
+        "dependsOn": [
+          {
+            "activity": "ForEach table in WPS",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "description": "Gives the master the tables that went through this step and the ones that failed, with their error.",
+        "typeProperties": {
+          "variableName": "pipelineReturnValue",
+          "setSystemVariable": true,
+          "value": [
+            {
+              "key": "LoadedTables",
+              "value": {
+                "type": "Expression",
+                "content": "@variables('LoadedTables')"
+              }
+            },
+            {
+              "key": "FailedTables",
+              "value": {
+                "type": "Expression",
+                "content": "@variables('FailedTables')"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "Fail Catalog Lookup",
+        "type": "Fail",
+        "dependsOn": [
+          {
+            "activity": "GET TABLES FROM CATALOG VIEW",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "errorCode": "CATALOG_LOOKUP_FAILED",
+          "message": "PL_WPS_SOURCE_TO_RAW could not read the catalog view (VL_MAIN names, warehouse)."
+        }
+      },
+      {
+        "name": "Fail Copy Loop",
+        "type": "Fail",
+        "dependsOn": [
+          {
+            "activity": "ForEach table in WPS",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "errorCode": "SOURCE_TO_RAW_LOOP_FAILED",
+          "message": "PL_WPS_SOURCE_TO_RAW failed for at least one table: open the failed Copy run."
+        }
+      }
+    ],
+    "parameters": {
+      "RawRoot": {
+        "type": "String",
+        "defaultValue": "raw/wps"
+      },
+      "RunPartition": {
+        "type": "String",
+        "defaultValue": ""
+      }
+    },
+    "variables": {
+      "Run": {
+        "type": "String"
+      },
+      "LoadedTables": {
+        "type": "Array",
+        "defaultValue": []
+      },
+      "FailedTables": {
+        "type": "Array",
+        "defaultValue": []
+      }
+    },
+    "libraryVariables": {
+      "WPS_CATALOG_VIEW_NAME": {
+        "type": "String",
+        "variableName": "WPS_CATALOG_VIEW_NAME",
+        "libraryName": "VL_MAIN"
+      },
+      "LH_SDS_WPS_ID": {
+        "type": "String",
+        "variableName": "LH_SDS_WPS_ID",
+        "libraryName": "VL_MAIN"
+      },
+      "WPS_LH_CONN_ID": {
+        "type": "String",
+        "variableName": "WPS_LH_CONN_ID",
+        "libraryName": "VL_MAIN"
+      },
+      "WPS_LH_NAME": {
+        "type": "String",
+        "variableName": "WPS_LH_NAME",
+        "libraryName": "VL_MAIN"
+      },
+      "CATALOG_WAREHOUSE_ID": {
+        "type": "String",
+        "variableName": "CATALOG_WAREHOUSE_ID",
+        "libraryName": "VL_MAIN"
+      },
+      "CATALOG_WAREHOUSE_SQL_ENDPOINT": {
+        "type": "String",
+        "variableName": "CATALOG_WAREHOUSE_SQL_ENDPOINT",
+        "libraryName": "VL_MAIN"
+      },
+      "CATALOG_WAREHOUSE_CONN_ID": {
+        "type": "String",
+        "variableName": "CATALOG_WAREHOUSE_CONN_ID",
+        "libraryName": "VL_MAIN"
+      },
+      "WPS_ORACLE_CONN_ID": {
+        "type": "String",
+        "variableName": "WPS_ORACLE_CONN_ID",
+        "libraryName": "VL_MAIN"
+      }
+    }
+  }
+}

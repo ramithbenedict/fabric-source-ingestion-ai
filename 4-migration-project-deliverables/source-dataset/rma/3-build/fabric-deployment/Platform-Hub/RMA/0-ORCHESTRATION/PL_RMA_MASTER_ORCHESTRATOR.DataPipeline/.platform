@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "DataPipeline",
+    "displayName": "PL_RMA_MASTER_ORCHESTRATOR",
+    "description": "RMA: source => raw, then raw => dbo tables, same run folder."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "922559c4-4a67-48c7-b946-aa0b1cbd1b84"
+  }
+}

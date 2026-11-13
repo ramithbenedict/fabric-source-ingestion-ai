@@ -1,0 +1,9 @@
+{
+  "_doc": "Request (relativeUrl) of the REST Copy of EPTW, generated from the DPV1 Copy by ingestion.save_rest_request (S2). item().WatermarkVal became item().WatermarkNow (the live watermark, ISO 8601 with Z as a Synapse Lookup returned it). Write a hand-made expression in \"override\" (kept by every build).",
+  "pipeline": "PL_RAWDATA_EPTW",
+  "param": "relativeUrl",
+  "source": "@{item().ApiName}/?LastSyncDate=@{item().WatermarkVal}",
+  "expression": "@{item().ApiName}/?LastSyncDate=@{item().WatermarkNow}",
+  "manual": "",
+  "override": ""
+}

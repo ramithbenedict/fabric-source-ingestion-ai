@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Lakehouse",
+    "displayName": "LH_SDS_EPTW",
+    "description": "Source dataset EPTW: Files/landing (as delivered), Files/raw (parquet), dbo tables."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "ac80f0c2-0136-5c03-9ac7-38d1694e7c8f"
+  }
+}

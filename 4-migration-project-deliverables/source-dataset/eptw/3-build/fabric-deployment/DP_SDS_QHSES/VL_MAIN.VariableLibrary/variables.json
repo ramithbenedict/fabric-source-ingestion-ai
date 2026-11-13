@@ -1,0 +1,77 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/variableLibrary/definition/variables/1.0.0/schema.json",
+  "variables": [
+    {
+      "name": "CATALOG_WAREHOUSE_CONN_ID",
+      "note": "Fabric connection ID used by the sources that keep their catalog view in WH_CATALOG_COMMON to read and update WH_CATALOG_COMMON (catalog Lookup and watermark Script).",
+      "type": "String",
+      "value": "d36dfa2d-c0ec-4225-a5d9-8ca399c84cdc"
+    },
+    {
+      "name": "CATALOG_WAREHOUSE_ID",
+      "note": "Item ID of WH_CATALOG_COMMON.",
+      "type": "String",
+      "value": "95f828da-713b-4dfb-a003-ca2df46ae856"
+    },
+    {
+      "name": "CATALOG_WAREHOUSE_NAME",
+      "note": "Common warehouse holding the catalog views of the sources that keep their catalog view in WH_CATALOG_COMMON.",
+      "type": "String",
+      "value": "WH_CATALOG_COMMON"
+    },
+    {
+      "name": "CATALOG_WAREHOUSE_SQL_ENDPOINT",
+      "note": "SQL endpoint of WH_CATALOG_COMMON (needed by the catalog Lookup connection).",
+      "type": "String",
+      "value": "dlihtekm5geejnpqivklyr2prq-ddmjmr5xx7hudexuzlwvoq6peq.datawarehouse.fabric.microsoft.com"
+    },
+    {
+      "name": "EPTW_CATALOG_VIEW_NAME",
+      "note": "Catalog view of EPTW: tables to ingest, load mode, active flag, watermark.",
+      "type": "String",
+      "value": "CATALOG.eptw_catalog"
+    },
+    {
+      "name": "EPTW_CATALOG_WATERMARK_TABLE_NAME",
+      "note": "Watermark table of EPTW in WH_CATALOG_COMMON, updated after each successful run.",
+      "type": "String",
+      "value": "CATALOG.catalog_eptw_watermark"
+    },
+    {
+      "name": "EPTW_KEYVAULT_CONN_ID",
+      "note": "Fabric connection ID (Web v2 to the Key Vault) used to read the API key header of LS_CORE_REST_EPTW.",
+      "type": "String",
+      "value": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "name": "EPTW_LH_CONN_ID",
+      "note": "Fabric connection ID used by the EPTW pipelines to read and write Lakehouse files (Copy activities).",
+      "type": "String",
+      "value": "2519e3e9-e9a9-4f7e-9a37-f59afc8c867f"
+    },
+    {
+      "name": "EPTW_LH_NAME",
+      "note": "Name of LH_SDS_EPTW: the notebooks look the lakehouse up by this name in the workspace they run in (no attached lakehouse needed).",
+      "type": "String",
+      "value": "LH_SDS_EPTW"
+    },
+    {
+      "name": "EPTW_REST_SERVICE_CONN_ID",
+      "note": "Fabric connection ID replacing linked service LS_CORE_REST_EPTW.",
+      "type": "String",
+      "value": "92966a93-0ef5-4b63-8446-1a3e6596fc7f"
+    },
+    {
+      "name": "EPTW_REST_SERVICE_CONN_NAME",
+      "note": "Fabric connection name replacing linked service LS_CORE_REST_EPTW.",
+      "type": "String",
+      "value": "CONN_EPTW_REST_SERVICE_DEV"
+    },
+    {
+      "name": "LH_SDS_EPTW_ID",
+      "note": "Item ID of LH_SDS_EPTW.",
+      "type": "String",
+      "value": "2327bd26-95b8-48c0-bbd4-370c439cb027"
+    }
+  ]
+}

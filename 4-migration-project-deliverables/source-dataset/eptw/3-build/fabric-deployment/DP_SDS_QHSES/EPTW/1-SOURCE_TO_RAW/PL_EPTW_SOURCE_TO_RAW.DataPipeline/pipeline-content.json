@@ -1,0 +1,658 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "name": "Get secret AZ-REST-EPTW-APIM-SUBKEY",
+        "type": "WebActivity",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.00:10:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 30,
+          "secureInput": true,
+          "secureOutput": true
+        },
+        "description": "DPV1 `Get APIM SubKey`: reads the Key Vault secret `AZ-REST-EPTW-APIM-SUBKEY` (header `ocp-apim-subscription-key` of the DPV1 linked service LS_CORE_REST_EPTW). The output is secure.",
+        "typeProperties": {
+          "method": "GET",
+          "relativeUrl": "secrets/AZ-REST-EPTW-APIM-SUBKEY?api-version=7.0"
+        },
+        "externalReferences": {
+          "connection": "@pipeline().libraryVariables.EPTW_KEYVAULT_CONN_ID"
+        }
+      },
+      {
+        "name": "Set run partition",
+        "type": "SetVariable",
+        "dependsOn": [],
+        "description": "Run folder yyyy/MM/dd/HHhmm: given by the master orchestrator (same folder for both children), or from the trigger time.",
+        "typeProperties": {
+          "variableName": "Run",
+          "value": {
+            "value": "@if(empty(pipeline().parameters.RunPartition), concat(formatDateTime(pipeline().TriggerTime, 'yyyy/MM/dd'), '/', formatDateTime(pipeline().TriggerTime, 'HH'), 'h', formatDateTime(pipeline().TriggerTime, 'mm')), pipeline().parameters.RunPartition)",
+            "type": "Expression"
+          }
+        }
+      },
+      {
+        "name": "GET TABLES FROM CATALOG VIEW",
+        "type": "Lookup",
+        "dependsOn": [
+          {
+            "activity": "Set run partition",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "description": "Active tables of EPTW from the catalog view (with the extract query and the watermark), names from VL_MAIN.",
+        "policy": {
+          "timeout": "0.00:10:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 30
+        },
+        "typeProperties": {
+          "source": {
+            "type": "DataWarehouseSource",
+            "partitionOption": "None",
+            "queryTimeout": "02:00:00",
+            "sqlReaderQuery": {
+              "value": "SELECT c.*,\n       CONVERT(varchar(33), DATEADD(day, -1, COALESCE(w.WatermarkVal, TRY_CAST(c.WatermarkValue AS datetime2(6)), CAST('2000-01-01' AS datetime2(6)))), 126) AS Since,\n       CONCAT(CONVERT(varchar(19), COALESCE(w.WatermarkVal, TRY_CAST(c.WatermarkValue AS datetime2(6))), 126), 'Z') AS WatermarkNow\nFROM @{pipeline().libraryVariables.EPTW_CATALOG_VIEW_NAME} AS c\nLEFT JOIN @{pipeline().libraryVariables.EPTW_CATALOG_WATERMARK_TABLE_NAME} AS w ON w.SchemaName = c.SchemaName AND w.TableName = c.TableName\nWHERE c.Active = 1",
+              "type": "Expression"
+            }
+          },
+          "firstRowOnly": false,
+          "datasetSettings": {
+            "type": "DataWarehouseTable",
+            "schema": [],
+            "annotations": [],
+            "typeProperties": {},
+            "connectionSettings": {
+              "name": "wh_catalog_common",
+              "properties": {
+                "annotations": [],
+                "type": "DataWarehouse",
+                "typeProperties": {
+                  "artifactId": "@pipeline().libraryVariables.CATALOG_WAREHOUSE_ID",
+                  "endpoint": "@pipeline().libraryVariables.CATALOG_WAREHOUSE_SQL_ENDPOINT",
+                  "workspaceId": "@pipeline().DataFactory"
+                },
+                "externalReferences": {
+                  "connection": "@pipeline().libraryVariables.CATALOG_WAREHOUSE_CONN_ID"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "Land list of items",
+        "type": "Copy",
+        "dependsOn": [
+          {
+            "activity": "Set run partition",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Get secret AZ-REST-EPTW-APIM-SUBKEY",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 3,
+          "retryIntervalInSeconds": 60
+        },
+        "description": "DPV1 `Get ePTW Projects`: calls `GetPTWProjects_V1/` once and lands the answer; the parameterised APIs run for every item of it. The API key is in the connection (DPV1 read it from Key Vault).",
+        "typeProperties": {
+          "source": {
+            "type": "RestSource",
+            "httpRequestTimeout": "00:05:00",
+            "requestInterval": "00.00:00:00.010",
+            "requestMethod": "GET",
+            "paginationRules": {
+              "supportRFC5988": "true"
+            },
+            "datasetSettings": {
+              "type": "RestResource",
+              "annotations": [],
+              "typeProperties": {
+                "relativeUrl": "GetPTWProjects_V1/"
+              },
+              "externalReferences": {
+                "connection": "@pipeline().libraryVariables.EPTW_REST_SERVICE_CONN_ID"
+              }
+            },
+            "additionalHeaders": {
+              "value": "@json(concat('{', '\"ocp-apim-subscription-key\":\"', if(contains(activity('Get secret AZ-REST-EPTW-APIM-SUBKEY').output, 'value'), activity('Get secret AZ-REST-EPTW-APIM-SUBKEY').output.value, activity('Get secret AZ-REST-EPTW-APIM-SUBKEY').output.data.value), '\"', '}'))",
+              "type": "Expression"
+            }
+          },
+          "sink": {
+            "type": "JsonSink",
+            "storeSettings": {
+              "type": "LakehouseWriteSettings"
+            },
+            "formatSettings": {
+              "type": "JsonWriteSettings"
+            },
+            "datasetSettings": {
+              "type": "Json",
+              "typeProperties": {
+                "location": {
+                  "type": "LakehouseLocation",
+                  "folderPath": {
+                    "value": "@{pipeline().parameters.LandingRoot}/@{variables('Run')}",
+                    "type": "Expression"
+                  },
+                  "fileName": "list_of_items.json"
+                }
+              },
+              "schema": {},
+              "connectionSettings": {
+                "name": "lh_sds_eptw",
+                "properties": {
+                  "annotations": [],
+                  "type": "Lakehouse",
+                  "typeProperties": {
+                    "workspaceId": "@pipeline().DataFactory",
+                    "artifactId": "@pipeline().libraryVariables.LH_SDS_EPTW_ID",
+                    "rootFolder": "Files"
+                  },
+                  "externalReferences": {
+                    "connection": "@pipeline().libraryVariables.EPTW_LH_CONN_ID"
+                  }
+                }
+              },
+              "annotations": []
+            }
+          },
+          "enableStaging": false
+        }
+      },
+      {
+        "name": "Valid items",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Land list of items",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.00:30:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 60
+        },
+        "description": "DPV1 filter: `@greater(length(item().cpInternalCode), 0)`. Runs NB_EPTW_LIST_ITEMS: reads the landed list and returns the items that have a cpInternalCode.",
+        "typeProperties": {
+          "notebookId": "04fd009a-d30e-58e9-b275-47f4dcbffbc2",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "sessionTag": "eptw-list-items",
+          "parameters": {
+            "lakehouse_name": {
+              "value": {
+                "value": "@pipeline().libraryVariables.EPTW_LH_NAME",
+                "type": "Expression"
+              },
+              "type": "String"
+            },
+            "landing_root": {
+              "value": {
+                "value": "@pipeline().parameters.LandingRoot",
+                "type": "Expression"
+              },
+              "type": "String"
+            },
+            "run_partition": {
+              "value": {
+                "value": "@variables('Run')",
+                "type": "Expression"
+              },
+              "type": "String"
+            }
+          }
+        }
+      },
+      {
+        "name": "ForEach table in EPTW",
+        "type": "ForEach",
+        "dependsOn": [
+          {
+            "activity": "GET TABLES FROM CATALOG VIEW",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Valid items",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Get secret AZ-REST-EPTW-APIM-SUBKEY",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "description": "One Copy per catalog row, 20 in parallel. A table that copied is added to LoadedTables (only those go to the lakehouse); a table that failed is added to FailedTables with its error, and the others carry on.",
+        "typeProperties": {
+          "isSequential": false,
+          "batchCount": 20,
+          "items": {
+            "value": "@activity('GET TABLES FROM CATALOG VIEW').output.value",
+            "type": "Expression"
+          },
+          "activities": [
+            {
+              "name": "Has a parameter",
+              "type": "IfCondition",
+              "dependsOn": [],
+              "description": "DPV1 Switch ExtractMode: rows with a ParamName run once per item (child pipeline), the others run one call.",
+              "typeProperties": {
+                "expression": {
+                  "value": "@not(empty(coalesce(item()?['ParamName'], '')))",
+                  "type": "Expression"
+                },
+                "ifTrueActivities": [
+                  {
+                    "name": "Run per item",
+                    "type": "ExecutePipeline",
+                    "policy": {
+                      "secureInput": false
+                    },
+                    "dependsOn": [],
+                    "description": "DPV1 `PL_RAWDATA_EPTW_CHILD_API`: one call per item of the list for this API, then waits for it.",
+                    "typeProperties": {
+                      "pipeline": {
+                        "referenceName": "7a85567b-80c6-54e2-ace5-158a7afa38eb",
+                        "type": "PipelineReference"
+                      },
+                      "waitOnCompletion": true,
+                      "parameters": {
+                        "apiMetadata": {
+                          "value": "@item()",
+                          "type": "Expression"
+                        },
+                        "projectMetadata": {
+                          "value": "@json(activity('Valid items').output.result.exitValue)",
+                          "type": "Expression"
+                        },
+                        "Run": {
+                          "value": "@variables('Run')",
+                          "type": "Expression"
+                        },
+                        "LandingRoot": {
+                          "value": "@pipeline().parameters.LandingRoot",
+                          "type": "Expression"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "name": "Add API to loaded tables",
+                    "type": "AppendVariable",
+                    "dependsOn": [
+                      {
+                        "activity": "Run per item",
+                        "dependencyConditions": [
+                          "Succeeded"
+                        ]
+                      }
+                    ],
+                    "description": "The catalog row of an API that landed for every item.",
+                    "typeProperties": {
+                      "variableName": "LoadedTables",
+                      "value": {
+                        "value": "@string(item())",
+                        "type": "Expression"
+                      }
+                    }
+                  },
+                  {
+                    "name": "Add API to failed tables",
+                    "type": "AppendVariable",
+                    "dependsOn": [
+                      {
+                        "activity": "Run per item",
+                        "dependencyConditions": [
+                          "Failed"
+                        ]
+                      }
+                    ],
+                    "description": "The API and the error of the child.",
+                    "typeProperties": {
+                      "variableName": "FailedTables",
+                      "value": {
+                        "value": "@concat(item().SchemaName, '.', item().TableName, ' (copy): ', activity('Run per item').error.message)",
+                        "type": "Expression"
+                      }
+                    }
+                  }
+                ],
+                "ifFalseActivities": [
+                  {
+                    "name": "Land as delivered",
+                    "type": "Copy",
+                    "dependsOn": [],
+                    "policy": {
+                      "timeout": "7.00:00:00",
+                      "retry": 3,
+                      "retryIntervalInSeconds": 60
+                    },
+                    "description": "Reads the API path of the catalog row page by page (DPV1 pagination) and lands the JSON as delivered.",
+                    "typeProperties": {
+                      "source": {
+                        "type": "RestSource",
+                        "httpRequestTimeout": "00:05:00",
+                        "requestInterval": "00.00:00:00.010",
+                        "requestMethod": "GET",
+                        "paginationRules": {
+                          "supportRFC5988": "true"
+                        },
+                        "datasetSettings": {
+                          "type": "RestResource",
+                          "annotations": [],
+                          "typeProperties": {
+                            "relativeUrl": {
+                              "value": "@{item().ApiName}/?LastSyncDate=@{item().WatermarkNow}",
+                              "type": "Expression"
+                            }
+                          },
+                          "externalReferences": {
+                            "connection": "@pipeline().libraryVariables.EPTW_REST_SERVICE_CONN_ID"
+                          }
+                        },
+                        "additionalHeaders": {
+                          "value": "@json(concat('{', '\"ocp-apim-subscription-key\":\"', if(contains(activity('Get secret AZ-REST-EPTW-APIM-SUBKEY').output, 'value'), activity('Get secret AZ-REST-EPTW-APIM-SUBKEY').output.value, activity('Get secret AZ-REST-EPTW-APIM-SUBKEY').output.data.value), '\"', '}'))",
+                          "type": "Expression"
+                        }
+                      },
+                      "sink": {
+                        "type": "JsonSink",
+                        "storeSettings": {
+                          "type": "LakehouseWriteSettings"
+                        },
+                        "formatSettings": {
+                          "type": "JsonWriteSettings"
+                        },
+                        "datasetSettings": {
+                          "type": "Json",
+                          "typeProperties": {
+                            "location": {
+                              "type": "LakehouseLocation",
+                              "folderPath": {
+                                "value": "@{pipeline().parameters.LandingRoot}/@{variables('Run')}",
+                                "type": "Expression"
+                              },
+                              "fileName": {
+                                "value": "@{item().EntityName}.json",
+                                "type": "Expression"
+                              }
+                            }
+                          },
+                          "schema": {},
+                          "connectionSettings": {
+                            "name": "lh_sds_eptw",
+                            "properties": {
+                              "annotations": [],
+                              "type": "Lakehouse",
+                              "typeProperties": {
+                                "workspaceId": "@pipeline().DataFactory",
+                                "artifactId": "@pipeline().libraryVariables.LH_SDS_EPTW_ID",
+                                "rootFolder": "Files"
+                              },
+                              "externalReferences": {
+                                "connection": "@pipeline().libraryVariables.EPTW_LH_CONN_ID"
+                              }
+                            }
+                          },
+                          "annotations": []
+                        }
+                      },
+                      "enableStaging": false
+                    }
+                  },
+                  {
+                    "name": "Add to loaded tables",
+                    "type": "AppendVariable",
+                    "dependsOn": [
+                      {
+                        "activity": "Land as delivered",
+                        "dependencyConditions": [
+                          "Succeeded"
+                        ]
+                      }
+                    ],
+                    "description": "The catalog row of a table that copied: the notebook loads it with its keys and load method.",
+                    "typeProperties": {
+                      "variableName": "LoadedTables",
+                      "value": {
+                        "value": "@string(item())",
+                        "type": "Expression"
+                      }
+                    }
+                  },
+                  {
+                    "name": "Add to failed tables",
+                    "type": "AppendVariable",
+                    "dependsOn": [
+                      {
+                        "activity": "Land as delivered",
+                        "dependencyConditions": [
+                          "Failed"
+                        ]
+                      }
+                    ],
+                    "description": "The table and the Copy error: listed in the failure message of the master.",
+                    "typeProperties": {
+                      "variableName": "FailedTables",
+                      "value": {
+                        "value": "@concat(item().SchemaName, '.', item().TableName, ' (copy): ', activity('Land as delivered').error.message)",
+                        "type": "Expression"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "Return loaded and failed tables",
+        "type": "SetVariable",
+        "dependsOn": [
+          {
+            "activity": "ForEach table in EPTW",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "description": "Gives the master the tables that went through this step and the ones that failed, with their error.",
+        "typeProperties": {
+          "variableName": "pipelineReturnValue",
+          "setSystemVariable": true,
+          "value": [
+            {
+              "key": "LoadedTables",
+              "value": {
+                "type": "Expression",
+                "content": "@variables('LoadedTables')"
+              }
+            },
+            {
+              "key": "FailedTables",
+              "value": {
+                "type": "Expression",
+                "content": "@variables('FailedTables')"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "Fail Catalog Lookup",
+        "type": "Fail",
+        "dependsOn": [
+          {
+            "activity": "GET TABLES FROM CATALOG VIEW",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "errorCode": "CATALOG_LOOKUP_FAILED",
+          "message": "PL_EPTW_SOURCE_TO_RAW could not read the catalog view (VL_MAIN names, warehouse)."
+        }
+      },
+      {
+        "name": "Fail Copy Loop",
+        "type": "Fail",
+        "dependsOn": [
+          {
+            "activity": "ForEach table in EPTW",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "errorCode": "SOURCE_TO_RAW_LOOP_FAILED",
+          "message": "PL_EPTW_SOURCE_TO_RAW failed for at least one table: open the failed Copy run."
+        }
+      },
+      {
+        "name": "Fail List of Items",
+        "type": "Fail",
+        "dependsOn": [
+          {
+            "activity": "Land list of items",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          },
+          {
+            "activity": "Valid items",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "errorCode": "LIST_OF_ITEMS_FAILED",
+          "message": "PL_EPTW_SOURCE_TO_RAW could not get the list `GetPTWProjects_V1/` (connection, URL, answer) or read it."
+        }
+      },
+      {
+        "name": "Fail Key Vault",
+        "type": "Fail",
+        "dependsOn": [
+          {
+            "activity": "Get secret AZ-REST-EPTW-APIM-SUBKEY",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "errorCode": "KEYVAULT_SECRET_FAILED",
+          "message": "The pipeline could not read the Key Vault secret(s) AZ-REST-EPTW-APIM-SUBKEY: check the connection EPTW_KEYVAULT_CONN_ID and its access."
+        }
+      }
+    ],
+    "parameters": {
+      "RawRoot": {
+        "type": "String",
+        "defaultValue": "raw/eptw"
+      },
+      "RunPartition": {
+        "type": "String",
+        "defaultValue": ""
+      },
+      "LandingRoot": {
+        "type": "String",
+        "defaultValue": "landing/eptw"
+      }
+    },
+    "variables": {
+      "Run": {
+        "type": "String"
+      },
+      "LoadedTables": {
+        "type": "Array",
+        "defaultValue": []
+      },
+      "FailedTables": {
+        "type": "Array",
+        "defaultValue": []
+      }
+    },
+    "libraryVariables": {
+      "EPTW_CATALOG_VIEW_NAME": {
+        "type": "String",
+        "variableName": "EPTW_CATALOG_VIEW_NAME",
+        "libraryName": "VL_MAIN"
+      },
+      "EPTW_CATALOG_WATERMARK_TABLE_NAME": {
+        "type": "String",
+        "variableName": "EPTW_CATALOG_WATERMARK_TABLE_NAME",
+        "libraryName": "VL_MAIN"
+      },
+      "LH_SDS_EPTW_ID": {
+        "type": "String",
+        "variableName": "LH_SDS_EPTW_ID",
+        "libraryName": "VL_MAIN"
+      },
+      "EPTW_LH_CONN_ID": {
+        "type": "String",
+        "variableName": "EPTW_LH_CONN_ID",
+        "libraryName": "VL_MAIN"
+      },
+      "EPTW_LH_NAME": {
+        "type": "String",
+        "variableName": "EPTW_LH_NAME",
+        "libraryName": "VL_MAIN"
+      },
+      "CATALOG_WAREHOUSE_ID": {
+        "type": "String",
+        "variableName": "CATALOG_WAREHOUSE_ID",
+        "libraryName": "VL_MAIN"
+      },
+      "CATALOG_WAREHOUSE_SQL_ENDPOINT": {
+        "type": "String",
+        "variableName": "CATALOG_WAREHOUSE_SQL_ENDPOINT",
+        "libraryName": "VL_MAIN"
+      },
+      "CATALOG_WAREHOUSE_CONN_ID": {
+        "type": "String",
+        "variableName": "CATALOG_WAREHOUSE_CONN_ID",
+        "libraryName": "VL_MAIN"
+      },
+      "EPTW_REST_SERVICE_CONN_ID": {
+        "type": "String",
+        "variableName": "EPTW_REST_SERVICE_CONN_ID",
+        "libraryName": "VL_MAIN"
+      },
+      "EPTW_KEYVAULT_CONN_ID": {
+        "type": "String",
+        "variableName": "EPTW_KEYVAULT_CONN_ID",
+        "libraryName": "VL_MAIN"
+      }
+    }
+  }
+}

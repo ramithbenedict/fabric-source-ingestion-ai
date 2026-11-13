@@ -1,0 +1,352 @@
+{
+ "project": "EPTW",
+ "service": "sds",
+ "date": "2026-11-05",
+ "verdict": "⚠️ ready with warnings",
+ "coverage": [
+  41,
+  41
+ ],
+ "findings": [
+  {
+   "id": "R01",
+   "area": "Coverage",
+   "check": "DPV1 objects to migrate: 41",
+   "status": "✅",
+   "remark": "41 built, 0 waiting for their stage, 0 missing after their stage completed",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R02",
+   "area": "Coverage",
+   "check": "Objects not migrated by rule: 7",
+   "status": "✅",
+   "remark": "Dataset, Linked service, Pipeline (ADLS linked services, datasets, Synapse pools, wrappers)",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R03",
+   "area": "Name check",
+   "check": "Other DPV1 objects named like EPTW: 24",
+   "status": "✅",
+   "remark": "all are in this scope or in another scope",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R04",
+   "area": "Catalog",
+   "check": "Watermark table CATALOG.catalog_eptw_watermark",
+   "status": "✅",
+   "remark": "incremental source: watermark per table in the warehouse",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R05",
+   "area": "Catalog",
+   "check": "View [CATALOG].[eptw_catalog] rows = catalog script",
+   "status": "✅",
+   "remark": "26 rows in the view, 26 in the script",
+   "fix": "",
+   "file": "3-build/fabric-deployment/DP_SDS_QHSES/WH_CATALOG_COMMON.Warehouse/CATALOG/Views/eptw_catalog.sql",
+   "auto_fix": false
+  },
+  {
+   "id": "R06",
+   "area": "Variable library",
+   "check": "Value sets DEV, UAT, PRD",
+   "status": "✅",
+   "remark": "DEV, PRD, UAT",
+   "fix": "",
+   "file": "3-build/fabric-deployment/DP_SDS_QHSES/VL_MAIN.VariableLibrary",
+   "auto_fix": true
+  },
+  {
+   "id": "R07",
+   "area": "Variable library",
+   "check": "Every value set overrides every variable",
+   "status": "✅",
+   "remark": "12 variables in each set",
+   "fix": "",
+   "file": "3-build/fabric-deployment/DP_SDS_QHSES/VL_MAIN.VariableLibrary",
+   "auto_fix": false
+  },
+  {
+   "id": "R08",
+   "area": "Variable library",
+   "check": "Only locating values (no ADLS, DPV1, batch size or catalog details)",
+   "status": "✅",
+   "remark": "EPTW_CATALOG_VIEW_NAME, EPTW_CATALOG_WATERMARK_TABLE_NAME, EPTW_KEYVAULT_CONN_ID, EPTW_LH_CONN_ID, EPTW_LH_NAME, EPTW_REST_SERVICE_CONN_ID, EPTW_REST_SERVICE_CONN_NAME, LH_SDS_EPTW_ID (+ 4 variables of other sources or shared, kept from the shared VL_MAIN and not checked here)",
+   "fix": "",
+   "file": "3-build/fabric-deployment/DP_SDS_QHSES/VL_MAIN.VariableLibrary",
+   "auto_fix": false
+  },
+  {
+   "id": "R09",
+   "area": "Deployment",
+   "check": "VL_MAIN DEV values set",
+   "status": "✅",
+   "remark": "all set",
+   "fix": "",
+   "file": "3-build/fabric-deployment/DP_SDS_QHSES/VL_MAIN.VariableLibrary",
+   "auto_fix": false
+  },
+  {
+   "id": "R10",
+   "area": "Fabric items",
+   "check": "10 items in Fabric Git format",
+   "status": "✅",
+   "remark": "LH_SDS_EPTW, NB_EPTW_FLATTEN, NB_EPTW_LIST_ITEMS, NB_EPTW_RAW_TO_DELTA, PL_EPTW_MASTER_ORCHESTRATOR, PL_EPTW_RAW_TO_DELTA, PL_EPTW_SOURCE_TO_RAW, PL_EPTW_SOURCE_TO_RAW_CHILD_API, VL_MAIN, WH_CATALOG_COMMON",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R11",
+   "area": "Hardcoding",
+   "check": "17 built files scanned",
+   "status": "✅",
+   "remark": "no GUID, ADLS path, secret or if-chain",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R12",
+   "area": "Lineage",
+   "check": "10 VL_MAIN variables referenced by pipelines / notebooks",
+   "status": "✅",
+   "remark": "all exist",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R13",
+   "area": "Lineage",
+   "check": "Every library variable used is declared in its pipeline under its VL_MAIN name",
+   "status": "✅",
+   "remark": "expressions, declarations and VL_MAIN agree",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R14",
+   "area": "Lineage",
+   "check": "6 pipelines / notebooks called",
+   "status": "✅",
+   "remark": "all built",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R15",
+   "area": "Lineage",
+   "check": "Data products that read this source (DPV1)",
+   "status": "✅",
+   "remark": "EASYPIPING (1 DPV1 objects); EPTW (2 DPV1 objects). They will read it through LH_INP_SDS_EPTW; nothing of a data product is built here.",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R16",
+   "area": "Lineage",
+   "check": "Source dataset contract for data products",
+   "status": "✅",
+   "remark": "26 tables with their DPV1 access paths; consumers: EASYPIPING, EPTW",
+   "fix": "",
+   "file": "3-build/build-notes/build-notes.md (hand-over)",
+   "auto_fix": false
+  },
+  {
+   "id": "R17",
+   "area": "Deployment",
+   "check": "Pipelines deploy in one Git sync (no item ids or deploy tokens in the files)",
+   "status": "✅",
+   "remark": "4 pipelines: connections resolved at run time from VL_MAIN",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R18",
+   "area": "Framing",
+   "check": "Key reference questions answered",
+   "status": "✅",
+   "remark": "every required question has an answer (1-framing/04-key-reference-questions.md)",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R19",
+   "area": "Service rules",
+   "check": "No shortcut in a source dataset",
+   "status": "✅",
+   "remark": "data is ingested from the source",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R20",
+   "area": "Service rules",
+   "check": "ADLS linked services and datasets not migrated",
+   "status": "✅",
+   "remark": "dropped by rule: OneLake is built into the Lakehouse; datasets do not exist in Fabric",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R21",
+   "area": "Ingestion",
+   "check": "Incremental REST: the request carries the watermark",
+   "status": "✅",
+   "remark": "relativeUrl uses item().WatermarkNow (DPV1 request: PL_RAWDATA_EPTW)",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R22",
+   "area": "Ingestion",
+   "check": "Notebook only where DPV1 had one, one loader per source",
+   "status": "✅",
+   "remark": "2 notebook(s) (1 FLATTEN); DPV1 had 6",
+   "fix": "",
+   "file": "3-build/fabric-deployment/DP_SDS_QHSES/EPTW/2-RAW_TO_DELTA/NB_EPTW_FLATTEN.Notebook/notebook-content.py",
+   "auto_fix": false
+  },
+  {
+   "id": "R23",
+   "area": "Ingestion",
+   "check": "NB_<SRC>_FLATTEN only for semi-structured sources",
+   "status": "✅",
+   "remark": "semi-structured: 1 FLATTEN notebook(s)",
+   "fix": "",
+   "file": "3-build/fabric-deployment/DP_SDS_QHSES/EPTW/2-RAW_TO_DELTA/NB_EPTW_FLATTEN.Notebook/notebook-content.py",
+   "auto_fix": false
+  },
+  {
+   "id": "R24",
+   "area": "Ingestion",
+   "check": "Loader reads only the tables that copied, from Files/raw",
+   "status": "✅",
+   "remark": "tables_json from LoadedTables, raw parquet only",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R25",
+   "area": "Ingestion",
+   "check": "S2 lists copied and failed tables and returns them",
+   "status": "✅",
+   "remark": "LoadedTables / FailedTables returned",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R26",
+   "area": "Ingestion",
+   "check": "S3 loads only LoadedTables (no catalog Lookup) and returns loaded / failed",
+   "status": "✅",
+   "remark": "parameter LoadedTables, return value set",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R27",
+   "area": "Ingestion",
+   "check": "Master passes LoadedTables and fails with the failed tables",
+   "status": "✅",
+   "remark": "final Fail lists every failed table",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R28",
+   "area": "Ingestion",
+   "check": "Watermark updated only for the tables loaded in this run",
+   "status": "✅",
+   "remark": "loaded list only",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R29",
+   "area": "Ingestion",
+   "check": "No notebook started per table",
+   "status": "✅",
+   "remark": "all tables in one session",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R30",
+   "area": "Ingestion",
+   "check": "APIs called once per item of a list (DPV1 child pipeline) run once per item",
+   "status": "✅",
+   "remark": "child pipeline built for the rows with a ParamName",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R31",
+   "area": "Deployment",
+   "check": "T-SQL lint on 3 files",
+   "status": "✅",
+   "remark": "0 blocking findings",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R32",
+   "area": "Deployment",
+   "check": "WH_CATALOG_COMMON.sqlproj targets Fabric Warehouse",
+   "status": "✅",
+   "remark": "DSP SqlDwUnifiedDatabaseSchemaProvider",
+   "fix": "",
+   "file": "3-build/fabric-deployment/DP_SDS_QHSES/WH_CATALOG_COMMON.Warehouse/WH_CATALOG_COMMON.sqlproj",
+   "auto_fix": false
+  },
+  {
+   "id": "R33",
+   "area": "Deployment",
+   "check": "Framing inputs (workspace, deployment repo path)",
+   "status": "✅",
+   "remark": "saved in 0_progress_tracking/progress.json",
+   "fix": "",
+   "file": "",
+   "auto_fix": false
+  },
+  {
+   "id": "R34",
+   "area": "Deployment",
+   "check": "Deployment repo holds the build",
+   "status": "⚠️",
+   "remark": "10 of 27 files new, changed or in conflict",
+   "fix": "python -I 0-shared/scripts/deploy_publish.py publish --service sds --id EPTW",
+   "file": "",
+   "auto_fix": false
+  }
+ ]
+}

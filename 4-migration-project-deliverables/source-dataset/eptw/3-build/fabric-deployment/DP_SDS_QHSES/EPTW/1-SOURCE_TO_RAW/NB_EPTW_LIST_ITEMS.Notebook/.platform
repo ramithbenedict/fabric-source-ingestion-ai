@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "NB_EPTW_LIST_ITEMS",
+    "description": "EPTW: the valid items of the list that the REST API returns (GetPTWProjects_V1/), for the per-item calls."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "04fd009a-d30e-58e9-b275-47f4dcbffbc2"
+  }
+}

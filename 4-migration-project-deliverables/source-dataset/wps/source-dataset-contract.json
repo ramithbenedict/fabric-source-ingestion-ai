@@ -1,0 +1,283 @@
+{
+ "source": "WPS",
+ "service": "Source Dataset Migration",
+ "domain": "COST",
+ "workspace": "Platform-Hub_<ENV>",
+ "folder": "WPS",
+ "lakehouse": "LH_SDS_WPS",
+ "lakehouse_logical_id": "d44747b9-fdbe-4551-85a3-e03315a74fc4",
+ "schema": "dbo",
+ "vl_main_for_products": {
+  "lakehouse_id": "LH_SDS_WPS_ID",
+  "lakehouse_workspace_id": "LH_SDS_WPS_WORKSPACE_ID",
+  "input_lakehouse_id": "LH_INP_SDS_WPS_ID"
+ },
+ "input_lakehouse": "LH_INP_SDS_WPS",
+ "tables": [
+  {
+   "dpv1": "DWHADMIN.TBL_RFOEC_PROJECTS",
+   "fabric": "dbo.tbl_rfoec_projects",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_RFOEC_PROJECTS",
+    "spot_wps.tbl_rfoec_projects"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.TBL_RFCO_OEC",
+   "fabric": "dbo.tbl_rfco_oec",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_RFCO_OEC",
+    "spot_wps.tbl_rfco_oec"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.TBL_RFCO_WORKLOADBS",
+   "fabric": "dbo.tbl_rfco_workloadbs",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_RFCO_WORKLOADBS",
+    "spot_wps.tbl_rfco_workloadbs"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.TBL_RFCO_PROJECTSCOPE",
+   "fabric": "dbo.tbl_rfco_projectscope",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_RFCO_PROJECTSCOPE",
+    "spot_wps.tbl_rfco_projectscope"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.TBL_RFOEC_OECBS",
+   "fabric": "dbo.tbl_rfoec_oecbs",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_RFOEC_OECBS",
+    "spot_wps.tbl_rfoec_oecbs"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.TBL_RFCO_GROUPDBS",
+   "fabric": "dbo.tbl_rfco_groupdbs",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_RFCO_GROUPDBS",
+    "spot_wps.tbl_rfco_groupdbs"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.TBL_RFCO_BUSINESS_LINE",
+   "fabric": "dbo.tbl_rfco_business_line",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_RFCO_BUSINESS_LINE",
+    "spot_wps.tbl_rfco_business_line"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.TBL_RFCO_TECHNOLOGYFIELD",
+   "fabric": "dbo.tbl_rfco_technologyfield",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_RFCO_TECHNOLOGYFIELD",
+    "spot_wps.tbl_rfco_technologyfield"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.TBL_RFCO_SUBBUSINESS_LINE",
+   "fabric": "dbo.tbl_rfco_subbusiness_line",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_RFCO_SUBBUSINESS_LINE",
+    "spot_wps.tbl_rfco_subbusiness_line"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.TBL_RFCO_SIMPL_PROJECTSCOPE",
+   "fabric": "dbo.tbl_rfco_simpl_projectscope",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_RFCO_SIMPL_PROJECTSCOPE",
+    "spot_wps.tbl_rfco_simpl_projectscope"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.TBL_RFCO_SIMPL_GROUPDBS",
+   "fabric": "dbo.tbl_rfco_simpl_groupdbs",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_RFCO_SIMPL_GROUPDBS",
+    "spot_wps.tbl_rfco_simpl_groupdbs"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.TBL_RFCO_REGIONS",
+   "fabric": "dbo.tbl_rfco_regions",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_RFCO_REGIONS",
+    "spot_wps.tbl_rfco_regions"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.TBL_RFCO_BILLINGTYPE",
+   "fabric": "dbo.tbl_rfco_billingtype",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_RFCO_BILLINGTYPE",
+    "spot_wps.tbl_rfco_billingtype"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.TBL_RFCO_ENERGYTRANSITIONPILAR",
+   "fabric": "dbo.tbl_rfco_energytransitionpilar",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_RFCO_ENERGYTRANSITIONPILAR",
+    "spot_wps.tbl_rfco_energytransitionpilar"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.TBL_RFCO_PROJECT_STATUS",
+   "fabric": "dbo.tbl_rfco_project_status",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_RFCO_PROJECT_STATUS",
+    "spot_wps.tbl_rfco_project_status"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.TBL_RFCO_PROBABILITYOFAWARD",
+   "fabric": "dbo.tbl_rfco_probabilityofaward",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_RFCO_PROBABILITYOFAWARD",
+    "spot_wps.tbl_rfco_probabilityofaward"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.TBL_RFCO_GROUPSEGMENT",
+   "fabric": "dbo.tbl_rfco_groupsegment",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_RFCO_GROUPSEGMENT",
+    "spot_wps.tbl_rfco_groupsegment"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.TBL_RFCO_WORKSHARING",
+   "fabric": "dbo.tbl_rfco_worksharing",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_RFCO_WORKSHARING",
+    "spot_wps.tbl_rfco_worksharing"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.TBL_RFCO_WORKSHARING_OECHOURS",
+   "fabric": "dbo.tbl_rfco_worksharing_oechours",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_RFCO_WORKSHARING_OECHOURS",
+    "spot_wps.tbl_rfco_worksharing_oechours"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.TBL_AUTH_ROLE",
+   "fabric": "dbo.tbl_auth_role",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_AUTH_ROLE",
+    "spot_wps.tbl_auth_role"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.TBL_AUTH_USER",
+   "fabric": "dbo.tbl_auth_user",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_AUTH_USER",
+    "spot_wps.tbl_auth_user"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.TBL_AUTH_USERPROFILE",
+   "fabric": "dbo.tbl_auth_userprofile",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.TBL_AUTH_USERPROFILE",
+    "spot_wps.tbl_auth_userprofile"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.DP_DETAILEDRESOURCE",
+   "fabric": "dbo.dp_detailedresource",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.DP_DETAILEDRESOURCE",
+    "spot_wps.dp_detailedresource"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.DP_SUMMARYRESOURCE",
+   "fabric": "dbo.dp_summaryresource",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.DP_SUMMARYRESOURCE",
+    "spot_wps.dp_summaryresource"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.DP_DETAILEDWORKLOAD",
+   "fabric": "dbo.dp_detailedworkload",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.DP_DETAILEDWORKLOAD",
+    "spot_wps.dp_detailedworkload"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.DP_SUMMARYWORKLOAD",
+   "fabric": "dbo.dp_summaryworkload",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.DP_SUMMARYWORKLOAD",
+    "spot_wps.dp_summaryworkload"
+   ]
+  },
+  {
+   "dpv1": "DWHADMIN.DP_PROJECTMASTERLIST",
+   "fabric": "dbo.dp_projectmasterlist",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=WPS/DWHADMIN.DP_PROJECTMASTERLIST",
+    "spot_wps.dp_projectmasterlist"
+   ]
+  }
+ ],
+ "dpv1_access_tokens": {
+  "datasource=wps": "ADLS folder DATASOURCE=WPS",
+  "rpl_wps": "replication views rpl_wps.*",
+  "spot_wps": "SPOT lake database SPOT_WPS"
+ },
+ "consumers": [],
+ "readiness": {
+  "stages": {
+   "F1": "completed",
+   "F2": "completed",
+   "F3": "completed",
+   "F4": "completed",
+   "S1": "completed",
+   "S2": "completed",
+   "S3": "completed",
+   "S4": "completed",
+   "S5": "not_started"
+  },
+  "ready": true,
+  "blockers": [],
+  "gap_review_passed": true
+ }
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "DataPipeline",
+    "displayName": "PL_EPTW_SOURCE_TO_RAW",
+    "description": "EPTW (semi-structured) => Files/landing (as delivered), one Copy per catalog row."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "4d9159c3-6ebe-5b8a-82f7-4ce005740c9e"
+  }
+}

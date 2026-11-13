@@ -1,0 +1,237 @@
+{
+ "source": "RMA",
+ "service": "Source Dataset Migration",
+ "domain": "FIN",
+ "workspace": "Platform-Hub_<ENV>",
+ "folder": "RMA",
+ "lakehouse": "LH_SDS_RMA",
+ "lakehouse_logical_id": "ba9ae58d-6305-45f7-9d73-c294b4ba88b0",
+ "schema": "dbo",
+ "vl_main_for_products": {
+  "lakehouse_id": "LH_SDS_RMA_ID",
+  "lakehouse_workspace_id": "LH_SDS_RMA_WORKSPACE_ID",
+  "input_lakehouse_id": "LH_INP_SDS_RMA_ID"
+ },
+ "input_lakehouse": "LH_INP_SDS_RMA",
+ "tables": [
+  {
+   "dpv1": "dbo.Actions",
+   "fabric": "dbo.actions",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=RMA/dbo.Actions",
+    "spot_rma.actions"
+   ]
+  },
+  {
+   "dpv1": "dbo.Business_Units",
+   "fabric": "dbo.business_units",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=RMA/dbo.Business_Units",
+    "spot_rma.business_units"
+   ]
+  },
+  {
+   "dpv1": "dbo.Global_Business_Units",
+   "fabric": "dbo.global_business_units",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=RMA/dbo.Global_Business_Units",
+    "spot_rma.global_business_units"
+   ]
+  },
+  {
+   "dpv1": "dbo.Iso4217_Currencies",
+   "fabric": "dbo.iso4217_currencies",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=RMA/dbo.Iso4217_Currencies",
+    "spot_rma.iso4217_currencies"
+   ]
+  },
+  {
+   "dpv1": "dbo.Lookup_Values",
+   "fabric": "dbo.lookup_values",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=RMA/dbo.Lookup_Values",
+    "spot_rma.lookup_values"
+   ]
+  },
+  {
+   "dpv1": "dbo.Lookup_Types",
+   "fabric": "dbo.lookup_types",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=RMA/dbo.Lookup_Types",
+    "spot_rma.lookup_types"
+   ]
+  },
+  {
+   "dpv1": "dbo.organizational_entities",
+   "fabric": "dbo.organizational_entities",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=RMA/dbo.organizational_entities",
+    "spot_rma.organizational_entities"
+   ]
+  },
+  {
+   "dpv1": "dbo.PreBids",
+   "fabric": "dbo.prebids",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=RMA/dbo.PreBids",
+    "spot_rma.prebids"
+   ]
+  },
+  {
+   "dpv1": "dbo.Projects",
+   "fabric": "dbo.projects",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=RMA/dbo.Projects",
+    "spot_rma.projects"
+   ]
+  },
+  {
+   "dpv1": "dbo.RBS",
+   "fabric": "dbo.rbs",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=RMA/dbo.RBS",
+    "spot_rma.rbs"
+   ]
+  },
+  {
+   "dpv1": "dbo.Risk_Registers",
+   "fabric": "dbo.risk_registers",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=RMA/dbo.Risk_Registers",
+    "spot_rma.risk_registers"
+   ]
+  },
+  {
+   "dpv1": "dbo.Risks",
+   "fabric": "dbo.risks",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=RMA/dbo.Risks",
+    "spot_rma.risks"
+   ]
+  },
+  {
+   "dpv1": "dbo.Risks_History",
+   "fabric": "dbo.risks_history",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=RMA/dbo.Risks_History",
+    "spot_rma.risks_history"
+   ]
+  },
+  {
+   "dpv1": "dbo.RPETS",
+   "fabric": "dbo.rpets",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=RMA/dbo.RPETS",
+    "spot_rma.rpets"
+   ]
+  },
+  {
+   "dpv1": "dbo.Threat_Matrices",
+   "fabric": "dbo.threat_matrices",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=RMA/dbo.Threat_Matrices",
+    "spot_rma.threat_matrices"
+   ]
+  },
+  {
+   "dpv1": "dbo.Opportunity_Matrices",
+   "fabric": "dbo.opportunity_matrices",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=RMA/dbo.Opportunity_Matrices",
+    "spot_rma.opportunity_matrices"
+   ]
+  },
+  {
+   "dpv1": "dbo.Permissions",
+   "fabric": "dbo.permissions",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=RMA/dbo.Permissions",
+    "spot_rma.permissions"
+   ]
+  },
+  {
+   "dpv1": "dbo.Users",
+   "fabric": "dbo.users",
+   "load": "full",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=RMA/dbo.Users",
+    "spot_rma.users"
+   ]
+  }
+ ],
+ "dpv1_access_tokens": {
+  "datasource=rma": "ADLS folder DATASOURCE=RMA",
+  "rpl_rma": "replication views rpl_rma.*",
+  "spot_rma": "SPOT lake database SPOT_RMA"
+ },
+ "consumers": [
+  {
+   "data_product": "QHSES",
+   "evidence": [
+    "notebook NTBK_INTELEX_MAPPING reads SPOT lake database SPOT_RMA"
+   ],
+   "tables_used": []
+  },
+  {
+   "data_product": "RMA",
+   "evidence": [
+    "pipeline PL_CHILD_META_SSP_RMA_DB_BUILD reads SPOT lake database SPOT_RMA",
+    "sqlscript INP_META_RMA_VIEWS reads SPOT lake database SPOT_RMA"
+   ],
+   "tables_used": [
+    "dbo.actions",
+    "dbo.business_units",
+    "dbo.global_business_units",
+    "dbo.iso4217_currencies",
+    "dbo.lookup_types",
+    "dbo.lookup_values",
+    "dbo.opportunity_matrices",
+    "dbo.organizational_entities",
+    "dbo.permissions",
+    "dbo.prebids",
+    "dbo.projects",
+    "dbo.rbs",
+    "dbo.risk_registers",
+    "dbo.risks",
+    "dbo.risks_history",
+    "dbo.rpets",
+    "dbo.threat_matrices",
+    "dbo.users"
+   ]
+  }
+ ],
+ "readiness": {
+  "stages": {
+   "F1": "completed",
+   "F2": "completed",
+   "F3": "completed",
+   "F4": "completed",
+   "S1": "completed",
+   "S2": "completed",
+   "S3": "completed",
+   "S4": "completed",
+   "S5": "blocked"
+  },
+  "ready": true,
+  "blockers": [],
+  "gap_review_passed": true
+ }
+}

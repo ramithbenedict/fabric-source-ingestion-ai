@@ -1,0 +1,761 @@
+{
+ "project": "RMA",
+ "service": "sds",
+ "created": "2026-10-27",
+ "stages": {
+  "F1": {
+   "status": "completed",
+   "note": "",
+   "at": "2026-10-27 17:51"
+  },
+  "F2": {
+   "status": "completed",
+   "note": "approved 2026-10-27",
+   "at": "2026-10-27 18:06"
+  },
+  "F3": {
+   "status": "completed",
+   "note": "approved 2026-10-27",
+   "at": "2026-10-27 18:06"
+  },
+  "F4": {
+   "status": "completed",
+   "note": "approved 2026-10-27",
+   "at": "2026-10-27 18:06"
+  },
+  "S1": {
+   "status": "completed",
+   "note": "catalog view 18 rows; LH_SDS_RMA built; pending review",
+   "at": "2026-10-27 18:06"
+  },
+  "S2": {
+   "status": "completed",
+   "note": "PL_RMA_SOURCE_TO_RAW built",
+   "at": "2026-10-27 18:09"
+  },
+  "S3": {
+   "status": "completed",
+   "note": "NB_RMA_RAW_TO_DELTA, PL_RMA_RAW_TO_DELTA built",
+   "at": "2026-10-27 18:09"
+  },
+  "S4": {
+   "status": "completed",
+   "note": "reviewed: pass with warnings",
+   "at": "2026-10-27 18:19"
+  },
+  "S5": {
+   "status": "blocked",
+   "note": "paused",
+   "at": "2026-10-28 16:54"
+  }
+ },
+ "gates": {
+  "name_check_resolved": {
+   "status": "completed",
+   "evidence": "0 objects not included (01-scope-analysis.md)"
+  },
+  "framing_approved": {
+   "status": "completed",
+   "evidence": "Framing approved by the developer (gbadhani), 2026-10-27; VL_MAIN without IS_PROD and without warehouse CONN_ID"
+  },
+  "catalog_rows_match": {
+   "status": "completed",
+   "evidence": "18 view rows / 18 catalog script rows"
+  },
+  "vl_main_complete": {
+   "status": "in_progress",
+   "evidence": "DEV still to set: LH_SDS_RMA_ID, CATALOG_WAREHOUSE_ID, CATALOG_WAREHOUSE_CONN_ID, CATALOG_WAREHOUSE_SQL_ENDPOINT, RMA_LH_CONN_ID, RMA_SQL_SERVER_CONN_ID"
+  },
+  "gap_review_passed": {
+   "status": "completed",
+   "evidence": "review/gap-review.md (2026-10-29)"
+  }
+ },
+ "inputs": [
+  "Source dataset identifier: `RMA` (resolved from name)",
+  "Domain: `FIN`",
+  "Catalog warehouse: `WH_CATALOG_RMA`"
+ ],
+ "risks": [],
+ "log": [
+  {
+   "at": "2026-10-27 17:51",
+   "type": "started",
+   "text": "Source dataset migration started",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-10-27 17:51",
+   "type": "completed",
+   "text": "Capture the request: ✅ completed",
+   "stage": "F1",
+   "workflow": "wf-1-framing"
+  },
+  {
+   "at": "2026-10-27 17:51",
+   "type": "started",
+   "text": "Scope analysis: 🟡 in progress - 1 name-check objects to confirm",
+   "stage": "F2",
+   "workflow": "wf-1-framing"
+  },
+  {
+   "at": "2026-10-27 17:58",
+   "type": "started",
+   "text": "Scope analysis: 🟡 in progress - resolve review rows, then mark completed",
+   "stage": "F2",
+   "workflow": "wf-1-framing"
+  },
+  {
+   "at": "2026-10-27 17:58",
+   "type": "decision",
+   "text": "Domain confirmed FIN by the developer. Target workspace Platform-Hub (not DP_SDS_FIN); artifacts stored in the Platform-Hub folder of the deployment repo. TR_RMA_DAILY: no trigger needed (product, owner decision 2026-10-27).",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-10-27 18:04",
+   "type": "change",
+   "text": "Framing pack generated in `1-framing/` (31 objects)",
+   "stage": "F2",
+   "workflow": "wf-1-framing"
+  },
+  {
+   "at": "2026-10-27 18:04",
+   "type": "started",
+   "text": "Scope analysis: 🟡 in progress - resolve review rows, then mark completed",
+   "stage": "F2",
+   "workflow": "wf-1-framing"
+  },
+  {
+   "at": "2026-10-27 18:04",
+   "type": "completed",
+   "text": "Gate framing_approved: ✅ completed (Framing approved by the developer (gbadhani), 2026-10-27; VL_MAIN without IS_PROD and without warehouse CONN_ID)",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-10-27 18:04",
+   "type": "decision",
+   "text": "VL_MAIN: IS_PROD removed (environment value sets suffice); RMA_CATALOG_WAREHOUSE_CONN_ID removed (warehouse addressed by item id, SQL endpoint, workspace). Scripts, docs and framing pack updated.",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-10-27 18:06",
+   "type": "completed",
+   "text": "Scope analysis: ✅ completed - approved 2026-10-27",
+   "stage": "F2",
+   "workflow": "wf-1-framing"
+  },
+  {
+   "at": "2026-10-27 18:06",
+   "type": "completed",
+   "text": "Target design: ✅ completed - approved 2026-10-27",
+   "stage": "F3",
+   "workflow": "wf-1-framing"
+  },
+  {
+   "at": "2026-10-27 18:06",
+   "type": "completed",
+   "text": "Migration plan and approval: ✅ completed - approved 2026-10-27",
+   "stage": "F4",
+   "workflow": "wf-1-framing"
+  },
+  {
+   "at": "2026-10-27 18:06",
+   "type": "change",
+   "text": "Catalog view `[CATALOG].[rma_catalog]` generated in `WH_CATALOG_RMA`: 18 rows (18 active), from dpv1",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:06",
+   "type": "change",
+   "text": "Built `LH_SDS_RMA.Lakehouse` (build_source_dataset.py)",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:06",
+   "type": "completed",
+   "text": "Catalog view and Lakehouse: ✅ completed - catalog view 18 rows; LH_SDS_RMA built; pending review",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:09",
+   "type": "started",
+   "text": "Source to landing and RAW: 🟡 in progress",
+   "stage": "S2",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:09",
+   "type": "started",
+   "text": "RAW to Lakehouse tables: 🟡 in progress",
+   "stage": "S3",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:09",
+   "type": "change",
+   "text": "Built `PL_RMA_SOURCE_TO_RAW` (build_source_dataset.py)",
+   "stage": "S2",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:09",
+   "type": "change",
+   "text": "Built `NB_RMA_RAW_TO_DELTA`, `PL_RMA_RAW_TO_DELTA` (build_source_dataset.py)",
+   "stage": "S3",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:09",
+   "type": "change",
+   "text": "Legacy code extracted: 3 pipelines, 3 notebooks, 1 SQL scripts, 0 embedded T-SQL objects",
+   "stage": "S2",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:09",
+   "type": "completed",
+   "text": "Source to landing and RAW: ✅ completed - PL_RMA_SOURCE_TO_RAW built",
+   "stage": "S2",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:09",
+   "type": "completed",
+   "text": "RAW to Lakehouse tables: ✅ completed - NB_RMA_RAW_TO_DELTA, PL_RMA_RAW_TO_DELTA built",
+   "stage": "S3",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:09",
+   "type": "started",
+   "text": "Orchestration and variable library: 🟡 in progress",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:15",
+   "type": "change",
+   "text": "Built `NB_RMA_RAW_TO_DELTA`, `PL_RMA_RAW_TO_DELTA` (build_source_dataset.py)",
+   "stage": "S3",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:15",
+   "type": "change",
+   "text": "VL_MAIN generated: 8 variables, DEV / UAT / PRD, 15 values `<to set>`",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:15",
+   "type": "note",
+   "text": "Gap review: ⚠️ ready with warnings (0 ❌, 2 ⚠️, 1 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:19",
+   "type": "change",
+   "text": "Built `PL_RMA_SOURCE_TO_RAW` (build_source_dataset.py)",
+   "stage": "S2",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:19",
+   "type": "change",
+   "text": "Source dataset contract published: 18 tables, 2 consuming data products, ready=False",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:19",
+   "type": "change",
+   "text": "Built `PL_RMA_MASTER_ORCHESTRATOR`, `VL_MAIN`, `connections.md`, `source-dataset-contract` (build_source_dataset.py)",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:19",
+   "type": "completed",
+   "text": "Orchestration and variable library: ✅ completed - reviewed: pass with warnings",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:19",
+   "type": "completed",
+   "text": "Gate gap_review_passed: ✅ completed (S5: ready with warnings, 0 blockers)",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-10-27 18:19",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `Platform-Hub/`: 20 files, 0 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-10-27 18:37",
+   "type": "change",
+   "text": "VL_MAIN generated: 8 variables, DEV / UAT / PRD, 15 values `<to set>`",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:37",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `Platform-Hub/`: 4 files, 0 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-10-27 18:45",
+   "type": "change",
+   "text": "Built `LH_SDS_RMA.Lakehouse` (build_source_dataset.py)",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:45",
+   "type": "change",
+   "text": "Built `NB_RMA_RAW_TO_DELTA`, `PL_RMA_RAW_TO_DELTA` (build_source_dataset.py)",
+   "stage": "S3",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:45",
+   "type": "change",
+   "text": "Built `PL_RMA_MASTER_ORCHESTRATOR`, `VL_MAIN`, `connections.md`, `source-dataset-contract` (build_source_dataset.py)",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-27 18:46",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `Platform-Hub/`: 5 files, 0 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-10-27 19:43",
+   "type": "change",
+   "text": "Built `PL_RMA_SOURCE_TO_RAW` (build_source_dataset.py)",
+   "stage": "S2",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 16:54",
+   "type": "issue",
+   "text": "Gap review and readiness: ⚠️ blocked - paused",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 17:40",
+   "type": "change",
+   "text": "Catalog view `[CATALOG].[rma_catalog]` generated in `WH_CATALOG_COMMON`: 18 rows (18 active), from dpv1",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 17:41",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `Platform-Hub/`: 7 files, 1 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-10-28 17:42",
+   "type": "change",
+   "text": "VL_MAIN generated: 9 variables, DEV / UAT / PRD, 18 values `<to set>`",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 17:43",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `Platform-Hub/`: 0 files, 1 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-10-28 17:43",
+   "type": "note",
+   "text": "Gap review: ⚠️ ready with warnings (0 ❌, 2 ⚠️, 0 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 17:43",
+   "type": "decision",
+   "text": "WH_CATALOG_RMA renamed WH_CATALOG_COMMON (same logicalId: Fabric renames the item); VL_MAIN uses COMMON_CATALOG_WAREHOUSE_*",
+   "stage": "S1",
+   "workflow": ""
+  },
+  {
+   "at": "2026-10-28 17:43",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `Platform-Hub/`: 0 files, 0 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-10-28 17:44",
+   "type": "change",
+   "text": "Source dataset contract published: 18 tables, 2 consuming data products, ready=True",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 17:44",
+   "type": "note",
+   "text": "Gap review: ⚠️ ready with warnings (0 ❌, 1 ⚠️, 0 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 17:49",
+   "type": "change",
+   "text": "VL_MAIN generated: 9 variables, DEV / UAT / PRD, 18 values `<to set>`",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 17:49",
+   "type": "change",
+   "text": "Catalog view `[CATALOG].[rma_catalog]` generated in `WH_CATALOG_COMMON`: 18 rows (18 active), from dpv1",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 18:15",
+   "type": "change",
+   "text": "Built `LH_SDS_RMA.Lakehouse` (build_source_dataset.py)",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 18:15",
+   "type": "change",
+   "text": "Built `PL_RMA_SOURCE_TO_RAW` (build_source_dataset.py)",
+   "stage": "S2",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 18:15",
+   "type": "change",
+   "text": "Built `NB_RMA_RAW_TO_DELTA`, `PL_RMA_RAW_TO_DELTA` (build_source_dataset.py)",
+   "stage": "S3",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 18:15",
+   "type": "change",
+   "text": "Built `PL_RMA_MASTER_ORCHESTRATOR`, `VL_MAIN`, `connections.md`, `source-dataset-contract` (build_source_dataset.py)",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 18:15",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `Platform-Hub/`: 7 files, 4 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-10-28 18:15",
+   "type": "change",
+   "text": "Source dataset contract published: 18 tables, 2 consuming data products, ready=True",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 18:15",
+   "type": "note",
+   "text": "Gap review: ✅ ready (0 ❌, 0 ⚠️, 0 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 18:23",
+   "type": "change",
+   "text": "VL_MAIN generated: 9 variables, DEV / UAT / PRD, 18 values `<to set>`",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 18:24",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `Platform-Hub/`: 1 files, 0 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-10-28 22:04",
+   "type": "change",
+   "text": "Built `PL_RMA_MASTER_ORCHESTRATOR`, `VL_MAIN`, `connections.md`, `source-dataset-contract` (build_source_dataset.py)",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 22:04",
+   "type": "change",
+   "text": "Source dataset contract published: 18 tables, 2 consuming data products, ready=True",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 22:04",
+   "type": "issue",
+   "text": "Gap review: ❌ not ready (2 ❌, 1 ⚠️, 0 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 22:04",
+   "type": "change",
+   "text": "Built `LH_SDS_RMA.Lakehouse` (build_source_dataset.py)",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 22:04",
+   "type": "change",
+   "text": "Built `PL_RMA_SOURCE_TO_RAW` (build_source_dataset.py)",
+   "stage": "S2",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 22:04",
+   "type": "change",
+   "text": "Built `NB_RMA_RAW_TO_DELTA`, `PL_RMA_RAW_TO_DELTA` (build_source_dataset.py)",
+   "stage": "S3",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 22:04",
+   "type": "change",
+   "text": "Built `PL_RMA_MASTER_ORCHESTRATOR`, `VL_MAIN`, `connections.md`, `source-dataset-contract` (build_source_dataset.py)",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 22:04",
+   "type": "change",
+   "text": "Source dataset contract published: 18 tables, 2 consuming data products, ready=False",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 22:04",
+   "type": "note",
+   "text": "Gap review: ⚠️ ready with warnings (0 ❌, 2 ⚠️, 0 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 22:04",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `Platform-Hub/`: 1 files, 0 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-10-28 22:09",
+   "type": "change",
+   "text": "Built `LH_SDS_RMA.Lakehouse` (build_source_dataset.py)",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 22:09",
+   "type": "change",
+   "text": "Built `PL_RMA_SOURCE_TO_RAW` (build_source_dataset.py)",
+   "stage": "S2",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 22:09",
+   "type": "change",
+   "text": "Built `NB_RMA_RAW_TO_DELTA`, `PL_RMA_RAW_TO_DELTA` (build_source_dataset.py)",
+   "stage": "S3",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 22:09",
+   "type": "change",
+   "text": "Built `PL_RMA_MASTER_ORCHESTRATOR`, `VL_MAIN`, `connections.md`, `source-dataset-contract` (build_source_dataset.py)",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 22:09",
+   "type": "change",
+   "text": "Source dataset contract published: 18 tables, 2 consuming data products, ready=True",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 22:09",
+   "type": "issue",
+   "text": "Gap review: ❌ not ready (1 ❌, 1 ⚠️, 0 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 22:09",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `Platform-Hub/`: 6 files, 0 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-10-28 22:10",
+   "type": "change",
+   "text": "Built `LH_SDS_RMA.Lakehouse` (build_source_dataset.py)",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 22:10",
+   "type": "change",
+   "text": "Built `PL_RMA_SOURCE_TO_RAW` (build_source_dataset.py)",
+   "stage": "S2",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 22:10",
+   "type": "change",
+   "text": "Built `NB_RMA_RAW_TO_DELTA`, `PL_RMA_RAW_TO_DELTA` (build_source_dataset.py)",
+   "stage": "S3",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 22:10",
+   "type": "change",
+   "text": "Built `PL_RMA_MASTER_ORCHESTRATOR`, `VL_MAIN`, `connections.md`, `source-dataset-contract` (build_source_dataset.py)",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 22:10",
+   "type": "change",
+   "text": "Source dataset contract published: 18 tables, 2 consuming data products, ready=False",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 22:10",
+   "type": "note",
+   "text": "Gap review: ⚠️ ready with warnings (0 ❌, 2 ⚠️, 0 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-28 22:10",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `Platform-Hub/`: 1 files, 0 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-10-28 22:19",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `Platform-Hub/`: 0 files, 0 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-10-29 13:52",
+   "type": "note",
+   "text": "Gap review: ⚠️ ready with warnings (0 ❌, 1 ⚠️, 0 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-29 15:47",
+   "type": "change",
+   "text": "VL_MAIN generated: 10 variables, DEV / UAT / PRD, 18 values `<to set>`",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-29 15:47",
+   "type": "change",
+   "text": "Built `LH_SDS_RMA.Lakehouse` (build_source_dataset.py)",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-29 15:47",
+   "type": "change",
+   "text": "Built `PL_RMA_SOURCE_TO_RAW` (build_source_dataset.py)",
+   "stage": "S2",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-29 15:47",
+   "type": "change",
+   "text": "Built `NB_RMA_RAW_TO_DELTA`, `PL_RMA_RAW_TO_DELTA` (build_source_dataset.py)",
+   "stage": "S3",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-29 15:48",
+   "type": "change",
+   "text": "Built `PL_RMA_MASTER_ORCHESTRATOR`, `VL_MAIN`, `connections.md`, `source-dataset-contract` (build_source_dataset.py)",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-29 15:48",
+   "type": "change",
+   "text": "Source dataset contract published: 18 tables, 2 consuming data products, ready=True",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-29 15:48",
+   "type": "note",
+   "text": "Gap review: ⚠️ ready with warnings (0 ❌, 1 ⚠️, 0 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-10-29 15:48",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `Platform-Hub/`: 2 files, 0 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  }
+ ],
+ "card": {
+  "Project name": "RMA",
+  "Service offering": "Source dataset",
+  "Domain": "FIN",
+  "Target": "`Platform-Hub` / `LH_SDS_RMA`",
+  "Source systems": "SqlServer",
+  "Ingestion": "Directly from the source: databases => Files/raw (parquet) => tables; APIs and files => Files/landing (as delivered) => Files/raw (parquet) => tables. No shortcut.",
+  "Complexity (repo)": "Medium (109 objects)",
+  "Register": "RMA (Small)",
+  "Owner": "TBD"
+ },
+ "project_inputs": {
+  "domain": "FIN",
+  "workspace": "Platform-Hub",
+  "deployment_repo": "C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT",
+  "service": "Source Dataset",
+  "name": "RMA",
+  "workspace_folder": "Platform-Hub",
+  "catalog_warehouse": "WH_CATALOG_COMMON"
+ },
+ "last_update": "2026-10-29"
+}

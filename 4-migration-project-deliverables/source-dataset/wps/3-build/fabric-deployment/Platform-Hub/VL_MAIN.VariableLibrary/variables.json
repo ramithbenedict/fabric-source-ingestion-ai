@@ -1,0 +1,101 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/variableLibrary/definition/variables/1.0.0/schema.json",
+  "variables": [
+    {
+      "name": "CATALOG_WAREHOUSE_CONN_ID",
+      "note": "Fabric connection ID used by the sources that keep their catalog view in WH_CATALOG_COMMON to read and update WH_CATALOG_COMMON (catalog Lookup and watermark Script).",
+      "type": "String",
+      "value": "d36dfa2d-c0ec-4225-a5d9-8ca399c84cdc"
+    },
+    {
+      "name": "CATALOG_WAREHOUSE_ID",
+      "note": "Item ID of WH_CATALOG_COMMON.",
+      "type": "String",
+      "value": "740281c9-80e9-439a-9a85-e325277c4688"
+    },
+    {
+      "name": "CATALOG_WAREHOUSE_NAME",
+      "note": "Common warehouse holding the catalog views of the sources that keep their catalog view in WH_CATALOG_COMMON.",
+      "type": "String",
+      "value": "WH_CATALOG_COMMON"
+    },
+    {
+      "name": "CATALOG_WAREHOUSE_SQL_ENDPOINT",
+      "note": "SQL endpoint of WH_CATALOG_COMMON (needed by the catalog Lookup connection).",
+      "type": "String",
+      "value": "dlihtekm5geejnpqivklyr2prq-26sfxqamwjyehklnwsekxins4m.datawarehouse.fabric.microsoft.com"
+    },
+    {
+      "name": "LH_SDS_RMA_ID",
+      "note": "Item ID of LH_SDS_RMA.",
+      "type": "String",
+      "value": "52f6774e-b820-43aa-bb1d-cee1b240960e"
+    },
+    {
+      "name": "LH_SDS_WPS_ID",
+      "note": "Item ID of LH_SDS_WPS.",
+      "type": "String",
+      "value": "019482c8-10c1-4c21-91b4-95d5a053ef64"
+    },
+    {
+      "name": "RMA_CATALOG_VIEW_NAME",
+      "note": "Catalog view of RMA: tables to ingest, load mode, active flag, watermark.",
+      "type": "String",
+      "value": "CATALOG.rma_catalog"
+    },
+    {
+      "name": "RMA_LH_CONN_ID",
+      "note": "Fabric connection ID used by the RMA pipelines to read and write Lakehouse files (Copy activities).",
+      "type": "String",
+      "value": "52f6774e-b820-43aa-bb1d-cee1b240960e"
+    },
+    {
+      "name": "RMA_LH_NAME",
+      "note": "Name of LH_SDS_RMA: the notebooks look the lakehouse up by this name in the workspace they run in (no attached lakehouse needed).",
+      "type": "String",
+      "value": "LH_SDS_RMA"
+    },
+    {
+      "name": "RMA_SQL_SERVER_CONN_ID",
+      "note": "Fabric connection ID replacing linked service LS_CORE_SQLSERVER_RMA.",
+      "type": "String",
+      "value": "ecabc208-d0a2-48e3-8c1e-5f42e5a1bf9a"
+    },
+    {
+      "name": "RMA_SQL_SERVER_CONN_NAME",
+      "note": "Fabric connection name replacing linked service LS_CORE_SQLSERVER_RMA.",
+      "type": "String",
+      "value": "CONN_RMA_SQL_SERVER_DEV"
+    },
+    {
+      "name": "WPS_CATALOG_VIEW_NAME",
+      "note": "Catalog view of WPS: tables to ingest, load mode, active flag, watermark.",
+      "type": "String",
+      "value": "CATALOG.wps_catalog"
+    },
+    {
+      "name": "WPS_LH_CONN_ID",
+      "note": "Fabric connection ID used by the WPS pipelines to read and write Lakehouse files (Copy activities).",
+      "type": "String",
+      "value": "52f6774e-b820-43aa-bb1d-cee1b240960e"
+    },
+    {
+      "name": "WPS_LH_NAME",
+      "note": "Name of LH_SDS_WPS: the notebooks look the lakehouse up by this name in the workspace they run in (no attached lakehouse needed).",
+      "type": "String",
+      "value": "LH_SDS_WPS"
+    },
+    {
+      "name": "WPS_ORACLE_CONN_ID",
+      "note": "Fabric connection ID replacing linked service LS_CORE_ORACLE_WPS.",
+      "type": "String",
+      "value": "6f18d578-010f-4573-adbc-8eb8656d7f2d"
+    },
+    {
+      "name": "WPS_ORACLE_CONN_NAME",
+      "note": "Fabric connection name replacing linked service LS_CORE_ORACLE_WPS.",
+      "type": "String",
+      "value": "CONN_WPS_ORACLE_DEV"
+    }
+  ]
+}

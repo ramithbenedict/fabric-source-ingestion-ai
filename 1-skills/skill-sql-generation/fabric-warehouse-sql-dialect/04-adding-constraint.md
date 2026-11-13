@@ -1,0 +1,33 @@
+## Example 4 — Adding Constraints
+
+### Input
+
+Instruction: "Add a PK, a unique constraint, and a FK to existing tables."
+
+### Output
+
+```sql
+-- Primary key
+ALTER TABLE [DBO].[DIM_PROJECT]
+    ADD CONSTRAINT [PK_DIM_PROJECT]
+    PRIMARY KEY NONCLUSTERED ([PROJECT_ID]) NOT ENFORCED
+;
+
+-- Unique
+ALTER TABLE [DBO].[DIM_PROJECT]
+    ADD CONSTRAINT [UQ_PROJECT_CODE]
+    UNIQUE NONCLUSTERED ([PROJECT_CODE]) NOT ENFORCED
+;
+
+-- Foreign key
+ALTER TABLE [DBO].[FACT_COST]
+    ADD CONSTRAINT [FK_FACT_COST_PROJECT]
+    FOREIGN KEY ([PROJECT_FK])
+    REFERENCES [DBO].[DIM_PROJECT] ([PROJECT_ID]) NOT ENFORCED
+;
+
+-- Drop constraint
+ALTER TABLE [DBO].[FACT_COST]
+    DROP CONSTRAINT [FK_FACT_COST_PROJECT]
+;
+```

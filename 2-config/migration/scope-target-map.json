@@ -1,0 +1,47 @@
+{
+  "_doc": "Target naming inputs for the migration mapper. 'domains' maps a source dataset scope to its Fabric domain code (2-config/conventions/01-general/domains.md). 'groups' maps a data product scope to its Data Product Group name (DP_DPG_<GROUP>, WH_DPG_<GROUP>, DPG-<GROUP>). Unknown entries fall back to 'defaults'. Values marked in 'confirmed' come from the T.EN workspace organisation slide; everything else is an assumption to confirm.",
+  "defaults": {
+    "domain": "<DOMAIN>",
+    "group_suffix": ""
+  },
+  "domains": {
+    "EPV2": "CONST",
+    "EASYPIPING": "CONST",
+    "MDM": "DIG",
+    "SERVICENOW": "DIG",
+    "LOG_CORRELATION": "DIG",
+    "GAIA": "ENG",
+    "GEOS": "PC",
+    "CORNERSTONE": "PC",
+    "RMA": "FIN",
+    "WPS": "COST",
+    "EPTW": "QHSES"
+  },
+  "groups": {
+    "GAIA": "GAIABI",
+    "EPV2": "EPV2BI",
+    "ERP_CLOUD_BI": "ERPBI",
+    "SERVICENOW": "SERVICENOW",
+    "CBP": "CBP",
+    "EASYPIPING": "EASYPIPINGBI",
+    "RMA": "RMA",
+    "EPTW": "QHSES"
+  },
+  "confirmed": [
+    "EPV2",
+    "EASYPIPING",
+    "MDM",
+    "SERVICENOW",
+    "GAIA",
+    "ERP_CLOUD_BI",
+    "CBP",
+    "GEOS",
+    "CORNERSTONE",
+    "RMA",
+    "WPS",
+    "EPTW"
+  ],
+  "known_fabric_connections": {
+    "DPV1 ADLS cleansed": "CONN_DPV1_ADLS_CLEANED_<ENV> (2-config/technical-setup/fabric-connections-setup.md)"
+  }
+}

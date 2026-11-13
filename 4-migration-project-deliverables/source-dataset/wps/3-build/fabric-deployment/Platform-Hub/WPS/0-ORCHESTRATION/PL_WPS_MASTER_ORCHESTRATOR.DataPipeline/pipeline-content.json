@@ -1,0 +1,198 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "name": "Set run partition",
+        "type": "SetVariable",
+        "dependsOn": [],
+        "description": "One run folder yyyy/MM/dd/HHhmm for both children (DPV1 folder tree), from the trigger time.",
+        "typeProperties": {
+          "variableName": "Run",
+          "value": {
+            "value": "@concat(formatDateTime(pipeline().TriggerTime, 'yyyy/MM/dd'), '/', formatDateTime(pipeline().TriggerTime, 'HH'), 'h', formatDateTime(pipeline().TriggerTime, 'mm'))",
+            "type": "Expression"
+          }
+        }
+      },
+      {
+        "name": "Execute Source to RAW",
+        "type": "ExecutePipeline",
+        "policy": {
+          "secureInput": false
+        },
+        "dependsOn": [
+          {
+            "activity": "Set run partition",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "description": "Runs PL_WPS_SOURCE_TO_RAW and waits for it.",
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "d3aff7e2-b291-427a-9a9b-088e1c5ca958",
+            "type": "PipelineReference"
+          },
+          "waitOnCompletion": true,
+          "parameters": {
+            "RawRoot": {
+              "value": "@pipeline().parameters.RawRoot",
+              "type": "Expression"
+            },
+            "RunPartition": {
+              "value": "@variables('Run')",
+              "type": "Expression"
+            }
+          }
+        }
+      },
+      {
+        "name": "Execute RAW to Lakehouse",
+        "type": "ExecutePipeline",
+        "policy": {
+          "secureInput": false
+        },
+        "dependsOn": [
+          {
+            "activity": "Execute Source to RAW",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "description": "Runs PL_WPS_RAW_TO_DELTA and waits for it.",
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "468ce916-9726-4498-9e8e-4fedc64a50e7",
+            "type": "PipelineReference"
+          },
+          "waitOnCompletion": true,
+          "parameters": {
+            "RawRoot": {
+              "value": "@pipeline().parameters.RawRoot",
+              "type": "Expression"
+            },
+            "MaxParallel": {
+              "value": "@pipeline().parameters.MaxParallel",
+              "type": "Expression"
+            },
+            "RunPartition": {
+              "value": "@variables('Run')",
+              "type": "Expression"
+            },
+            "LoadedTables": {
+              "value": "@activity('Execute Source to RAW').output.pipelineReturnValue.LoadedTables",
+              "type": "Expression"
+            }
+          }
+        }
+      },
+      {
+        "name": "Fail Execute Source to RAW",
+        "type": "Fail",
+        "dependsOn": [
+          {
+            "activity": "Execute Source to RAW",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "errorCode": "MASTER_SOURCE_TO_RAW_FAILED",
+          "message": "PL_WPS_MASTER_ORCHESTRATOR stopped: PL_WPS_SOURCE_TO_RAW did not run to the end. Open its run."
+        }
+      },
+      {
+        "name": "Fail Execute RAW to Lakehouse",
+        "type": "Fail",
+        "dependsOn": [
+          {
+            "activity": "Execute RAW to Lakehouse",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "errorCode": "MASTER_RAW_TO_DELTA_FAILED",
+          "message": "PL_WPS_MASTER_ORCHESTRATOR stopped: PL_WPS_RAW_TO_DELTA did not run to the end. Open its run."
+        }
+      },
+      {
+        "name": "Collect failed tables",
+        "type": "SetVariable",
+        "dependsOn": [
+          {
+            "activity": "Execute RAW to Lakehouse",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "description": "Tables that failed to copy (S2) or to load (S3), each with its error.",
+        "typeProperties": {
+          "variableName": "Failed",
+          "value": {
+            "value": "@union(activity('Execute Source to RAW').output.pipelineReturnValue.FailedTables, activity('Execute RAW to Lakehouse').output.pipelineReturnValue.FailedTables)",
+            "type": "Expression"
+          }
+        }
+      },
+      {
+        "name": "Any table failed",
+        "type": "IfCondition",
+        "dependsOn": [
+          {
+            "activity": "Collect failed tables",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "description": "The other tables are loaded; the run still ends Failed and names every failed table with its error.",
+        "typeProperties": {
+          "expression": {
+            "value": "@greater(length(variables('Failed')), 0)",
+            "type": "Expression"
+          },
+          "ifTrueActivities": [
+            {
+              "name": "Fail with failed tables",
+              "type": "Fail",
+              "dependsOn": [],
+              "typeProperties": {
+                "errorCode": "MASTER_TABLES_FAILED",
+                "message": {
+                  "value": "@concat('PL_WPS_MASTER_ORCHESTRATOR: ', string(length(variables('Failed'))), ' table(s) failed, the others are loaded: ', join(variables('Failed'), ' | '))",
+                  "type": "Expression"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "parameters": {
+      "RawRoot": {
+        "type": "String",
+        "defaultValue": "raw/wps"
+      },
+      "MaxParallel": {
+        "type": "String",
+        "defaultValue": "8"
+      }
+    },
+    "concurrency": 1,
+    "variables": {
+      "Run": {
+        "type": "String"
+      },
+      "Failed": {
+        "type": "Array",
+        "defaultValue": []
+      }
+    }
+  }
+}

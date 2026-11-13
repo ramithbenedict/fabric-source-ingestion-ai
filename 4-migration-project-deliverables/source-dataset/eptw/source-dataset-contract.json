@@ -1,0 +1,317 @@
+{
+ "source": "EPTW",
+ "service": "Source Dataset Migration",
+ "domain": "QHSES",
+ "workspace": "DP_SDS_QHSES_<ENV>",
+ "folder": "EPTW",
+ "lakehouse": "LH_SDS_EPTW",
+ "lakehouse_logical_id": "ac80f0c2-0136-5c03-9ac7-38d1694e7c8f",
+ "schema": "dbo",
+ "vl_main_for_products": {
+  "lakehouse_id": "LH_SDS_EPTW_ID",
+  "lakehouse_workspace_id": "LH_SDS_EPTW_WORKSPACE_ID",
+  "input_lakehouse_id": "LH_INP_SDS_EPTW_ID"
+ },
+ "input_lakehouse": "LH_INP_SDS_EPTW",
+ "tables": [
+  {
+   "dpv1": "EPTW.GetPTWProjects_V1",
+   "fabric": "dbo.getptwprojects_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetPTWProjects_V1",
+    "spot_eptw.getptwprojects_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectPTW_V1",
+   "fabric": "dbo.getprojectptw_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectPTW_V1",
+    "spot_eptw.getprojectptw_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectPTWGeneralPrecautions_V1",
+   "fabric": "dbo.getprojectptwgeneralprecautions_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectPTWGeneralPrecautions_V1",
+    "spot_eptw.getprojectptwgeneralprecautions_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectPTWHazard_V1",
+   "fabric": "dbo.getprojectptwhazard_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectPTWHazard_V1",
+    "spot_eptw.getprojectptwhazard_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectPTWTag_V1",
+   "fabric": "dbo.getprojectptwtag_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectPTWTag_V1",
+    "spot_eptw.getprojectptwtag_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectPTWToolsAndEquipment_V1",
+   "fabric": "dbo.getprojectptwtoolsandequipment_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectPTWToolsAndEquipment_V1",
+    "spot_eptw.getprojectptwtoolsandequipment_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectPTWType_V1",
+   "fabric": "dbo.getprojectptwtype_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectPTWType_V1",
+    "spot_eptw.getprojectptwtype_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectPTWWorkClass_V1",
+   "fabric": "dbo.getprojectptwworkclass_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectPTWWorkClass_V1",
+    "spot_eptw.getprojectptwworkclass_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectPTWWorkSteps_V1",
+   "fabric": "dbo.getprojectptwworksteps_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectPTWWorkSteps_V1",
+    "spot_eptw.getprojectptwworksteps_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectActivityType_V1",
+   "fabric": "dbo.getprojectactivitytype_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectActivityType_V1",
+    "spot_eptw.getprojectactivitytype_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectCompany_V1",
+   "fabric": "dbo.getprojectcompany_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectCompany_V1",
+    "spot_eptw.getprojectcompany_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectContract_V1",
+   "fabric": "dbo.getprojectcontract_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectContract_V1",
+    "spot_eptw.getprojectcontract_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectDepartment_V1",
+   "fabric": "dbo.getprojectdepartment_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectDepartment_V1",
+    "spot_eptw.getprojectdepartment_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectDiscipline_V1",
+   "fabric": "dbo.getprojectdiscipline_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectDiscipline_V1",
+    "spot_eptw.getprojectdiscipline_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectFWBS_V1",
+   "fabric": "dbo.getprojectfwbs_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectFWBS_V1",
+    "spot_eptw.getprojectfwbs_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectGeneralPrecautions_V1",
+   "fabric": "dbo.getprojectgeneralprecautions_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectGeneralPrecautions_V1",
+    "spot_eptw.getprojectgeneralprecautions_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectGWBS_V1",
+   "fabric": "dbo.getprojectgwbs_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectGWBS_V1",
+    "spot_eptw.getprojectgwbs_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectHazards_V1",
+   "fabric": "dbo.getprojecthazards_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectHazards_V1",
+    "spot_eptw.getprojecthazards_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectLocationArea_V1",
+   "fabric": "dbo.getprojectlocationarea_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectLocationArea_V1",
+    "spot_eptw.getprojectlocationarea_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectPhaseOwnership_V1",
+   "fabric": "dbo.getprojectphaseownership_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectPhaseOwnership_V1",
+    "spot_eptw.getprojectphaseownership_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectSupportingDocuments_V1",
+   "fabric": "dbo.getprojectsupportingdocuments_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectSupportingDocuments_V1",
+    "spot_eptw.getprojectsupportingdocuments_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectTag_V1",
+   "fabric": "dbo.getprojecttag_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectTag_V1",
+    "spot_eptw.getprojecttag_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectToolsEquipmentRequired_V1",
+   "fabric": "dbo.getprojecttoolsequipmentrequired_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectToolsEquipmentRequired_V1",
+    "spot_eptw.getprojecttoolsequipmentrequired_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectType_V1",
+   "fabric": "dbo.getprojecttype_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectType_V1",
+    "spot_eptw.getprojecttype_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetProjectWorkclass_V1",
+   "fabric": "dbo.getprojectworkclass_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetProjectWorkclass_V1",
+    "spot_eptw.getprojectworkclass_v1"
+   ]
+  },
+  {
+   "dpv1": "EPTW.GetUsers_V1",
+   "fabric": "dbo.getusers_v1",
+   "load": "incremental",
+   "dpv1_access": [
+    "ADLS RAW|CLEANSED/DATASOURCE=EPTW/EPTW.GetUsers_V1",
+    "spot_eptw.getusers_v1"
+   ]
+  }
+ ],
+ "dpv1_access_tokens": {
+  "datasource=eptw": "ADLS folder DATASOURCE=EPTW",
+  "rpl_eptw": "replication views rpl_eptw.*",
+  "spot_eptw": "SPOT lake database SPOT_EPTW"
+ },
+ "consumers": [
+  {
+   "data_product": "EASYPIPING",
+   "evidence": [
+    "notebook NTBK_COMMON_MASTER_RAW_TO_CLEAN reads ADLS folder DATASOURCE=EPTW"
+   ],
+   "tables_used": []
+  },
+  {
+   "data_product": "EPTW",
+   "evidence": [
+    "sqlscript EPTW_INP_VIEWS reads SPOT lake database SPOT_EPTW",
+    "sqlscript SP_META_CREATE_INP_VIEW reads SPOT lake database SPOT_EPTW"
+   ],
+   "tables_used": [
+    "dbo.getprojectactivitytype_v1",
+    "dbo.getprojectcompany_v1",
+    "dbo.getprojectcontract_v1",
+    "dbo.getprojectdepartment_v1",
+    "dbo.getprojectdiscipline_v1",
+    "dbo.getprojectfwbs_v1",
+    "dbo.getprojectgeneralprecautions_v1",
+    "dbo.getprojectgwbs_v1",
+    "dbo.getprojecthazards_v1",
+    "dbo.getprojectlocationarea_v1",
+    "dbo.getprojectphaseownership_v1",
+    "dbo.getprojectptw_v1",
+    "dbo.getprojectptwgeneralprecautions_v1",
+    "dbo.getprojectptwhazard_v1",
+    "dbo.getprojectptwtag_v1",
+    "dbo.getprojectptwtoolsandequipment_v1",
+    "dbo.getprojectptwtype_v1",
+    "dbo.getprojectptwworkclass_v1",
+    "dbo.getprojectptwworksteps_v1",
+    "dbo.getprojectsupportingdocuments_v1",
+    "dbo.getprojecttag_v1",
+    "dbo.getprojecttoolsequipmentrequired_v1",
+    "dbo.getprojecttype_v1",
+    "dbo.getprojectworkclass_v1",
+    "dbo.getptwprojects_v1",
+    "dbo.getusers_v1"
+   ]
+  }
+ ],
+ "readiness": {
+  "stages": {
+   "F1": "completed",
+   "F2": "completed",
+   "F3": "completed",
+   "F4": "completed",
+   "S1": "completed",
+   "S2": "completed",
+   "S3": "completed",
+   "S4": "completed",
+   "S5": "completed"
+  },
+  "ready": true,
+  "blockers": [],
+  "gap_review_passed": true
+ }
+}

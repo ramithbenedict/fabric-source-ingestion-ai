@@ -1,0 +1,701 @@
+{
+ "project": "EPTW",
+ "service": "sds",
+ "created": "2026-11-02",
+ "stages": {
+  "F1": {
+   "status": "completed",
+   "note": "",
+   "at": "2026-11-02 21:33"
+  },
+  "F2": {
+   "status": "completed",
+   "note": "",
+   "at": "2026-11-02 21:33"
+  },
+  "F4": {
+   "status": "completed",
+   "note": "",
+   "at": "2026-11-02 21:33"
+  },
+  "F3": {
+   "status": "completed",
+   "note": "",
+   "at": "2026-11-02 21:33"
+  },
+  "S1": {
+   "status": "completed",
+   "note": "",
+   "at": "2026-11-02 21:35"
+  },
+  "S2": {
+   "status": "completed",
+   "note": "",
+   "at": "2026-11-02 21:35"
+  },
+  "S3": {
+   "status": "completed",
+   "note": "",
+   "at": "2026-11-02 21:35"
+  },
+  "S4": {
+   "status": "completed",
+   "note": "",
+   "at": "2026-11-02 21:35"
+  },
+  "S5": {
+   "status": "completed",
+   "note": "",
+   "at": "2026-11-02 21:35"
+  }
+ },
+ "gates": {
+  "name_check_resolved": {
+   "status": "completed",
+   "evidence": "0 objects not included (01-scope-analysis.md)"
+  },
+  "framing_approved": {
+   "status": "completed",
+   "evidence": "Owner (gbadhani), 2026-11-02"
+  },
+  "gap_review_passed": {
+   "status": "completed",
+   "evidence": "review/gap-review.md (2026-11-05)"
+  },
+  "catalog_rows_match": {
+   "status": "completed",
+   "evidence": "26 view rows / 26 catalog script rows"
+  },
+  "vl_main_complete": {
+   "status": "in_progress",
+   "evidence": "DEV still to set: LH_SDS_EPTW_ID, CATALOG_WAREHOUSE_CONN_ID, EPTW_LH_CONN_ID, EPTW_REST_SERVICE_CONN_ID"
+  }
+ },
+ "inputs": [
+  "Source dataset identifier: `EPTW` (resolved from name)",
+  "Domain: `QHSES`",
+  "Catalog warehouse: `WH_CATALOG_COMMON`"
+ ],
+ "risks": [],
+ "log": [
+  {
+   "at": "2026-11-02 19:59",
+   "type": "started",
+   "text": "Source dataset migration started",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-11-02 19:59",
+   "type": "change",
+   "text": "Framing pack generated in `1-framing/` (31 objects)",
+   "stage": "F2",
+   "workflow": "wf-1-framing"
+  },
+  {
+   "at": "2026-11-02 19:59",
+   "type": "completed",
+   "text": "Capture the request: ✅ completed",
+   "stage": "F1",
+   "workflow": "wf-1-framing"
+  },
+  {
+   "at": "2026-11-02 19:59",
+   "type": "started",
+   "text": "Scope analysis: 🟡 in progress - 5 name-check objects to confirm",
+   "stage": "F2",
+   "workflow": "wf-1-framing"
+  },
+  {
+   "at": "2026-11-02 20:23",
+   "type": "issue",
+   "text": "Scope analysis: ⚠️ blocked - paused",
+   "stage": "F2",
+   "workflow": "wf-1-framing"
+  },
+  {
+   "at": "2026-11-02 20:32",
+   "type": "started",
+   "text": "Scope analysis: 🟡 in progress - resumed",
+   "stage": "F2",
+   "workflow": "wf-1-framing"
+  },
+  {
+   "at": "2026-11-02 20:32",
+   "type": "started",
+   "text": "Scope analysis: 🟡 in progress - resolve review rows, then mark completed",
+   "stage": "F2",
+   "workflow": "wf-1-framing"
+  },
+  {
+   "at": "2026-11-02 20:33",
+   "type": "started",
+   "text": "Scope analysis: 🟡 in progress - resolve review rows, then mark completed",
+   "stage": "F2",
+   "workflow": "wf-1-framing"
+  },
+  {
+   "at": "2026-11-02 20:56",
+   "type": "change",
+   "text": "Framing pack generated in `1-framing/` (48 objects)",
+   "stage": "F2",
+   "workflow": "wf-1-framing"
+  },
+  {
+   "at": "2026-11-02 20:56",
+   "type": "started",
+   "text": "Scope analysis: 🟡 in progress - resolve review rows, then mark completed",
+   "stage": "F2",
+   "workflow": "wf-1-framing"
+  },
+  {
+   "at": "2026-11-02 21:33",
+   "type": "completed",
+   "text": "Gate framing_approved: ✅ completed (Owner (gbadhani), 2026-11-02)",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-11-02 21:33",
+   "type": "completed",
+   "text": "Migration plan and approval: ✅ completed",
+   "stage": "F4",
+   "workflow": "wf-1-framing"
+  },
+  {
+   "at": "2026-11-02 21:33",
+   "type": "completed",
+   "text": "Capture the request: ✅ completed",
+   "stage": "F1",
+   "workflow": "wf-1-framing"
+  },
+  {
+   "at": "2026-11-02 21:33",
+   "type": "completed",
+   "text": "Scope analysis: ✅ completed",
+   "stage": "F2",
+   "workflow": "wf-1-framing"
+  },
+  {
+   "at": "2026-11-02 21:33",
+   "type": "completed",
+   "text": "Target design: ✅ completed",
+   "stage": "F3",
+   "workflow": "wf-1-framing"
+  },
+  {
+   "at": "2026-11-02 21:33",
+   "type": "change",
+   "text": "Built `LH_SDS_EPTW.Lakehouse` (build_source_dataset.py)",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-02 21:33",
+   "type": "change",
+   "text": "Built `PL_EPTW_SOURCE_TO_RAW` (build_source_dataset.py)",
+   "stage": "S2",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-02 21:33",
+   "type": "change",
+   "text": "Built `NB_EPTW_FLATTEN`, `NB_EPTW_RAW_TO_DELTA`, `PL_EPTW_RAW_TO_DELTA` (build_source_dataset.py)",
+   "stage": "S3",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-02 21:33",
+   "type": "change",
+   "text": "Source dataset contract published: 26 tables, 2 consuming data products, ready=False",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-02 21:33",
+   "type": "change",
+   "text": "Built `PL_EPTW_MASTER_ORCHESTRATOR`, `VL_MAIN`, `connections.md`, `source-dataset-contract` (build_source_dataset.py)",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-02 21:33",
+   "type": "note",
+   "text": "Gap review: ⚠️ ready with warnings (0 ❌, 1 ⚠️, 3 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-02 21:33",
+   "type": "change",
+   "text": "Catalog view `[CATALOG].[eptw_catalog]` generated in `WH_CATALOG_COMMON`: 26 rows (26 active), from dpv1; watermark table `catalog_eptw_watermark`",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-02 21:33",
+   "type": "issue",
+   "text": "Gap review: ❌ not ready (1 ❌, 1 ⚠️, 1 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-02 21:34",
+   "type": "change",
+   "text": "Built `LH_SDS_EPTW.Lakehouse` (build_source_dataset.py)",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-02 21:34",
+   "type": "change",
+   "text": "Built `PL_EPTW_SOURCE_TO_RAW` (build_source_dataset.py)",
+   "stage": "S2",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-02 21:34",
+   "type": "change",
+   "text": "Built `NB_EPTW_FLATTEN`, `NB_EPTW_RAW_TO_DELTA`, `PL_EPTW_RAW_TO_DELTA` (build_source_dataset.py)",
+   "stage": "S3",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-02 21:34",
+   "type": "change",
+   "text": "Built `PL_EPTW_MASTER_ORCHESTRATOR`, `VL_MAIN`, `connections.md`, `source-dataset-contract` (build_source_dataset.py)",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-02 21:34",
+   "type": "note",
+   "text": "Gap review: ⚠️ ready with warnings (0 ❌, 1 ⚠️, 1 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-02 21:35",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `DP_SDS_QHSES/`: 23 files, 0 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-11-02 21:35",
+   "type": "note",
+   "text": "Gap review: ⚪ build not finished (0 ❌, 0 ⚠️, 1 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-02 21:35",
+   "type": "completed",
+   "text": "Catalog view and Lakehouse: ✅ completed",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-02 21:35",
+   "type": "completed",
+   "text": "Source to landing and RAW: ✅ completed",
+   "stage": "S2",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-02 21:35",
+   "type": "completed",
+   "text": "RAW to Lakehouse tables: ✅ completed",
+   "stage": "S3",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-02 21:35",
+   "type": "completed",
+   "text": "Orchestration and variable library: ✅ completed",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-02 21:35",
+   "type": "completed",
+   "text": "Gap review and readiness: ✅ completed",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-02 21:35",
+   "type": "change",
+   "text": "Source dataset contract published: 26 tables, 2 consuming data products, ready=False",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-02 21:35",
+   "type": "change",
+   "text": "Source dataset contract published: 26 tables, 2 consuming data products, ready=False",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-03 17:07",
+   "type": "change",
+   "text": "Built `LH_SDS_EPTW.Lakehouse` (build_source_dataset.py)",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-03 17:07",
+   "type": "change",
+   "text": "Built `PL_EPTW_SOURCE_TO_RAW` (build_source_dataset.py)",
+   "stage": "S2",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-03 17:07",
+   "type": "change",
+   "text": "Built `NB_EPTW_FLATTEN`, `NB_EPTW_RAW_TO_DELTA`, `PL_EPTW_RAW_TO_DELTA` (build_source_dataset.py)",
+   "stage": "S3",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-03 17:08",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `DP_SDS_QHSES/`: 7 files, 0 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-11-05 11:18",
+   "type": "change",
+   "text": "Source dataset contract published: 26 tables, 2 consuming data products, ready=True",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 11:18",
+   "type": "note",
+   "text": "Gap review: ⚠️ ready with warnings (0 ❌, 1 ⚠️, 0 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 11:26",
+   "type": "change",
+   "text": "VL_MAIN generated: 11 variables, DEV / UAT / PRD, 16 values `<to set>`",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 13:44",
+   "type": "change",
+   "text": "Catalog view `[CATALOG].[eptw_catalog]` generated in `WH_CATALOG_COMMON`: 26 rows (26 active), from dpv1; watermark table `catalog_eptw_watermark`",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 13:44",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `DP_SDS_QHSES/`: 4 files, 0 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-11-05 14:06",
+   "type": "change",
+   "text": "Built `LH_SDS_EPTW.Lakehouse` (build_source_dataset.py)",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 14:06",
+   "type": "change",
+   "text": "Built `PL_EPTW_SOURCE_TO_RAW`, `PL_EPTW_SOURCE_TO_RAW_CHILD_API` (build_source_dataset.py)",
+   "stage": "S2",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 14:06",
+   "type": "change",
+   "text": "Built `NB_EPTW_FLATTEN`, `NB_EPTW_RAW_TO_DELTA`, `PL_EPTW_RAW_TO_DELTA` (build_source_dataset.py)",
+   "stage": "S3",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 14:06",
+   "type": "change",
+   "text": "Built `PL_EPTW_MASTER_ORCHESTRATOR`, `VL_MAIN`, `connections.md`, `source-dataset-contract` (build_source_dataset.py)",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 14:07",
+   "type": "change",
+   "text": "Source dataset contract published: 26 tables, 2 consuming data products, ready=True",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 14:07",
+   "type": "issue",
+   "text": "Gap review: ❌ not ready (1 ❌, 1 ⚠️, 0 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 14:07",
+   "type": "change",
+   "text": "Source dataset contract published: 26 tables, 2 consuming data products, ready=False",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 14:07",
+   "type": "note",
+   "text": "Gap review: ⚠️ ready with warnings (0 ❌, 2 ⚠️, 0 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 14:07",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `DP_SDS_QHSES/`: 8 files, 0 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-11-05 14:17",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `DP_SDS_QHSES/`: 6 files, 0 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-11-05 14:25",
+   "type": "change",
+   "text": "Built `LH_SDS_EPTW.Lakehouse` (build_source_dataset.py)",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 14:25",
+   "type": "change",
+   "text": "Built `PL_EPTW_SOURCE_TO_RAW`, `PL_EPTW_SOURCE_TO_RAW_CHILD_API` (build_source_dataset.py)",
+   "stage": "S2",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 14:25",
+   "type": "change",
+   "text": "Built `NB_EPTW_FLATTEN`, `NB_EPTW_RAW_TO_DELTA`, `PL_EPTW_RAW_TO_DELTA` (build_source_dataset.py)",
+   "stage": "S3",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 14:25",
+   "type": "change",
+   "text": "Built `PL_EPTW_MASTER_ORCHESTRATOR`, `VL_MAIN`, `connections.md`, `source-dataset-contract` (build_source_dataset.py)",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 14:25",
+   "type": "note",
+   "text": "Gap review: ⚠️ ready with warnings (0 ❌, 1 ⚠️, 0 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 14:25",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `DP_SDS_QHSES/`: 9 files, 0 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-11-05 14:29",
+   "type": "change",
+   "text": "Built `LH_SDS_EPTW.Lakehouse` (build_source_dataset.py)",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 14:29",
+   "type": "change",
+   "text": "Built `PL_EPTW_SOURCE_TO_RAW`, `PL_EPTW_SOURCE_TO_RAW_CHILD_API` (build_source_dataset.py)",
+   "stage": "S2",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 14:29",
+   "type": "change",
+   "text": "Built `NB_EPTW_FLATTEN`, `NB_EPTW_RAW_TO_DELTA`, `PL_EPTW_RAW_TO_DELTA` (build_source_dataset.py)",
+   "stage": "S3",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 14:29",
+   "type": "change",
+   "text": "Built `PL_EPTW_MASTER_ORCHESTRATOR`, `VL_MAIN`, `connections.md`, `source-dataset-contract` (build_source_dataset.py)",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 14:29",
+   "type": "change",
+   "text": "Source dataset contract published: 26 tables, 2 consuming data products, ready=True",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 14:29",
+   "type": "issue",
+   "text": "Gap review: ❌ not ready (2 ❌, 1 ⚠️, 0 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 14:30",
+   "type": "change",
+   "text": "Source dataset contract published: 26 tables, 2 consuming data products, ready=False",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 14:30",
+   "type": "note",
+   "text": "Gap review: ⚠️ ready with warnings (0 ❌, 2 ⚠️, 0 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 14:30",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `DP_SDS_QHSES/`: 7 files, 0 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-11-05 15:03",
+   "type": "change",
+   "text": "Built `LH_SDS_EPTW.Lakehouse` (build_source_dataset.py)",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 15:03",
+   "type": "change",
+   "text": "Built `PL_EPTW_SOURCE_TO_RAW`, `PL_EPTW_SOURCE_TO_RAW_CHILD_API` (build_source_dataset.py)",
+   "stage": "S2",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 15:03",
+   "type": "change",
+   "text": "Built `NB_EPTW_FLATTEN`, `NB_EPTW_RAW_TO_DELTA`, `PL_EPTW_RAW_TO_DELTA` (build_source_dataset.py)",
+   "stage": "S3",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 15:03",
+   "type": "change",
+   "text": "Built `PL_EPTW_MASTER_ORCHESTRATOR`, `VL_MAIN`, `connections.md`, `source-dataset-contract` (build_source_dataset.py)",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 15:03",
+   "type": "note",
+   "text": "Gap review: ⚠️ ready with warnings (0 ❌, 1 ⚠️, 0 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 15:03",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `DP_SDS_QHSES/`: 10 files, 0 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  },
+  {
+   "at": "2026-11-05 15:04",
+   "type": "change",
+   "text": "Built `LH_SDS_EPTW.Lakehouse` (build_source_dataset.py)",
+   "stage": "S1",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 15:04",
+   "type": "change",
+   "text": "Built `PL_EPTW_SOURCE_TO_RAW`, `PL_EPTW_SOURCE_TO_RAW_CHILD_API` (build_source_dataset.py)",
+   "stage": "S2",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 15:04",
+   "type": "change",
+   "text": "Built `NB_EPTW_FLATTEN`, `NB_EPTW_RAW_TO_DELTA`, `PL_EPTW_RAW_TO_DELTA` (build_source_dataset.py)",
+   "stage": "S3",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 15:04",
+   "type": "change",
+   "text": "Built `PL_EPTW_MASTER_ORCHESTRATOR`, `VL_MAIN`, `connections.md`, `source-dataset-contract` (build_source_dataset.py)",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 15:04",
+   "type": "change",
+   "text": "Source dataset contract published: 26 tables, 2 consuming data products, ready=True",
+   "stage": "S4",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 15:04",
+   "type": "note",
+   "text": "Gap review: ⚠️ ready with warnings (0 ❌, 1 ⚠️, 0 ⚪), review/gap-review.md",
+   "stage": "S5",
+   "workflow": "wf-2-migration-source-dataset"
+  },
+  {
+   "at": "2026-11-05 15:04",
+   "type": "change",
+   "text": "Artifacts stored in the deployment repo `C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT` under `DP_SDS_QHSES/`: 10 files, 0 conflicts kept",
+   "stage": null,
+   "workflow": ""
+  }
+ ],
+ "card": {
+  "Project name": "EPTW",
+  "Service offering": "Source dataset",
+  "Domain": "QHSES",
+  "Target": "`DP_SDS_QHSES_<ENV>` / `LH_SDS_EPTW`",
+  "Source systems": "RestService",
+  "Ingestion": "Directly from the source: databases => Files/raw (parquet) => tables; APIs and files => Files/landing (as delivered) => Files/raw (parquet) => tables. No shortcut.",
+  "Complexity (repo)": "Medium (117 objects)",
+  "Register": "EPTW (Medium)",
+  "Owner": "TBD"
+ },
+ "project_inputs": {
+  "domain": "QHSES",
+  "workspace": "DP_SDS_QHSES_DEV",
+  "deployment_repo": "C:\\Ten_Fabric_Data_Platform\\fabric_deployment_repository\\REPO-FABRIC-DEPLOYMENT",
+  "catalog_warehouse": "WH_CATALOG_COMMON",
+  "catalog_workspace": "",
+  "service": "Source Dataset",
+  "name": "EPTW",
+  "workspace_folder": "DP_SDS_QHSES",
+  "catalog_ids": {
+   "DEV": {
+    "workspace_name": "DP_SDS_QHSES_DEV",
+    "workspace_id": "4796d818-bfb7-41cf-92f4-caed5743cf24",
+    "warehouse_name": "WH_CATALOG_COMMON",
+    "warehouse_id": "95f828da-713b-4dfb-a003-ca2df46ae856",
+    "sql_endpoint": "dlihtekm5geejnpqivklyr2prq-ddmjmr5xx7hudexuzlwvoq6peq.datawarehouse.fabric.microsoft.com"
+   }
+  }
+ },
+ "last_update": "2026-11-05"
+}

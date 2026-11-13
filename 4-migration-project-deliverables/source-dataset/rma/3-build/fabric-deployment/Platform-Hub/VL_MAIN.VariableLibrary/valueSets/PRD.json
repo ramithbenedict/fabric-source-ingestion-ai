@@ -1,0 +1,70 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/variableLibrary/definition/valueSet/1.0.0/schema.json",
+  "name": "PRD",
+  "variableOverrides": [
+    {
+      "name": "CATALOG_WAREHOUSE_CONN_ID",
+      "value": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "name": "CATALOG_WAREHOUSE_ID",
+      "value": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "name": "CATALOG_WAREHOUSE_NAME",
+      "value": "WH_CATALOG_COMMON"
+    },
+    {
+      "name": "CATALOG_WAREHOUSE_SQL_ENDPOINT",
+      "value": "<to set>"
+    },
+    {
+      "name": "LH_SDS_RMA_ID",
+      "value": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "name": "LH_SDS_WPS_ID",
+      "value": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "name": "RMA_CATALOG_VIEW_NAME",
+      "value": "CATALOG.rma_catalog"
+    },
+    {
+      "name": "RMA_LH_CONN_ID",
+      "value": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "name": "RMA_LH_NAME",
+      "value": "LH_SDS_RMA"
+    },
+    {
+      "name": "RMA_SQL_SERVER_CONN_ID",
+      "value": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "name": "RMA_SQL_SERVER_CONN_NAME",
+      "value": "CONN_RMA_SQL_SERVER_PRD"
+    },
+    {
+      "name": "WPS_CATALOG_VIEW_NAME",
+      "value": "CATALOG.wps_catalog"
+    },
+    {
+      "name": "WPS_LH_CONN_ID",
+      "value": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "name": "WPS_LH_NAME",
+      "value": "LH_SDS_WPS"
+    },
+    {
+      "name": "WPS_ORACLE_CONN_ID",
+      "value": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "name": "WPS_ORACLE_CONN_NAME",
+      "value": "CONN_WPS_ORACLE_PRD"
+    }
+  ]
+}

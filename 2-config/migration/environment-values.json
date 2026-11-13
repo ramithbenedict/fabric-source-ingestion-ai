@@ -1,0 +1,16 @@
+{
+  "_doc": "Known per-environment values used by create_variable_library.py. Source: Fabric-AI-DEV-REPO 2-config/technical-setup (datalake-config.md, fabric-connections-setup.md, fabric-workspaces/dp_common_*.yml, fabric-global-setup.md). Empty strings are written as '<to set>' in the variable library. Keep DEV, UAT and PRD for every key.",
+  "environments": ["DEV", "UAT", "PRD"],
+  "values": {
+    "TENANT_ID": {"DEV": "9179d01a-e94c-4488-b5f0-4554bc474f8c", "UAT": "9179d01a-e94c-4488-b5f0-4554bc474f8c", "PRD": "9179d01a-e94c-4488-b5f0-4554bc474f8c"},
+    "SHARED_WORKSPACE_ID": {"DEV": "9e2e8d32-c46e-4f06-ac87-238deba7f445", "UAT": "4f81c043-2355-4016-9207-2976fa3b6e35", "PRD": "4026d348-a560-4b10-919c-d9b81f99daaa"},
+    "SHARED_WORKSPACE_NAME": {"DEV": "DP_COMMON_DEV", "UAT": "DP_COMMON_UAT", "PRD": "DP_COMMON_PRD"},
+    "ADLS_CLEANSED_CONN_ID": {"DEV": "d3368ca1-6cd9-4f16-859d-e85b2c1cc978", "UAT": "1c5ca0d1-05a9-4059-ae4d-5b347f958c6a", "PRD": "0df35d69-6675-4d9d-95b6-b865f2580d6b"},
+    "ADLS_CLEANSED_CONN_NAME": {"DEV": "CONN_DPV1_ADLS_CLEANED_DEV02", "UAT": "CONN_DPV1_ADLS_CLEANED_UAT", "PRD": "CONN_DPV1_ADLS_CLEANED_PRD"},
+    "ADLS_CLEANSED_STORAGE_ACCOUNT_NAME": {"DEV": "azsane08wedevcleansed01", "UAT": "azsane08weuatcleansed01", "PRD": "azsane07weprdcleansed01"},
+    "ADLS_CLEANSED_DFS_ENDPOINT": {"DEV": "https://azsane08wedevcleansed01.dfs.core.windows.net", "UAT": "https://azsane08weuatcleansed01.dfs.core.windows.net", "PRD": "https://azsane07weprdcleansed01.dfs.core.windows.net"},
+    "ADLS_CLEANSED_CONTAINER_NAME": {"DEV": "azblb01cleansed", "UAT": "azblb01cleansed", "PRD": "azblb01cleansed"},
+    "ADLS_RAW_STORAGE_ACCOUNT_NAME": {"DEV": "azsane08wedevraw01", "UAT": "", "PRD": ""},
+    "ADLS_RAW_CONTAINER_NAME": {"DEV": "azblb01raw", "UAT": "", "PRD": ""}
+  }
+}

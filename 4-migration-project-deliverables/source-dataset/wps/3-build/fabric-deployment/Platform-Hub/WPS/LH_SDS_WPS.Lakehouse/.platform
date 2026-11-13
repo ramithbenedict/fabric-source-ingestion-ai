@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Lakehouse",
+    "displayName": "LH_SDS_WPS",
+    "description": "Source dataset WPS: Files/raw (parquet), dbo tables."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "d44747b9-fdbe-4551-85a3-e03315a74fc4"
+  }
+}

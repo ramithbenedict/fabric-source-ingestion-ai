@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Warehouse",
+    "displayName": "WH_DPG_SERVICENOW",
+    "description": "Warehouse for ServiceNow Data Product (silver and gold layers)"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "6ba69e0b-a996-b3e7-447b-5da81ecec049"
+  }
+}

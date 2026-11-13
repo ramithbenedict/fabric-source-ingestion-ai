@@ -1,0 +1,99 @@
+{
+    "version": "2.0.0",
+    "inputs": [
+        {
+            "id": "service",
+            "type": "pickString",
+            "description": "Service",
+            "options": [
+                "sds",
+                "dp"
+            ]
+        },
+        {
+            "id": "ident",
+            "type": "promptString",
+            "description": "Source name (sds) or project / master pipeline / DW schema (dp)"
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Migration: refresh hub",
+            "type": "shell",
+            "command": "python -I 0-shared/scripts/refresh_hub.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "Migration: scope knowledge (show / check)",
+            "type": "shell",
+            "command": "python -I 0-shared/scripts/knowledge.py show --service ${input:service} --id ${input:ident} && python -I 0-shared/scripts/knowledge.py check --service ${input:service} --id ${input:ident}",
+            "problemMatcher": []
+        },
+        {
+            "label": "Migration: frame a scope (wf-1 F2)",
+            "type": "shell",
+            "command": "python -I 0-shared/scripts/frame_scope.py --service ${input:service} --id ${input:ident}",
+            "problemMatcher": []
+        },
+        {
+            "label": "Migration: catalog view (source dataset)",
+            "type": "shell",
+            "command": "python -I 0-shared/scripts/create_catalog_view.py --id ${input:ident}",
+            "problemMatcher": []
+        },
+        {
+            "label": "Migration: variable library VL_MAIN",
+            "type": "shell",
+            "command": "python -I 0-shared/scripts/create_variable_library.py --service ${input:service} --id ${input:ident}",
+            "problemMatcher": []
+        },
+        {
+            "label": "Migration: extract legacy code",
+            "type": "shell",
+            "command": "python -I 0-shared/scripts/extract_scope_code.py --service ${input:service} --id ${input:ident}",
+            "problemMatcher": []
+        },
+        {
+            "label": "Migration: build source dataset S1-S4",
+            "type": "shell",
+            "command": "python -I 0-shared/scripts/build_source_dataset.py --id ${input:ident}",
+            "problemMatcher": []
+        },
+        {
+            "label": "Migration: data product inputs (contracts)",
+            "type": "shell",
+            "command": "python -I 0-shared/scripts/source_contract.py show --product ${input:ident}",
+            "problemMatcher": []
+        },
+        {
+            "label": "Migration: input Lakehouses (wf-3 D3)",
+            "type": "shell",
+            "command": "python -I 0-shared/scripts/build_input_lakehouse.py --id ${input:ident}",
+            "problemMatcher": []
+        },
+        {
+            "label": "Migration: gap review",
+            "type": "shell",
+            "command": "python -I 0-shared/scripts/review_scope.py --service ${input:service} --id ${input:ident}",
+            "problemMatcher": []
+        },
+        {
+            "label": "Migration: apply gap review fixes",
+            "type": "shell",
+            "command": "python -I 0-shared/scripts/fix_from_review.py --service ${input:service} --id ${input:ident}",
+            "problemMatcher": []
+        },
+        {
+            "label": "Migration: data validation DPV1 => DPV2 (wf-5)",
+            "type": "shell",
+            "command": "python -I 0-shared/scripts/validate_data.py run --service ${input:service} --id ${input:ident}",
+            "problemMatcher": []
+        },
+        {
+            "label": "Migration: sync baseline conventions",
+            "type": "shell",
+            "command": "python -I 0-shared/scripts/sync_baseline.py",
+            "problemMatcher": []
+        }
+    ]
+}

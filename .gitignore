@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+bin/
+obj/
+*.dacpac
+.DS_Store
+# generated, rebuilt locally (not committed): copied DPV1 code (extract_scope_code.py)
+4-migration-project-deliverables/*/*/2-legacy-code/
+# hub data (knowledge/, migration-map.json, refresh-report.md, estate-coverage.md, dpv1-fabric-migration-hub.html) IS committed: a branch without the local DPV1 export needs it for scans and analysis; it changes only when refresh_hub.py runs
+
+# converter output, rebuilt by convert_serverless_sql.py; the committed input of the database project is 3-build/_work/d2-flat
+4-migration-project-deliverables/*/*/3-build/_work/d2-converted-sql/

@@ -1,0 +1,16 @@
+{
+  "_doc": "REST API of EPTW called once per item of a parent API (DPV1: child pipeline with a ForEach), generated from the DPV1 pipelines by ingestion.save_rest_loop (S2). Write replacements in \"override\" (any key below; kept by every build).",
+  "parent": "PL_RAWDATA_EPTW",
+  "child": "PL_RAWDATA_EPTW_CHILD_API",
+  "list_activity": "Get ePTW Projects",
+  "list_url": "GetPTWProjects_V1/",
+  "list_filter": "@greater(length(item().cpInternalCode), 0)",
+  "item_key": "cpInternalCode",
+  "param_column": "ParamName",
+  "batch": 50,
+  "url": "@{pipeline().parameters.apiMetadata.ApiName}/?@{pipeline().parameters.apiMetadata.ParamName}=@{item().cpInternalCode}&LastSyncDate=@{pipeline().parameters.apiMetadata.WatermarkNow}",
+  "object_param": "apiMetadata",
+  "array_param": "projectMetadata",
+  "manual": "",
+  "override": {}
+}

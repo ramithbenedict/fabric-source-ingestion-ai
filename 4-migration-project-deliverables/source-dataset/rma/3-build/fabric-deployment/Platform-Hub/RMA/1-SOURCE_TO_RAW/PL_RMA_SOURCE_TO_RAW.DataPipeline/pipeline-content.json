@@ -1,0 +1,360 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "name": "Set run partition",
+        "type": "SetVariable",
+        "dependsOn": [],
+        "description": "Run folder yyyy/MM/dd/HHhmm: given by the master orchestrator (same folder for both children), or from the trigger time.",
+        "typeProperties": {
+          "variableName": "Run",
+          "value": {
+            "value": "@if(empty(pipeline().parameters.RunPartition), concat(formatDateTime(pipeline().TriggerTime, 'yyyy/MM/dd'), '/', formatDateTime(pipeline().TriggerTime, 'HH'), 'h', formatDateTime(pipeline().TriggerTime, 'mm')), pipeline().parameters.RunPartition)",
+            "type": "Expression"
+          }
+        }
+      },
+      {
+        "name": "GET TABLES FROM CATALOG VIEW",
+        "type": "Lookup",
+        "dependsOn": [
+          {
+            "activity": "Set run partition",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "description": "Active tables of RMA from the catalog view (with the extract query and the watermark), names from VL_MAIN.",
+        "policy": {
+          "timeout": "0.00:10:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 30
+        },
+        "typeProperties": {
+          "source": {
+            "type": "DataWarehouseSource",
+            "partitionOption": "None",
+            "queryTimeout": "02:00:00",
+            "sqlReaderQuery": {
+              "value": "SELECT c.*,\n       CONVERT(varchar(33), CAST('2000-01-01' AS datetime2(6)), 126) AS Since,\n       CASE WHEN c.LoadMethod = 'incremental' AND c.WatermarkColumn IS NOT NULL\n     THEN CONCAT('SELECT * FROM ', CONCAT('[', c.SchemaName, '].[', c.SourceName, ']'), ' WHERE ', CONCAT('COALESCE([', c.WatermarkColumn, '], ''2000-01-01'')'), ' > ', CONCAT('''', CONVERT(varchar(23), CAST('2000-01-01' AS datetime2(6)), 121), ''''))\n     ELSE CASE WHEN c.[TableName] = 'Risks' THEN CONCAT('SELECT [Id]\n      ,[FriendlyRiskId]\n      ,[Ranking]\n      ,[Severity]\n      ,[RiskRating]\n      ,[SeverityPreResponse]\n      ,[RiskRatingPreResponse]\n      ,[SeverityPostResponse]\n      ,[RiskRatingPostResponse]\n      ,[GroupCost]\n      ,[GroupSeverity]\n      ,[GroupRating]\n      ,dbo.RemoveHTML([Description]) as Description\n      ,dbo.RemoveHTML([Causes]) as Causes\n      ,dbo.RemoveHTML([Events]) as Events\n      ,dbo.RemoveHTML([Consequences]) as Consequences\n      ,dbo.RemoveHTML([RaisedBy]) as RaisedBy\n      ,dbo.RemoveHTML([StatusComments]) as StatusComments\n      ,dbo.RemoveHTML([InternalNotes]) as InternalNotes\n      ,dbo.RemoveHTML([RatingUpdateRationale]) as RatingUpdateRationale\n      ,dbo.RemoveHTML([ClosureComment]) as ClosureComment\n      ,dbo.RemoveHTML([DoDifferently]) as DoDifferently\n      ,[ProjectGate]\n      ,[TriggerDescription]\n      ,[OrderReference]\n      ,[ProjectSpecificFieldOne]\n      ,[ProjectSpecificFieldTwo]\n      ,[ProjectSpecificFieldThree]\n      ,[ProjectSpecificFieldFour]\n      ,[CreatedBy]\n      ,[ModifiedBy]\n      ,[Customer]\n      ,[PartnerOne]\n      ,[PartnerTwo]\n      ,[RiskOccurred]\n      ,[IncludeInLL]\n      ,[DateRaised]\n      ,[ExposureStartDate]\n      ,[ExposureEndDate]\n      ,[ClosureDate]\n      ,[TriggerDate]\n      ,[CreatedDate]\n      ,[LastModified]\n      ,[StatusId]\n      ,[RiskNatureId]\n      ,[OwnershipLevelId]\n      ,[ResponseStrategyId]\n      ,[ReputationId]\n      ,[HSEScoreId]\n      ,[ITCybersecurityScoreId]\n      ,[StrategyScoreId]\n      ,[PerformanceQualityScoreId]\n      ,[ScheduleScoreId]\n      ,[CostScoreId]\n      ,[ProbabilityScoreId]\n      ,[ReputationPreResponseId]\n      ,[HSEScorePreResponseId]\n      ,[ITCybersecurityScorePreResponseId]\n      ,[StrategyScorePreResponseId]\n      ,[PerformanceQualityScorePreResponseId]\n      ,[ScheduleScorePreResponseId]\n      ,[CostScorePreResponseId]\n      ,[ProbabilityScorePreResponseId]\n      ,[ReputationPostResponseId]\n      ,[HSEScorePostResponseId]\n      ,[ITCybersecurityScorePostResponseId]\n      ,[StrategyScorePostResponseId]\n      ,[PerformanceQualityScorePostResponseId]\n      ,[ScheduleScorePostResponseId]\n      ,[CostScorePostResponseId]\n      ,[ProbabilityScorePostResponseId]\n      ,[SeverityAtClosureId]\n      ,[ClosureRationaleId]\n      ,[ResponseEffectiveId]\n      ,[MostEffectiveActionId]\n      ,[WorkPackageId]\n      ,[ProductAreaId]\n      ,[RBSId]\n      ,[SecondaryRBSId]\n      ,[RiskOwnerId]\n      ,[RowVersion]\n      ,[BURiskRegisterId]\n      ,[GBURiskRegisterId]\n      ,[OERiskRegisterId]\n      ,[ProjectRiskRegisterId]\n      ,[Discriminator]\n      ,[ReportToParent]\n      ,[Source]\n      ,[RiskCopiedFrom]\n      ,[RiskCopiedDate]\n      ,[InCSA]\n      ,[QuarterlyReport]\n  FROM ', c.[SchemaName], '.', c.[TableName]) WHEN c.[TableName] = 'Risks_History' THEN CONCAT('SELECT [Id]\n      ,[RiskId]\n      ,[Ranking]\n      ,[Severity]\n      ,[RiskRating]\n      ,[SeverityPreResponse]\n      ,[RiskRatingPreResponse]\n      ,[SeverityPostResponse]\n      ,[RiskRatingPostResponse]\n      ,[PreviousRating]\n      ,[GroupCost]\n      ,[GroupSeverity]\n      ,[GroupRating]\n      ,[PreviousGroupRating]\n      ,[SeverityAtClosure]\n      ,dbo.RemoveHTML([Description]) as [Description]\n      ,dbo.RemoveHTML([Causes]) as [Causes]\n      ,dbo.RemoveHTML([Events]) as [Events]\n      ,dbo.RemoveHTML([Consequences]) as [Consequences]\n      ,dbo.RemoveHTML([RaisedBy]) as [RaisedBy]\n      ,dbo.RemoveHTML([StatusComments]) as [StatusComments]\n      ,dbo.RemoveHTML([InternalNotes]) as [InternalNotes]\n      ,dbo.RemoveHTML([RatingUpdateRationale]) as [RatingUpdateRationale]\n      ,dbo.RemoveHTML([ClosureComment]) as [ClosureComment]\n      ,dbo.RemoveHTML([DoDifferently]) as [DoDifferently]\n      ,[ProjectGate]\n      ,[TriggerDescription]\n      ,[OrderReference]\n      ,[ProjectSpecificFieldOne]\n      ,[ProjectSpecificFieldTwo]\n      ,[ProjectSpecificFieldThree]\n      ,[ProjectSpecificFieldFour]\n      ,[HistoryCreatedBy]\n      ,[ModifiedBy]\n      ,[Customer]\n      ,[PartnerOne]\n      ,[PartnerTwo]\n      ,[RiskOccurred]\n      ,[IncludeInLL]\n      ,[DateRaised]\n      ,[ExposureStartDate]\n      ,[ExposureEndDate]\n      ,[ClosureDate]\n      ,[TriggerDate]\n      ,[LastModified]\n      ,[HistoryCreatedDate]\n      ,[StatusId]\n      ,[Status]\n      ,[RiskNatureId]\n      ,[RiskNature]\n      ,[OwnershipLevelId]\n      ,[OwnershipLevel]\n      ,[ResponseStrategyId]\n      ,[ResponseStrategy]\n      ,[ReputationId]\n      ,[Reputation]\n      ,[HSEScoreId]\n      ,[HSEScore]\n      ,[ITCybersecurityScoreId]\n      ,[ITCybersecurityScore]\n      ,[StrategyScoreId]\n      ,[StrategyScore]\n      ,[PerformanceQualityScoreId]\n      ,[PerformanceQualityScore]\n      ,[ScheduleScoreId]\n      ,[ScheduleScore]\n      ,[CostScoreId]\n      ,[CostScore]\n      ,[ProbabilityScoreId]\n      ,[ProbabilityScore]\n      ,[ReputationPreResponseId]\n      ,[ReputationPreResponse]\n      ,[HSEScorePreResponseId]\n      ,[HSEScorePreResponse]\n      ,[ITCybersecurityScorePreResponseId]\n      ,[ITCybersecurityScorePreResponse]\n      ,[StrategyScorePreResponseId]\n      ,[StrategyScorePreResponse]\n      ,[PerformanceQualityScorePreResponseId]\n      ,[PerformanceQualityScorePreResponse]\n      ,[ScheduleScorePreResponseId]\n      ,[ScheduleScorePreResponse]\n      ,[CostScorePreResponseId]\n      ,[CostScorePreResponse]\n      ,[ProbabilityScorePreResponseId]\n      ,[ProbabilityScorePreResponse]\n      ,[ReputationPostResponseId]\n      ,[ReputationPostResponse]\n      ,[HSEScorePostResponseId]\n      ,[HSEScorePostResponse]\n      ,[ITCybersecurityScorePostResponseId]\n      ,[ITCybersecurityScorePostResponse]\n      ,[StrategyScorePostResponseId]\n      ,[StrategyScorePostResponse]\n      ,[PerformanceQualityScorePostResponseId]\n      ,[PerformanceQualityScorePostResponse]\n      ,[ScheduleScorePostResponseId]\n      ,[ScheduleScorePostResponse]\n      ,[CostScorePostResponseId]\n      ,[CostScorePostResponse]\n      ,[ProbabilityScorePostResponseId]\n      ,[ProbabilityScorePostResponse]\n      ,[ClosureRationaleId]\n      ,[ClosureRationale]\n      ,[ResponseEffectiveId]\n      ,[ResponseEffective]\n      ,[WorkPackageId]\n      ,[WorkPackage]\n      ,[ProductAreaId]\n      ,[ProductArea]\n      ,[MostEffectiveActionId]\n      ,[MostEffectiveAction]\n      ,[RBSId]\n      ,[RBS]\n      ,[SecondaryRBSId]\n      ,[SecondaryRBS]\n      ,[RiskOwnerId]\n      ,[RiskOwner]\n      ,[ProjectRiskRegisterId]\n      ,[Discriminator]\n      ,[ProjectRisk_Id]\n      ,[RiskRegister_Id]\n  FROM ', c.[SchemaName], '.', c.[TableName]) WHEN c.[TableName] = 'Users' THEN CONCAT('SELECT \nu.[Id],\nu.[Login],\nu.[FirstName],\nu.[LastName],\nu.[IsAdmin],\np.[Email]\nFROM ', c.[SchemaName], '.', c.[TableName], ' u\nOUTER APPLY (\nSELECT TOP 1 \n      p.[Email]\nFROM \n      MDM_Mirror_Person p\nWHERE \n      p.ActiveDirectoryAccount = u.Login)p') WHEN c.[TableName] = 'Actions' THEN CONCAT('SELECT [Id]\n,[FriendlyActionId]\n,[CostToImplement]\n,dbo.RemoveHTML([Description]) as [Description]\n,dbo.RemoveHTML([Comment]) as [Comment]\n,[ModifiedBy]\n,[Source]\n,[CreatedDate]\n,[StatusId]\n,[PriorityId]\n,[RiskId]\n,[OwnerId]\n,[RowVersion]\n,[CreatedBy]\n,[FallbackPlan]\n,[PlannedFinishDate]\n,[ForecastFinishDate]\n,[ActualFinishDate]\n,[LastModified]\n,[QuarterlyReport]\n  FROM ', c.[SchemaName], '.', c.[TableName]) ELSE CONCAT('SELECT * FROM ', CONCAT('[', c.SchemaName, '].[', c.SourceName, ']')) END END AS ExtractQuery\nFROM @{pipeline().libraryVariables.RMA_CATALOG_VIEW_NAME} AS c\nWHERE c.Active = 1",
+              "type": "Expression"
+            }
+          },
+          "firstRowOnly": false,
+          "datasetSettings": {
+            "type": "DataWarehouseTable",
+            "schema": [],
+            "annotations": [],
+            "typeProperties": {},
+            "connectionSettings": {
+              "name": "wh_catalog_common",
+              "properties": {
+                "annotations": [],
+                "type": "DataWarehouse",
+                "typeProperties": {
+                  "artifactId": "@pipeline().libraryVariables.CATALOG_WAREHOUSE_ID",
+                  "endpoint": "@pipeline().libraryVariables.CATALOG_WAREHOUSE_SQL_ENDPOINT",
+                  "workspaceId": "@pipeline().DataFactory"
+                },
+                "externalReferences": {
+                  "connection": "@pipeline().libraryVariables.CATALOG_WAREHOUSE_CONN_ID"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "ForEach table in RMA",
+        "type": "ForEach",
+        "dependsOn": [
+          {
+            "activity": "GET TABLES FROM CATALOG VIEW",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "description": "One Copy per catalog row, 20 in parallel. A table that copied is added to LoadedTables (only those go to the lakehouse); a table that failed is added to FailedTables with its error, and the others carry on.",
+        "typeProperties": {
+          "isSequential": false,
+          "batchCount": 20,
+          "items": {
+            "value": "@activity('GET TABLES FROM CATALOG VIEW').output.value",
+            "type": "Expression"
+          },
+          "activities": [
+            {
+              "name": "Extract to RAW parquet",
+              "type": "Copy",
+              "dependsOn": [],
+              "policy": {
+                "timeout": "7.00:00:00",
+                "retry": 3,
+                "retryIntervalInSeconds": 60
+              },
+              "description": "Runs the ExtractQuery of the catalog row (full table, or changes since the watermark minus 1 day) and writes parquet once, straight to Files/raw (DPV1: Copy into RAW/DATASOURCE=…).",
+              "typeProperties": {
+                "source": {
+                  "type": "SqlServerSource",
+                  "partitionOption": "None",
+                  "queryTimeout": "02:00:00",
+                  "sqlReaderQuery": {
+                    "value": "@item().ExtractQuery",
+                    "type": "Expression"
+                  },
+                  "datasetSettings": {
+                    "type": "SqlServerTable",
+                    "annotations": [],
+                    "externalReferences": {
+                      "connection": "@pipeline().libraryVariables.RMA_SQL_SERVER_CONN_ID"
+                    },
+                    "typeProperties": {
+                      "schema": {
+                        "value": "@item().SchemaName",
+                        "type": "Expression"
+                      },
+                      "table": {
+                        "value": "@item().SourceName",
+                        "type": "Expression"
+                      }
+                    }
+                  }
+                },
+                "sink": {
+                  "type": "ParquetSink",
+                  "formatSettings": {
+                    "type": "ParquetWriteSettings",
+                    "enableVertiParquet": true
+                  },
+                  "storeSettings": {
+                    "type": "LakehouseWriteSettings",
+                    "copyBehavior": "PreserveHierarchy"
+                  },
+                  "datasetSettings": {
+                    "type": "Parquet",
+                    "typeProperties": {
+                      "location": {
+                        "type": "LakehouseLocation",
+                        "folderPath": {
+                          "value": "@{pipeline().parameters.RawRoot}/@{item().EntityName}@{item().FolderTail}",
+                          "type": "Expression"
+                        },
+                        "fileName": {
+                          "value": "@{item().EntityName}.parquet",
+                          "type": "Expression"
+                        }
+                      },
+                      "compressionCodec": "snappy"
+                    },
+                    "schema": [],
+                    "connectionSettings": {
+                      "name": "lh_sds_rma",
+                      "properties": {
+                        "annotations": [],
+                        "type": "Lakehouse",
+                        "typeProperties": {
+                          "workspaceId": "@pipeline().DataFactory",
+                          "artifactId": "@pipeline().libraryVariables.LH_SDS_RMA_ID",
+                          "rootFolder": "Files"
+                        },
+                        "externalReferences": {
+                          "connection": "@pipeline().libraryVariables.RMA_LH_CONN_ID"
+                        }
+                      }
+                    },
+                    "annotations": []
+                  }
+                },
+                "enableStaging": false,
+                "translator": {
+                  "type": "TabularTranslator",
+                  "typeConversion": true,
+                  "typeConversionSettings": {
+                    "allowDataTruncation": true,
+                    "treatBooleanAsNumber": false
+                  }
+                }
+              }
+            },
+            {
+              "name": "Add to loaded tables",
+              "type": "AppendVariable",
+              "dependsOn": [
+                {
+                  "activity": "Extract to RAW parquet",
+                  "dependencyConditions": [
+                    "Succeeded"
+                  ]
+                }
+              ],
+              "description": "The catalog row of a table that copied: the notebook loads it with its keys and load method.",
+              "typeProperties": {
+                "variableName": "LoadedTables",
+                "value": {
+                  "value": "@string(item())",
+                  "type": "Expression"
+                }
+              }
+            },
+            {
+              "name": "Add to failed tables",
+              "type": "AppendVariable",
+              "dependsOn": [
+                {
+                  "activity": "Extract to RAW parquet",
+                  "dependencyConditions": [
+                    "Failed"
+                  ]
+                }
+              ],
+              "description": "The table and the Copy error: listed in the failure message of the master.",
+              "typeProperties": {
+                "variableName": "FailedTables",
+                "value": {
+                  "value": "@concat(item().SchemaName, '.', item().TableName, ' (copy): ', activity('Extract to RAW parquet').error.message)",
+                  "type": "Expression"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "Return loaded and failed tables",
+        "type": "SetVariable",
+        "dependsOn": [
+          {
+            "activity": "ForEach table in RMA",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "description": "Gives the master the tables that went through this step and the ones that failed, with their error.",
+        "typeProperties": {
+          "variableName": "pipelineReturnValue",
+          "setSystemVariable": true,
+          "value": [
+            {
+              "key": "LoadedTables",
+              "value": {
+                "type": "Expression",
+                "content": "@variables('LoadedTables')"
+              }
+            },
+            {
+              "key": "FailedTables",
+              "value": {
+                "type": "Expression",
+                "content": "@variables('FailedTables')"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "Fail Catalog Lookup",
+        "type": "Fail",
+        "dependsOn": [
+          {
+            "activity": "GET TABLES FROM CATALOG VIEW",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "errorCode": "CATALOG_LOOKUP_FAILED",
+          "message": "PL_RMA_SOURCE_TO_RAW could not read the catalog view (VL_MAIN names, warehouse)."
+        }
+      },
+      {
+        "name": "Fail Copy Loop",
+        "type": "Fail",
+        "dependsOn": [
+          {
+            "activity": "ForEach table in RMA",
+            "dependencyConditions": [
+              "Failed"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "errorCode": "SOURCE_TO_RAW_LOOP_FAILED",
+          "message": "PL_RMA_SOURCE_TO_RAW failed for at least one table: open the failed Copy run."
+        }
+      }
+    ],
+    "parameters": {
+      "RawRoot": {
+        "type": "String",
+        "defaultValue": "raw/rma"
+      },
+      "RunPartition": {
+        "type": "String",
+        "defaultValue": ""
+      }
+    },
+    "variables": {
+      "Run": {
+        "type": "String"
+      },
+      "LoadedTables": {
+        "type": "Array",
+        "defaultValue": []
+      },
+      "FailedTables": {
+        "type": "Array",
+        "defaultValue": []
+      }
+    },
+    "libraryVariables": {
+      "RMA_CATALOG_VIEW_NAME": {
+        "type": "String",
+        "variableName": "RMA_CATALOG_VIEW_NAME",
+        "libraryName": "VL_MAIN"
+      },
+      "LH_SDS_RMA_ID": {
+        "type": "String",
+        "variableName": "LH_SDS_RMA_ID",
+        "libraryName": "VL_MAIN"
+      },
+      "RMA_LH_CONN_ID": {
+        "type": "String",
+        "variableName": "RMA_LH_CONN_ID",
+        "libraryName": "VL_MAIN"
+      },
+      "RMA_LH_NAME": {
+        "type": "String",
+        "variableName": "RMA_LH_NAME",
+        "libraryName": "VL_MAIN"
+      },
+      "CATALOG_WAREHOUSE_ID": {
+        "type": "String",
+        "variableName": "CATALOG_WAREHOUSE_ID",
+        "libraryName": "VL_MAIN"
+      },
+      "CATALOG_WAREHOUSE_SQL_ENDPOINT": {
+        "type": "String",
+        "variableName": "CATALOG_WAREHOUSE_SQL_ENDPOINT",
+        "libraryName": "VL_MAIN"
+      },
+      "CATALOG_WAREHOUSE_CONN_ID": {
+        "type": "String",
+        "variableName": "CATALOG_WAREHOUSE_CONN_ID",
+        "libraryName": "VL_MAIN"
+      },
+      "RMA_SQL_SERVER_CONN_ID": {
+        "type": "String",
+        "variableName": "RMA_SQL_SERVER_CONN_ID",
+        "libraryName": "VL_MAIN"
+      }
+    }
+  }
+}

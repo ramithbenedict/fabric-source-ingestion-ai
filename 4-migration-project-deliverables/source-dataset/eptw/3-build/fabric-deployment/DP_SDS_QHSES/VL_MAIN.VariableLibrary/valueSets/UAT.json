@@ -1,0 +1,54 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/variableLibrary/definition/valueSet/1.0.0/schema.json",
+  "name": "UAT",
+  "variableOverrides": [
+    {
+      "name": "CATALOG_WAREHOUSE_CONN_ID",
+      "value": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "name": "CATALOG_WAREHOUSE_ID",
+      "value": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "name": "CATALOG_WAREHOUSE_NAME",
+      "value": "WH_CATALOG_COMMON"
+    },
+    {
+      "name": "CATALOG_WAREHOUSE_SQL_ENDPOINT",
+      "value": "<to set>"
+    },
+    {
+      "name": "EPTW_CATALOG_VIEW_NAME",
+      "value": "CATALOG.eptw_catalog"
+    },
+    {
+      "name": "EPTW_CATALOG_WATERMARK_TABLE_NAME",
+      "value": "CATALOG.catalog_eptw_watermark"
+    },
+    {
+      "name": "EPTW_KEYVAULT_CONN_ID",
+      "value": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "name": "EPTW_LH_CONN_ID",
+      "value": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "name": "EPTW_LH_NAME",
+      "value": "LH_SDS_EPTW"
+    },
+    {
+      "name": "EPTW_REST_SERVICE_CONN_ID",
+      "value": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "name": "EPTW_REST_SERVICE_CONN_NAME",
+      "value": "CONN_EPTW_REST_SERVICE_UAT"
+    },
+    {
+      "name": "LH_SDS_EPTW_ID",
+      "value": "00000000-0000-0000-0000-000000000000"
+    }
+  ]
+}
